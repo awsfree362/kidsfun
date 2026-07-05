@@ -46,7 +46,11 @@ def create_app():
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         'pool_recycle': 280,
         'pool_pre_ping': True,
+        'pool_size': 5,
+        'max_overflow': 10,
     }
+    app.config['WTF_CSRF_TIME_LIMIT'] = 3600
+    app.config['WTF_CSRF_SSL_STRICT'] = False
     app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
     app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
     app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True') == 'True'
@@ -60,8 +64,9 @@ def create_app():
     app.config['S3_SECRET_ACCESS_KEY'] = os.getenv('S3_SECRET_ACCESS_KEY')
     app.config['S3_REGION'] = os.getenv('S3_REGION', 'auto')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
-    # Limiter: use Redis when available, fall back to memory
     app.config['RATELIMIT_STORAGE_URI'] = os.getenv('REDIS_URL', 'memory://')
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME', 'noreply@kidscomp.com')
+    app.config['APP_URL'] = os.getenv('APP_URL', 'http://localhost:5000')
 
     db.init_app(app)
     login_manager.init_app(app)

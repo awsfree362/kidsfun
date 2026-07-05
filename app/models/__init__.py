@@ -146,7 +146,7 @@ class ChildDocument(db.Model):
     __tablename__ = 'child_documents'
     id = db.Column(db.Integer, primary_key=True)
     child_id = db.Column(db.Integer, db.ForeignKey('children.id'), nullable=False)
-    doc_type = db.Column(db.String(100))  # birth_certificate, medical, id, etc.
+    doc_type = db.Column(db.String(100))
     file_url = db.Column(db.String(500))
     file_name = db.Column(db.String(200))
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -167,7 +167,7 @@ class Sport(db.Model):
 class AgeGroup(db.Model):
     __tablename__ = 'age_groups'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)  # U7, U9, U11, etc.
+    name = db.Column(db.String(50), nullable=False)
     min_age = db.Column(db.Integer)
     max_age = db.Column(db.Integer)
     description = db.Column(db.String(200))
@@ -182,7 +182,7 @@ class Venue(db.Model):
     city = db.Column(db.String(100))
     state = db.Column(db.String(100))
     zip_code = db.Column(db.String(20))
-    country = db.Column(db.String(100), default='USA')
+    country = db.Column(db.String(100), default='South Africa')
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
     capacity = db.Column(db.Integer)
@@ -297,7 +297,7 @@ class EventCustomField(db.Model):
 class Agreement(db.Model):
     __tablename__ = 'agreements'
     id = db.Column(db.Integer, primary_key=True)
-    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=True)  # null = global
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
     required = db.Column(db.Boolean, default=True)
@@ -347,6 +347,19 @@ class RegistrationDocument(db.Model):
     file_url = db.Column(db.String(500))
     file_name = db.Column(db.String(200))
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class PaymentLog(db.Model):
+    __tablename__ = 'payment_logs'
+    id = db.Column(db.Integer, primary_key=True)
+    registration_id = db.Column(db.Integer, db.ForeignKey('registrations.id'), nullable=False)
+    gateway = db.Column(db.String(50))
+    reference = db.Column(db.String(200))
+    amount = db.Column(db.Numeric(10, 2))
+    status = db.Column(db.String(50))  # initiated, success, failed, refunded
+    raw_response = db.Column(db.Text)  # JSON
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    registration = db.relationship('Registration', backref='payment_logs')
 
 
 class NavMenuItem(db.Model):

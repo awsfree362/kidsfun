@@ -46,7 +46,7 @@
                   {{ (user.first_name or user.email)[0] | upper }}
                 </div>
               {% endif %}
-              <span class="font-medium">{{ user.full_name or '—' }}</span>
+              <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="font-medium hover:text-indigo-600">{{ user.full_name or '—' }}</a>
             </div>
           </td>
           <td class="px-4 py-3 text-gray-500">{{ user.email }}</td>

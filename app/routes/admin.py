@@ -3,7 +3,8 @@ from flask_login import login_required, current_user
 from app import db
 from app.models import (Event, Sport, Venue, AgeGroup, SiteSettings, User,
                          NavMenuItem, Page, Agreement, EventAgeDivision,
-                         EventCustomField, EventImage, VenueImage, Notification, Registration)
+                         EventCustomField, EventImage, VenueImage, Notification,
+                         Registration, PaymentLog)
 from app.utils.helpers import admin_required, unique_slug, invalidate_cache
 from app.utils.storage import upload_file, delete_file
 from app.utils.forms import (EventForm, VenueForm, SportForm, AgeGroupForm,
@@ -674,3 +675,104 @@ def agreement_delete(ag_id):
     db.session.commit()
     flash('Agreement deleted.', 'success')
     return redirect(url_for('admin.agreements'))
+
+
+# ─── Bulk Registration Actions ───────────────────────────────────────────────
+
+@admin_bp.route('/registrations/bulk', methods=['POST'])
+def registrations_bulk():
+    ids = request.form.getlist('reg_ids')
+    action = request.form.get('action')
+    if not ids or not action:
+        flash('No registrations selected.', 'warning')
+        return redirect(url_for('admin.registrations'))
+    regs = Registration.query.filter(Registration.id.in_([int(i) for i in ids])).all()
+    if action in ('confirm', 'cancel', 'waitlist'):
+        status_map = {'confirm': 'confirmed', 'cancel': 'cancelled', 'waitlist': 'waitlist'}
+        for reg in regs:
+            reg.status = status_map[action]
+        db.session.commit()
+        flash(f'{len(regs)} registrations updated to {status_map[action]}.', 'success')
+    elif action == 'refund':
+        for reg in regs:
+            reg.payment_status = 'refunded'
+            reg.status = 'cancelled'
+        db.session.commit()
+        flash(f'{len(regs)} registrations marked as refunded.', 'success')
+    return redirect(url_for('admin.registrations'))
+
+
+# ─── Payment Logs ────────────────────────────────────────────────────────────
+
+@admin_bp.route('/payments')
+def payment_logs():
+    page = request.args.get('page', 1, type=int)
+    logs = (PaymentLog.query
+            .order_by(PaymentLog.created_at.desc())
+            .paginate(page=page, per_page=25))
+    return render_template('admin/payment_logs.html', logs=logs)
+
+
+@admin_bp.route('/registrations/<int:reg_id>/refund', methods=['POST'])
+def registration_refund(reg_id):
+    reg = Registration.query.get_or_404(reg_id)
+    reg.payment_status = 'refunded'
+    reg.status = 'cancelled'
+    db.session.commit()
+    from app.models import PaymentLog
+    log = PaymentLog(
+        registration_id=reg.id,
+        gateway='manual',
+        reference='admin-refund',
+        amount=float(reg.amount_paid or 0),
+        status='refunded',
+        raw_response='{}'
+    )
+    db.session.add(log)
+    db.session.commit()
+    flash('Registration refunded and cancelled.', 'success')
+    return redirect(url_for('admin.registration_detail', reg_id=reg_id))
+
+
+# ─── Revenue / Chart Data ────────────────────────────────────────────────────
+
+@admin_bp.route('/api/revenue-chart')
+def revenue_chart():
+    from sqlalchemy import func, extract
+    rows = (db.session.query(
+                extract('year', Registration.registered_at).label('yr'),
+                extract('month', Registration.registered_at).label('mo'),
+                func.sum(Registration.amount_paid).label('total')
+            )
+            .filter_by(payment_status='paid')
+            .group_by('yr', 'mo')
+            .order_by('yr', 'mo')
+            .limit(12).all())
+    labels = [f"{int(r.mo):02d}/{int(r.yr)}" for r in rows]
+    data = [float(r.total or 0) for r in rows]
+    return jsonify({'labels': labels, 'data': data})
+
+
+@admin_bp.route('/api/registrations-chart')
+def registrations_chart():
+    from sqlalchemy import func, extract
+    rows = (db.session.query(
+                extract('year', Registration.registered_at).label('yr'),
+                extract('month', Registration.registered_at).label('mo'),
+                func.count(Registration.id).label('cnt')
+            )
+            .group_by('yr', 'mo')
+            .order_by('yr', 'mo')
+            .limit(12).all())
+    labels = [f"{int(r.mo):02d}/{int(r.yr)}" for r in rows]
+    data = [int(r.cnt) for r in rows]
+    return jsonify({'labels': labels, 'data': data})
+
+
+# ─── User Detail ─────────────────────────────────────────────────────────────
+
+@admin_bp.route('/users/<int:user_id>')
+def user_detail(user_id):
+    user = User.query.get_or_404(user_id)
+    regs = Registration.query.filter_by(user_id=user_id).order_by(Registration.registered_at.desc()).all()
+    return render_template('admin/user_detail.html', user=user, regs=regs)

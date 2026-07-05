@@ -1,9 +1,10 @@
 import os
 import uuid
+import json
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, abort
 from flask_login import login_required, current_user
 from app import db
-from app.models import Registration, Event, SiteSettings
+from app.models import Registration, Event, SiteSettings, PaymentLog
 from app.utils.payments import (paystack_verify, paystack_verify_webhook,
                                   stripe_verify_webhook, payfast_verify_itn,
                                   yoco_create_charge, initiate_payment)
@@ -57,6 +58,18 @@ def checkout(reg_id):
     reg.payment_intent_id = reference
     db.session.commit()
 
+    # Log payment initiation
+    log = PaymentLog(
+        registration_id=reg.id,
+        gateway=gateway,
+        reference=reference,
+        amount=float(amount_cents) / 100,
+        status='initiated',
+        raw_response=json.dumps(result)
+    )
+    db.session.add(log)
+    db.session.commit()
+
     # Redirect gateways
     if 'redirect_url' in result:
         return redirect(result['redirect_url'])
@@ -92,6 +105,7 @@ def verify(reg_id):
             reg.status = 'confirmed'
             reg.amount_paid = data['amount'] / 100
             db.session.commit()
+            _log_payment(reg.id, gateway, reference, reg.amount_paid, 'success', data)
             try:
                 from app.utils.email import send_registration_confirmation
                 send_registration_confirmation(reg)
@@ -111,6 +125,7 @@ def verify(reg_id):
                 reg.status = 'confirmed'
                 reg.amount_paid = session.amount_total / 100
                 db.session.commit()
+                _log_payment(reg.id, gateway, session_id, reg.amount_paid, 'success', {'session_id': session_id})
                 try:
                     from app.utils.email import send_registration_confirmation
                     send_registration_confirmation(reg)
@@ -120,6 +135,7 @@ def verify(reg_id):
                 return redirect(url_for('user.registration_detail', reg_id=reg.id))
 
     flash('Payment could not be verified. Please contact support.', 'warning')
+    _log_payment(reg.id, gateway, reference, 0, 'failed', {})
     return redirect(url_for('user.registration_detail', reg_id=reg.id))
 
 
@@ -215,6 +231,39 @@ def yoco_charge():
         reg.status = 'confirmed'
         reg.amount_paid = amount_cents / 100
         db.session.commit()
+        _log_payment(reg.id, 'yoco', token, reg.amount_paid, 'success', result)
         return jsonify({'success': True, 'redirect': url_for('user.registration_detail', reg_id=reg.id)})
     except Exception as e:
+        _log_payment(reg.id, 'yoco', token, 0, 'failed', {'error': str(e)})
         return jsonify({'success': False, 'error': str(e)}), 400
+
+
+def _log_payment(registration_id, gateway, reference, amount, status, raw):
+    try:
+        log = PaymentLog(
+            registration_id=registration_id,
+            gateway=gateway,
+            reference=str(reference),
+            amount=amount,
+            status=status,
+            raw_response=json.dumps(raw, default=str)
+        )
+        db.session.add(log)
+        db.session.commit()
+    except Exception:
+        pass
+
+
+@payments_bp.route('/admin/refund/<int:reg_id>', methods=['POST'])
+@login_required
+def admin_refund(reg_id):
+    from app.utils.helpers import admin_required
+    if not current_user.is_admin():
+        abort(403)
+    reg = Registration.query.get_or_404(reg_id)
+    reg.payment_status = 'refunded'
+    reg.status = 'cancelled'
+    db.session.commit()
+    _log_payment(reg.id, 'manual', 'admin-refund', float(reg.amount_paid or 0), 'refunded', {})
+    flash('Registration marked as refunded.', 'success')
+    return redirect(url_for('admin.registration_detail', reg_id=reg_id))

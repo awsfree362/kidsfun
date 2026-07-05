@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from app.models import Event, Sport, SiteSettings
+from app.models import Event, Sport, SiteSettings, Venue
 from app import get_redis
 import json
 
@@ -77,3 +77,30 @@ def api_settings():
     keys = request.args.getlist('keys') or ['site_name', 'primary_color', 'secondary_color',
                                               'currency_symbol', 'hero_title']
     return jsonify({k: SiteSettings.get(k, '') for k in keys})
+
+
+@api_bp.route('/search/suggestions')
+def search_suggestions():
+    q = request.args.get('q', '').strip()
+    if len(q) < 2:
+        return jsonify([])
+    cache_key = f"api:suggest:{q.lower()}"
+    cached = _redis_get(cache_key)
+    if cached:
+        return jsonify(json.loads(cached))
+    events = (Event.query
+              .filter(Event.status == 'published', Event.title.ilike(f'%{q}%'))
+              .order_by(Event.start_date)
+              .limit(6).all())
+    sports = Sport.query.filter(Sport.is_active == True, Sport.name.ilike(f'%{q}%')).limit(3).all()
+    venues = Venue.query.filter(Venue.city.ilike(f'%{q}%')).limit(3).all()
+    results = (
+        [{'type': 'event', 'label': e.title, 'url': f'/events/{e.slug}',
+          'meta': e.start_date.strftime('%d %b %Y')} for e in events] +
+        [{'type': 'sport', 'label': e.name, 'url': f'/sports/{e.slug}',
+          'meta': 'Sport'} for e in sports] +
+        [{'type': 'venue', 'label': e.name, 'url': f'/events?location={e.city}',
+          'meta': e.city or ''} for e in venues]
+    )
+    _redis_set(cache_key, 60, json.dumps(results))
+    return jsonify(results)
