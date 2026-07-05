@@ -359,14 +359,17 @@ function searchBar() {
       return `
         <div style="min-width:100%;padding:0 32px;box-sizing:border-box;">
           <a href="${s.url}"
+             class="sport-slide-inner"
              style="display:flex;align-items:stretch;border-radius:24px;overflow:hidden;text-decoration:none;max-width:1136px;margin:0 auto;min-height:320px;box-shadow:0 24px 80px ${c.glow};">
-            <div style="background:${c.bg};flex:0 0 45%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:48px;">
+            <div class="sport-slide-left"
+                 style="background:${c.bg};flex:0 0 45%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:48px;">
               <div style="width:120px;height:120px;border-radius:28px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;">
                 <i class="fas ${s.icon}" style="font-size:56px;color:${c.icon};"></i>
               </div>
               <span style="font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;text-align:center;">${s.name}</span>
             </div>
-            <div style="flex:1;background:#fff;display:flex;flex-direction:column;justify-content:center;padding:48px 56px;gap:20px;">
+            <div class="sport-slide-right"
+                 style="flex:1;background:#fff;display:flex;flex-direction:column;justify-content:center;padding:48px 56px;gap:20px;">
               <div style="display:inline-flex;align-items:center;gap:8px;background:${c.bg};padding:6px 14px;border-radius:100px;width:fit-content;">
                 <i class="fas ${s.icon}" style="color:${c.icon};font-size:12px;"></i>
                 <span style="font-size:12px;font-weight:700;color:${c.icon};text-transform:uppercase;letter-spacing:.08em;">${s.name}</span>

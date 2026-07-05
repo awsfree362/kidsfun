@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ sidebarOpen: window.innerWidth >= 1024 }">
+<html lang="en" x-data="{ sidebarOpen: window.innerWidth >= 1024 }" x-init="$watch('sidebarOpen', v => { document.querySelector('.admin-sidebar').classList.toggle('open', v) }); document.querySelector('.admin-sidebar').classList.toggle('open', sidebarOpen)">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -43,8 +43,8 @@
 
     /* Layout */
     .admin-layout { display: flex; height: 100vh; overflow: hidden; }
-    .admin-sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
-    .admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+    .admin-sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; position: fixed; top: 0; left: 0; bottom: 0; z-index: 40; transform: translateX(0); transition: transform 200ms ease; }
+    .admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; margin-left: var(--sidebar-width); transition: margin-left 200ms ease; }
     .admin-topbar { height: var(--topbar-height); background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
     .admin-content { flex: 1; overflow-y: auto; padding: 32px 24px; }
 
@@ -133,6 +133,26 @@
 
     /* Avatar */
     .avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; background: var(--primary); flex-shrink: 0; }
+
+    /* ── Mobile responsive ── */
+    @media (max-width: 1024px) {
+      .admin-sidebar { transform: translateX(-100%); }
+      .admin-sidebar.open { transform: translateX(0); }
+      .admin-main { margin-left: 0 !important; }
+      .admin-content { padding: 20px 16px; }
+      .admin-topbar { padding: 0 16px; }
+      .search-input { width: 180px; }
+    }
+    @media (max-width: 640px) {
+      .admin-content { padding: 16px 12px; }
+      .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .data-table thead th, .data-table tbody td { padding: 10px 12px; font-size: 13px; }
+      .table-wrap { overflow-x: auto; }
+      .stat-value { font-size: 22px; }
+      .search-input { display: none; }
+      .btn { padding: 8px 14px; font-size: 13px; }
+      .btn-sm { padding: 6px 10px; font-size: 12px; }
+    }
   </style>
   {% block head %}{% endblock %}
 </head>
@@ -140,7 +160,7 @@
 <div class="admin-layout">
 
   <!-- Sidebar -->
-  <aside x-show="sidebarOpen" x-cloak class="admin-sidebar" style="position:fixed;top:0;left:0;bottom:0;z-index:40;" :style="sidebarOpen ? '' : 'display:none'">
+  <aside :class="sidebarOpen ? 'admin-sidebar open' : 'admin-sidebar'" class="admin-sidebar">
     <!-- Logo -->
     <div class="sidebar-logo">
       <a href="{{ url_for('admin.dashboard') }}" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
@@ -217,10 +237,11 @@
 
   <!-- Mobile overlay -->
   <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false"
-       style="position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;" class="lg:hidden"></div>
+       style="position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;display:none;"
+       :style="sidebarOpen ? 'display:block' : 'display:none'"></div>
 
-  <!-- Main area — offset by sidebar width on desktop -->
-  <div class="admin-main" :style="sidebarOpen ? 'margin-left:260px' : 'margin-left:0'" style="transition:margin-left 200ms ease;">
+  <!-- Main area -->
+  <div class="admin-main">
 
     <!-- Top bar -->
     <header class="admin-topbar">

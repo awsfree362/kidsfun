@@ -137,11 +137,37 @@
 
     @media (max-width: 768px) {
       .nav-links { display: none; }
-      .footer-inner { grid-template-columns: 1fr 1fr; }
-      .hero h1 { font-size: 2.2rem; }
+      .nav-actions { display: none; }
+      .nav-inner { padding: 0 16px; }
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .section { padding: 56px 16px; }
+      .feature-grid { grid-template-columns: 1fr; gap: 16px; margin-top: 32px; }
+      .events-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr; gap: 32px; }
+      .cta-band { padding: 56px 16px; }
+      .site-footer { padding: 48px 16px 24px; }
     }
     @media (max-width: 480px) {
-      .footer-inner { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; gap: 24px; }
+      .nav-inner { height: 60px; }
+    }
+    /* Mobile hamburger always visible, desktop nav hidden on mobile */
+    .mobile-menu-btn { display: none; }
+    @media (max-width: 768px) { .mobile-menu-btn { display: flex; } }
+    @media (min-width: 769px) { .mobile-menu-btn { display: none; } }
+    /* Sport slider mobile */
+    @media (max-width: 640px) {
+      .sport-slide-inner { flex-direction: column !important; min-height: auto !important; }
+      .sport-slide-left { flex: none !important; width: 100% !important; min-height: 200px !important; padding: 32px 24px !important; }
+      .sport-slide-right { padding: 28px 24px !important; }
+      .sport-slide-right h3 { font-size: 20px !important; }
+      #sportPrev { left: 12px !important; width: 40px !important; height: 40px !important; }
+      #sportNext { right: 12px !important; width: 40px !important; height: 40px !important; }
+    }
+    @media (max-width: 768px) {
+      .sport-slide-left { flex: 0 0 40% !important; padding: 32px 24px !important; }
+      .sport-slide-right { padding: 28px 32px !important; }
+      .sport-slide-right h3 { font-size: 22px !important; }
     }
   </style>
   {% block head %}{% endblock %}
@@ -185,7 +211,7 @@
       {% endif %}
     </div>
 
-    <button @click="mobileMenu = !mobileMenu" class="lg:hidden" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--text-2);">
+    <button @click="mobileMenu = !mobileMenu" class="mobile-menu-btn" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--text-2);align-items:center;justify-content:center;">
       <i class="fas fa-bars" style="font-size:16px;"></i>
     </button>
   </div>
