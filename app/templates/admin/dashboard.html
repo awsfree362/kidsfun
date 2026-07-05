@@ -1,151 +1,153 @@
 {% extends 'admin/base.html' %}
 {% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
 {% block head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 {% block content %}
-<div class="flex justify-between items-center mb-6">
-  <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Dashboard</h1>
-  <span class="text-sm text-gray-400">Welcome back, {{ current_user.first_name }}</span>
+<div class="flex justify-between items-center mb-5">
+  <div>
+    <h1 class="text-base font-bold text-[#1A1F36]">Dashboard</h1>
+    <p class="text-xs text-[#697386] mt-0.5">Welcome back, {{ current_user.first_name }}</p>
+  </div>
+  <a href="{{ url_for('admin.event_new') }}" class="btn-primary">
+    <i class="fas fa-plus text-[10px]"></i> New Event
+  </a>
 </div>
 
-<!-- Stats Grid -->
-<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+<!-- Primary Stats -->
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
   {% for label, value, icon, bg, color in [
-    ('Published Events', stats.published,      'fa-calendar-check',  'bg-indigo-50',  'text-indigo-600'),
-    ('Total Parents',    stats.users,           'fa-user-friends',    'bg-blue-50',    'text-blue-600'),
-    ('Confirmed Regs',   stats.confirmed,       'fa-check-circle',    'bg-green-50',   'text-green-600'),
-    ('Pending Regs',     stats.pending,         'fa-clock',           'bg-amber-50',   'text-amber-600'),
-    ('Revenue',          site.currency_symbol ~ "%.2f"|format(stats.revenue|float), 'fa-coins', 'bg-emerald-50', 'text-emerald-600'),
+    ('Published Events', stats.published,      'fa-calendar-check',  'bg-[#F0EFFE]',  'text-[#635BFF]'),
+    ('Total Parents',    stats.users,           'fa-user-friends',    'bg-[#EEF2FF]',  'text-[#3730A3]'),
+    ('Confirmed Regs',   stats.confirmed,       'fa-check-circle',    'bg-[#EDFAF1]',  'text-[#0D6832]'),
+    ('Pending Regs',     stats.pending,         'fa-clock',           'bg-[#FFF8E6]',  'text-[#7A5C00]'),
+    ('Revenue',          site.currency_symbol ~ "%.2f"|format(stats.revenue|float), 'fa-coins', 'bg-[#EDFAF1]', 'text-[#0D6832]'),
   ] %}
-    <div class="bg-white rounded border border-gray-100 shadow-sm p-4">
+    <div class="card p-4">
       <div class="flex items-center justify-between mb-2">
-        <span class="text-gray-500 text-xs font-medium uppercase tracking-wide">{{ label }}</span>
-        <div class="w-8 h-8 rounded {{ bg }} flex items-center justify-center shrink-0">
-          <i class="fas {{ icon }} {{ color }} text-sm"></i>
+        <span class="text-[#697386] text-[10px] font-semibold uppercase tracking-wider">{{ label }}</span>
+        <div class="w-7 h-7 rounded {{ bg }} flex items-center justify-center shrink-0">
+          <i class="fas {{ icon }} {{ color }} text-xs"></i>
         </div>
       </div>
-      <span class="text-2xl font-extrabold text-gray-800">{{ value }}</span>
+      <span class="text-xl font-extrabold text-[#1A1F36]">{{ value }}</span>
     </div>
   {% endfor %}
 </div>
 
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+<!-- Secondary Stats -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
   {% for label, value, icon in [
     ('Total Events',   stats.events,        'fa-calendar-alt'),
     ('Total Regs',     stats.registrations, 'fa-clipboard-list'),
     ('Sports',         stats.sports,        'fa-running'),
     ('Venues',         stats.venues,        'fa-map-marker-alt'),
   ] %}
-    <div class="bg-white rounded border border-gray-100 p-4 flex items-center gap-3">
-      <div class="w-9 h-9 bg-slate-100 rounded flex items-center justify-center shrink-0">
-        <i class="fas {{ icon }} text-slate-500"></i>
+    <div class="card p-3.5 flex items-center gap-3">
+      <div class="w-8 h-8 bg-[#F7F8FC] rounded flex items-center justify-center shrink-0">
+        <i class="fas {{ icon }} text-[#697386] text-xs"></i>
       </div>
       <div>
-        <p class="text-xs text-gray-400">{{ label }}</p>
-        <p class="text-xl font-bold text-gray-800">{{ value }}</p>
+        <p class="text-[10px] text-[#697386] font-medium">{{ label }}</p>
+        <p class="text-lg font-bold text-[#1A1F36]">{{ value }}</p>
       </div>
     </div>
   {% endfor %}
 </div>
 
 <!-- Quick Actions -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
   <a href="{{ url_for('admin.event_new') }}"
-     class="bg-indigo-600 hover:bg-indigo-700 text-white rounded p-4 flex items-center gap-3 transition">
-    <i class="fas fa-plus-circle text-xl shrink-0"></i>
-    <span class="font-semibold text-sm">New Event</span>
+     class="bg-[#635BFF] hover:bg-[#4f48e6] text-white rounded p-3.5 flex items-center gap-2.5 transition">
+    <i class="fas fa-plus-circle text-sm shrink-0"></i>
+    <span class="font-semibold text-xs">New Event</span>
   </a>
   <a href="{{ url_for('admin.sport_form') }}"
-     class="bg-green-600 hover:bg-green-700 text-white rounded p-4 flex items-center gap-3 transition">
-    <i class="fas fa-running text-xl shrink-0"></i>
-    <span class="font-semibold text-sm">Add Sport</span>
+     class="bg-[#27AE60] hover:bg-[#219a52] text-white rounded p-3.5 flex items-center gap-2.5 transition">
+    <i class="fas fa-running text-sm shrink-0"></i>
+    <span class="font-semibold text-xs">Add Sport</span>
   </a>
   <a href="{{ url_for('admin.send_notification') }}"
-     class="bg-amber-500 hover:bg-amber-600 text-white rounded p-4 flex items-center gap-3 transition">
-    <i class="fas fa-bell text-xl shrink-0"></i>
-    <span class="font-semibold text-sm">Notify Users</span>
+     class="bg-[#F5A623] hover:bg-[#e09510] text-white rounded p-3.5 flex items-center gap-2.5 transition">
+    <i class="fas fa-bell text-sm shrink-0"></i>
+    <span class="font-semibold text-xs">Notify Users</span>
   </a>
   <a href="{{ url_for('admin.settings') }}"
-     class="bg-slate-700 hover:bg-slate-800 text-white rounded p-4 flex items-center gap-3 transition">
-    <i class="fas fa-cog text-xl shrink-0"></i>
-    <span class="font-semibold text-sm">Settings</span>
+     class="bg-[#1A1F36] hover:bg-[#252B4A] text-white rounded p-3.5 flex items-center gap-2.5 transition">
+    <i class="fas fa-cog text-sm shrink-0"></i>
+    <span class="font-semibold text-xs">Settings</span>
   </a>
 </div>
 
 <!-- Charts -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-  <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-    <h2 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
-      <i class="fas fa-chart-line text-indigo-500"></i> Monthly Revenue
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+  <div class="card p-5">
+    <h2 class="text-xs font-bold text-[#697386] mb-4 flex items-center gap-2 uppercase tracking-wider">
+      <i class="fas fa-chart-line text-[#635BFF]"></i> Monthly Revenue
     </h2>
-    <canvas id="revenueChart" height="120"></canvas>
+    <canvas id="revenueChart" height="110"></canvas>
   </div>
-  <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-    <h2 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
-      <i class="fas fa-chart-bar text-green-500"></i> Monthly Registrations
+  <div class="card p-5">
+    <h2 class="text-xs font-bold text-[#697386] mb-4 flex items-center gap-2 uppercase tracking-wider">
+      <i class="fas fa-chart-bar text-[#27AE60]"></i> Monthly Registrations
     </h2>
-    <canvas id="regsChart" height="120"></canvas>
+    <canvas id="regsChart" height="110"></canvas>
   </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
   <!-- Recent Registrations -->
-  <div class="lg:col-span-2 bg-white rounded border border-gray-100 shadow-sm p-6">
+  <div class="lg:col-span-2 card p-5">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-base font-bold text-gray-800 flex items-center gap-2">
-        <i class="fas fa-clipboard-list text-indigo-500"></i> Recent Registrations
+      <h2 class="text-xs font-bold text-[#697386] flex items-center gap-2 uppercase tracking-wider">
+        <i class="fas fa-clipboard-list text-[#635BFF]"></i> Recent Registrations
       </h2>
       <div class="flex gap-3">
-        <a href="{{ url_for('admin.registrations_export') }}" class="text-green-600 text-xs hover:underline">
-          <i class="fas fa-download mr-1"></i>CSV
+        <a href="{{ url_for('admin.registrations_export') }}" class="text-[#27AE60] text-xs hover:underline flex items-center gap-1">
+          <i class="fas fa-download text-[10px]"></i>CSV
         </a>
-        <a href="{{ url_for('admin.registrations') }}" class="text-indigo-600 text-xs hover:underline">View All</a>
+        <a href="{{ url_for('admin.registrations') }}" class="text-[#635BFF] text-xs hover:underline">View All</a>
       </div>
     </div>
     <div class="overflow-x-auto">
-      <table class="w-full text-sm min-w-[500px]">
+      <table class="w-full atera-table min-w-[500px]">
         <thead>
-          <tr class="text-left text-gray-400 border-b border-gray-100 text-xs uppercase tracking-wider">
-            <th class="pb-3 font-semibold">Parent</th>
-            <th class="pb-3 font-semibold">Child</th>
-            <th class="pb-3 font-semibold">Event</th>
-            <th class="pb-3 font-semibold">Status</th>
-            <th class="pb-3 font-semibold">Payment</th>
-            <th class="pb-3 font-semibold">Date</th>
+          <tr>
+            <th class="text-left">Parent</th>
+            <th class="text-left">Child</th>
+            <th class="text-left">Event</th>
+            <th class="text-left">Status</th>
+            <th class="text-left">Payment</th>
+            <th class="text-left">Date</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-50">
+        <tbody>
           {% for reg in recent_regs %}
-            <tr class="hover:bg-gray-50">
-              <td class="py-3 font-medium text-gray-800 text-xs">
-                <a href="{{ url_for('admin.registration_detail', reg_id=reg.id) }}" class="hover:text-indigo-600">
+            <tr>
+              <td class="font-medium text-[#1A1F36]">
+                <a href="{{ url_for('admin.registration_detail', reg_id=reg.id) }}" class="hover:text-[#635BFF]">
                   {{ reg.user.full_name }}
                 </a>
               </td>
-              <td class="py-3 text-gray-600 text-xs">{{ reg.child.full_name }}</td>
-              <td class="py-3 max-w-[140px] truncate text-gray-600 text-xs">{{ reg.event.title }}</td>
-              <td class="py-3">
-                <span class="px-2 py-0.5 rounded-full text-xs font-semibold
-                  {% if reg.status == 'confirmed' %}bg-green-100 text-green-700
-                  {% elif reg.status == 'pending' %}bg-amber-100 text-amber-700
-                  {% elif reg.status == 'cancelled' %}bg-red-100 text-red-700
-                  {% else %}bg-gray-100 text-gray-600{% endif %}">
+              <td>{{ reg.child.full_name }}</td>
+              <td class="max-w-[140px] truncate">{{ reg.event.title }}</td>
+              <td>
+                <span class="badge {% if reg.status == 'confirmed' %}badge-green{% elif reg.status == 'pending' %}badge-amber{% elif reg.status == 'cancelled' %}badge-red{% else %}badge-gray{% endif %}">
                   {{ reg.status | title }}
                 </span>
               </td>
-              <td class="py-3">
-                <span class="px-2 py-0.5 rounded-full text-xs font-semibold
-                  {% if reg.payment_status == 'paid' %}bg-green-100 text-green-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+              <td>
+                <span class="badge {% if reg.payment_status == 'paid' %}badge-green{% else %}badge-amber{% endif %}">
                   {{ reg.payment_status | title }}
                 </span>
               </td>
-              <td class="py-3 text-gray-400 text-xs">{{ reg.registered_at.strftime('%d %b %Y') }}</td>
+              <td class="text-[#697386]">{{ reg.registered_at.strftime('%d %b %Y') }}</td>
             </tr>
           {% else %}
             <tr>
-              <td colspan="6" class="py-10 text-center text-gray-400">
-                <i class="fas fa-inbox text-3xl mb-2 block text-gray-200"></i>
+              <td colspan="6" class="py-10 text-center text-[#697386]">
+                <i class="fas fa-inbox text-3xl mb-2 block text-[#E3E8EF]"></i>
                 No registrations yet.
               </td>
             </tr>
@@ -156,39 +158,37 @@
   </div>
 
   <!-- Right Panel -->
-  <div class="space-y-6">
+  <div class="space-y-4">
     <!-- Top Events -->
-    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-      <h2 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
-        <i class="fas fa-trophy text-amber-500"></i> Top Events
+    <div class="card p-5">
+      <h2 class="text-xs font-bold text-[#697386] mb-4 flex items-center gap-2 uppercase tracking-wider">
+        <i class="fas fa-trophy text-[#F5A623]"></i> Top Events
       </h2>
       {% if top_events %}
         <div class="space-y-3">
           {% for event, count in top_events %}
             <div class="flex items-center gap-3">
-              <div class="w-8 h-8 bg-indigo-50 rounded flex items-center justify-center shrink-0">
-                <i class="fas fa-calendar-alt text-indigo-400 text-xs"></i>
+              <div class="w-7 h-7 bg-[#F0EFFE] rounded flex items-center justify-center shrink-0">
+                <i class="fas fa-calendar-alt text-[#635BFF] text-[10px]"></i>
               </div>
               <div class="flex-1 min-w-0">
                 <a href="{{ url_for('admin.event_edit', event_id=event.id) }}"
-                   class="text-sm font-medium text-gray-800 truncate block hover:text-indigo-600">{{ event.title }}</a>
-                <p class="text-xs text-gray-400">{{ event.sport.name }}</p>
+                   class="text-xs font-semibold text-[#1A1F36] truncate block hover:text-[#635BFF]">{{ event.title }}</a>
+                <p class="text-[10px] text-[#697386]">{{ event.sport.name }}</p>
               </div>
-              <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full shrink-0">
-                {{ count }}
-              </span>
+              <span class="badge badge-purple shrink-0">{{ count }}</span>
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <p class="text-gray-400 text-sm text-center py-6">No registrations yet.</p>
+        <p class="text-[#697386] text-xs text-center py-4">No registrations yet.</p>
       {% endif %}
     </div>
 
     <!-- Quick Links -->
-    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-      <h3 class="text-sm font-bold text-gray-700 mb-3">Quick Links</h3>
-      <div class="space-y-2">
+    <div class="card p-5">
+      <h3 class="text-[10px] font-bold text-[#697386] mb-3 uppercase tracking-widest">Quick Links</h3>
+      <div class="space-y-1">
         {% for label, endpoint, icon in [
           ('Export Registrations', 'admin.registrations_export', 'fa-download'),
           ('Export Users',         'admin.users_export',         'fa-download'),
@@ -199,8 +199,8 @@
           ('Age Groups',           'admin.age_groups',           'fa-users'),
         ] %}
           <a href="{{ url_for(endpoint) }}"
-             class="flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600 transition py-1">
-            <i class="fas {{ icon }} text-indigo-400 w-4 text-center"></i> {{ label }}
+             class="flex items-center gap-2 text-xs text-[#697386] hover:text-[#635BFF] transition py-1.5">
+            <i class="fas {{ icon }} text-[#635BFF] w-3.5 text-center text-[10px]"></i> {{ label }}
           </a>
         {% endfor %}
       </div>
@@ -217,203 +217,19 @@ async function loadChart(url, canvasId, label, color) {
     type: 'bar',
     data: {
       labels: d.labels,
-      datasets: [{ label, data: d.data, backgroundColor: color, borderRadius: 4 }]
+      datasets: [{ label, data: d.data, backgroundColor: color, borderRadius: 3, borderSkipped: false }]
     },
     options: {
       responsive: true,
       plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true, grid: { color: '#f3f4f6' } }, x: { grid: { display: false } } }
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#F0F2F7' }, ticks: { font: { size: 10 }, color: '#697386' } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#697386' } }
+      }
     }
   });
 }
-loadChart('/admin/api/revenue-chart', 'revenueChart', 'Revenue', '#6366f1');
-loadChart('/admin/api/registrations-chart', 'regsChart', 'Registrations', '#22c55e');
+loadChart('/admin/api/revenue-chart', 'revenueChart', 'Revenue', '#635BFF');
+loadChart('/admin/api/registrations-chart', 'regsChart', 'Registrations', '#27AE60');
 </script>
-{% endblock %}
-<div class="flex justify-between items-center mb-6">
-  <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Dashboard</h1>
-  <span class="text-sm text-gray-400">Welcome back, {{ current_user.first_name }}</span>
-</div>
-
-<!-- Stats Grid -->
-<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-  {% for label, value, icon, bg, color in [
-    ('Published Events', stats.published,      'fa-calendar-check',  'bg-indigo-50',  'text-indigo-600'),
-    ('Total Parents',    stats.users,           'fa-user-friends',    'bg-blue-50',    'text-blue-600'),
-    ('Confirmed Regs',   stats.confirmed,       'fa-check-circle',    'bg-green-50',   'text-green-600'),
-    ('Pending Regs',     stats.pending,         'fa-clock',           'bg-amber-50',   'text-amber-600'),
-    ('Revenue',          site.currency_symbol ~ "%.2f"|format(stats.revenue|float), 'fa-coins', 'bg-emerald-50', 'text-emerald-600'),
-  ] %}
-    <div class="bg-white rounded border border-gray-100 shadow-sm p-4">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-gray-500 text-xs font-medium uppercase tracking-wide">{{ label }}</span>
-        <div class="w-8 h-8 rounded {{ bg }} flex items-center justify-center shrink-0">
-          <i class="fas {{ icon }} {{ color }} text-sm"></i>
-        </div>
-      </div>
-      <span class="text-2xl font-extrabold text-gray-800">{{ value }}</span>
-    </div>
-  {% endfor %}
-</div>
-
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-  {% for label, value, icon in [
-    ('Total Events',   stats.events,        'fa-calendar-alt'),
-    ('Total Regs',     stats.registrations, 'fa-clipboard-list'),
-    ('Sports',         stats.sports,        'fa-running'),
-    ('Venues',         stats.venues,        'fa-map-marker-alt'),
-  ] %}
-    <div class="bg-white rounded border border-gray-100 p-4 flex items-center gap-3">
-      <div class="w-9 h-9 bg-slate-100 rounded flex items-center justify-center shrink-0">
-        <i class="fas {{ icon }} text-slate-500"></i>
-      </div>
-      <div>
-        <p class="text-xs text-gray-400">{{ label }}</p>
-        <p class="text-xl font-bold text-gray-800">{{ value }}</p>
-      </div>
-    </div>
-  {% endfor %}
-</div>
-
-<!-- Quick Actions -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-  <a href="{{ url_for('admin.event_new') }}"
-     class="bg-indigo-600 hover:bg-indigo-700 text-white rounded p-4 flex items-center gap-3 transition">
-    <i class="fas fa-plus-circle text-xl shrink-0"></i>
-    <span class="font-semibold text-sm">New Event</span>
-  </a>
-  <a href="{{ url_for('admin.sport_form') }}"
-     class="bg-green-600 hover:bg-green-700 text-white rounded p-4 flex items-center gap-3 transition">
-    <i class="fas fa-running text-xl shrink-0"></i>
-    <span class="font-semibold text-sm">Add Sport</span>
-  </a>
-  <a href="{{ url_for('admin.send_notification') }}"
-     class="bg-amber-500 hover:bg-amber-600 text-white rounded p-4 flex items-center gap-3 transition">
-    <i class="fas fa-bell text-xl shrink-0"></i>
-    <span class="font-semibold text-sm">Notify Users</span>
-  </a>
-  <a href="{{ url_for('admin.settings') }}"
-     class="bg-slate-700 hover:bg-slate-800 text-white rounded p-4 flex items-center gap-3 transition">
-    <i class="fas fa-cog text-xl shrink-0"></i>
-    <span class="font-semibold text-sm">Settings</span>
-  </a>
-</div>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  <!-- Recent Registrations -->
-  <div class="lg:col-span-2 bg-white rounded border border-gray-100 shadow-sm p-6">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-base font-bold text-gray-800 flex items-center gap-2">
-        <i class="fas fa-clipboard-list text-indigo-500"></i> Recent Registrations
-      </h2>
-      <div class="flex gap-3">
-        <a href="{{ url_for('admin.registrations_export') }}" class="text-green-600 text-xs hover:underline">
-          <i class="fas fa-download mr-1"></i>CSV
-        </a>
-        <a href="{{ url_for('admin.registrations') }}" class="text-indigo-600 text-xs hover:underline">View All</a>
-      </div>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm min-w-[500px]">
-        <thead>
-          <tr class="text-left text-gray-400 border-b border-gray-100 text-xs uppercase tracking-wider">
-            <th class="pb-3 font-semibold">Parent</th>
-            <th class="pb-3 font-semibold">Child</th>
-            <th class="pb-3 font-semibold">Event</th>
-            <th class="pb-3 font-semibold">Status</th>
-            <th class="pb-3 font-semibold">Payment</th>
-            <th class="pb-3 font-semibold">Date</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-50">
-          {% for reg in recent_regs %}
-            <tr class="hover:bg-gray-50">
-              <td class="py-3 font-medium text-gray-800 text-xs">
-                <a href="{{ url_for('admin.registration_detail', reg_id=reg.id) }}" class="hover:text-indigo-600">
-                  {{ reg.user.full_name }}
-                </a>
-              </td>
-              <td class="py-3 text-gray-600 text-xs">{{ reg.child.full_name }}</td>
-              <td class="py-3 max-w-[140px] truncate text-gray-600 text-xs">{{ reg.event.title }}</td>
-              <td class="py-3">
-                <span class="px-2 py-0.5 rounded-full text-xs font-semibold
-                  {% if reg.status == 'confirmed' %}bg-green-100 text-green-700
-                  {% elif reg.status == 'pending' %}bg-amber-100 text-amber-700
-                  {% elif reg.status == 'cancelled' %}bg-red-100 text-red-700
-                  {% else %}bg-gray-100 text-gray-600{% endif %}">
-                  {{ reg.status | title }}
-                </span>
-              </td>
-              <td class="py-3">
-                <span class="px-2 py-0.5 rounded-full text-xs font-semibold
-                  {% if reg.payment_status == 'paid' %}bg-green-100 text-green-700{% else %}bg-orange-100 text-orange-700{% endif %}">
-                  {{ reg.payment_status | title }}
-                </span>
-              </td>
-              <td class="py-3 text-gray-400 text-xs">{{ reg.registered_at.strftime('%d %b %Y') }}</td>
-            </tr>
-          {% else %}
-            <tr>
-              <td colspan="6" class="py-10 text-center text-gray-400">
-                <i class="fas fa-inbox text-3xl mb-2 block text-gray-200"></i>
-                No registrations yet.
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Right Panel -->
-  <div class="space-y-6">
-    <!-- Top Events -->
-    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-      <h2 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
-        <i class="fas fa-trophy text-amber-500"></i> Top Events
-      </h2>
-      {% if top_events %}
-        <div class="space-y-3">
-          {% for event, count in top_events %}
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 bg-indigo-50 rounded flex items-center justify-center shrink-0">
-                <i class="fas fa-calendar-alt text-indigo-400 text-xs"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <a href="{{ url_for('admin.event_edit', event_id=event.id) }}"
-                   class="text-sm font-medium text-gray-800 truncate block hover:text-indigo-600">{{ event.title }}</a>
-                <p class="text-xs text-gray-400">{{ event.sport.name }}</p>
-              </div>
-              <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full shrink-0">
-                {{ count }}
-              </span>
-            </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p class="text-gray-400 text-sm text-center py-6">No registrations yet.</p>
-      {% endif %}
-    </div>
-
-    <!-- Quick Links -->
-    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-      <h3 class="text-sm font-bold text-gray-700 mb-3">Quick Links</h3>
-      <div class="space-y-2">
-        {% for label, endpoint, icon in [
-          ('Export Registrations', 'admin.registrations_export', 'fa-download'),
-          ('Export Users',         'admin.users_export',         'fa-download'),
-          ('Manage Agreements',    'admin.agreements',           'fa-file-signature'),
-          ('Edit Navigation',      'admin.navigation',           'fa-bars'),
-          ('Manage Pages',         'admin.pages',                'fa-file-alt'),
-          ('Age Groups',           'admin.age_groups',           'fa-users'),
-        ] %}
-          <a href="{{ url_for(endpoint) }}"
-             class="flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600 transition py-1">
-            <i class="fas {{ icon }} text-indigo-400 w-4 text-center"></i> {{ label }}
-          </a>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-</div>
 {% endblock %}

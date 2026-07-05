@@ -4,17 +4,29 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}{{ site.site_name or 'KidsComp' }}{% endblock %}</title>
-  {% if site.site_favicon %}
-    <link rel="icon" href="{{ site.site_favicon }}"/>
-  {% endif %}
+  {% if site.site_favicon %}<link rel="icon" href="{{ site.site_favicon }}"/>{% endif %}
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
           colors: {
-            primary: '{{ site.primary_color or "#6366f1" }}',
-            secondary: '{{ site.secondary_color or "#f59e0b" }}',
+            brand: {
+              50:  '#f0effe',
+              100: '#e0defe',
+              200: '#c4c0fc',
+              300: '#a89af9',
+              400: '#8b74f6',
+              500: '#635BFF',
+              600: '#4f48e6',
+              700: '#3d38b8',
+              800: '#2d2a8a',
+              900: '#1e1c5c',
+            }
           }
         }
       }
@@ -23,144 +35,161 @@
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
+    * { font-family: 'Inter', sans-serif; }
     [x-cloak] { display: none !important; }
     .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .btn-primary { background-color: {{ site.primary_color or '#6366f1' }}; color: #fff; }
-    .btn-primary:hover { opacity: 0.9; }
-    .text-primary { color: {{ site.primary_color or '#6366f1' }}; }
-    .bg-primary { background-color: {{ site.primary_color or '#6366f1' }}; }
-    .border-primary { border-color: {{ site.primary_color or '#6366f1' }}; }
-    .accent-primary { accent-color: {{ site.primary_color or '#6366f1' }}; }
-    .focus\:ring-primary:focus { --tw-ring-color: {{ site.primary_color or '#6366f1' }}; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    :root {
+      --brand: {{ site.primary_color or '#635BFF' }};
+      --brand-dark: {{ site.secondary_color or '#4f48e6' }};
+    }
+    .btn-brand { background: var(--brand); color: #fff; }
+    .btn-brand:hover { background: var(--brand-dark); }
+    .text-brand { color: var(--brand); }
+    .bg-brand { background: var(--brand); }
+    .border-brand { border-color: var(--brand); }
+    .ring-brand:focus { --tw-ring-color: var(--brand); }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--brand) !important;
+      box-shadow: 0 0 0 3px rgba(99,91,255,0.12);
+    }
   </style>
   {% block head %}{% endblock %}
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+<body class="bg-[#F7F8FC] text-[#1A1F36] antialiased">
 
 <!-- Navbar -->
-<nav class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+<nav class="bg-white border-b border-[#E3E8EF] sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-16 items-center">
+    <div class="flex justify-between h-14 items-center">
 
       <!-- Logo -->
       <a href="{{ url_for('events.index') }}" class="flex items-center gap-2 shrink-0">
         {% if site.site_logo %}
-          <img src="{{ site.site_logo }}" alt="{{ site.site_name }}" class="h-9 w-auto"/>
+          <img src="{{ site.site_logo }}" alt="{{ site.site_name }}" class="h-8 w-auto"/>
         {% else %}
-          <span class="text-xl font-extrabold text-indigo-600 tracking-tight">{{ site.site_name or 'KidsComp' }}</span>
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded bg-brand flex items-center justify-center">
+              <i class="fas fa-bolt text-white text-xs"></i>
+            </div>
+            <span class="text-[15px] font-bold text-[#1A1F36] tracking-tight">{{ site.site_name or 'KidsComp' }}</span>
+          </div>
         {% endif %}
       </a>
 
       <!-- Desktop Nav -->
-      <div class="hidden lg:flex items-center gap-6">
-        <a href="{{ url_for('events.event_list') }}" class="text-gray-600 hover:text-indigo-600 font-medium text-sm transition">Events</a>
+      <div class="hidden lg:flex items-center gap-1">
+        <a href="{{ url_for('events.event_list') }}"
+           class="px-3 py-1.5 text-sm font-medium text-[#4F566B] hover:text-[#1A1F36] hover:bg-[#F7F8FC] rounded transition">Events</a>
         {% for item in nav_items %}
           <a href="{{ item.url }}" {% if item.open_in_new_tab %}target="_blank"{% endif %}
-             class="text-gray-600 hover:text-indigo-600 font-medium text-sm transition">{{ item.label }}</a>
+             class="px-3 py-1.5 text-sm font-medium text-[#4F566B] hover:text-[#1A1F36] hover:bg-[#F7F8FC] rounded transition">{{ item.label }}</a>
         {% endfor %}
         {% for sport in sports_list[:5] %}
           <a href="{{ url_for('events.sport_page', slug=sport.slug) }}"
-             class="text-gray-500 hover:text-indigo-600 text-sm transition">{{ sport.name }}</a>
+             class="px-3 py-1.5 text-sm text-[#697386] hover:text-[#1A1F36] hover:bg-[#F7F8FC] rounded transition">{{ sport.name }}</a>
         {% endfor %}
       </div>
 
       <!-- Desktop Auth -->
-      <div class="hidden lg:flex items-center gap-3">
+      <div class="hidden lg:flex items-center gap-2">
         {% if current_user.is_authenticated %}
           {% if current_user.is_admin() %}
             <a href="{{ url_for('admin.dashboard') }}"
-               class="text-sm text-gray-600 hover:text-indigo-600 flex items-center gap-1">
-              <i class="fas fa-cog"></i> Admin
+               class="px-3 py-1.5 text-sm font-medium text-[#4F566B] hover:text-[#1A1F36] hover:bg-[#F7F8FC] rounded transition flex items-center gap-1.5">
+              <i class="fas fa-cog text-xs"></i> Admin
             </a>
           {% endif %}
           <a href="{{ url_for('user.dashboard') }}"
-             class="text-sm text-gray-600 hover:text-indigo-600 flex items-center gap-1">
-            <i class="fas fa-user-circle"></i> Dashboard
+             class="px-3 py-1.5 text-sm font-medium text-[#4F566B] hover:text-[#1A1F36] hover:bg-[#F7F8FC] rounded transition flex items-center gap-1.5">
+            <i class="fas fa-user-circle text-xs"></i> Dashboard
           </a>
           <a href="{{ url_for('auth.logout') }}"
-             class="text-sm bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition">Logout</a>
+             class="px-3 py-1.5 text-sm font-medium text-[#4F566B] border border-[#E3E8EF] rounded hover:bg-[#F7F8FC] transition">Logout</a>
         {% else %}
-          <a href="{{ url_for('auth.login') }}" class="text-sm text-gray-600 hover:text-indigo-600 font-medium">Login</a>
+          <a href="{{ url_for('auth.login') }}"
+             class="px-3 py-1.5 text-sm font-medium text-[#4F566B] hover:text-[#1A1F36] transition">Sign in</a>
           <a href="{{ url_for('auth.register') }}"
-             class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition">Sign Up</a>
+             class="px-4 py-1.5 text-sm font-semibold text-white rounded btn-brand transition">Get started</a>
         {% endif %}
       </div>
 
       <!-- Mobile toggle -->
-      <button @click="mobileMenu = !mobileMenu" class="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100">
-        <i class="fas fa-bars text-lg"></i>
+      <button @click="mobileMenu = !mobileMenu" class="lg:hidden p-2 rounded text-[#4F566B] hover:bg-[#F7F8FC]">
+        <i class="fas fa-bars text-base"></i>
       </button>
     </div>
   </div>
 
   <!-- Mobile Menu -->
-  <div x-show="mobileMenu" x-cloak class="lg:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-1">
-    <a href="{{ url_for('events.event_list') }}" class="flex items-center gap-3 py-2.5 px-3 rounded-lg text-gray-700 hover:bg-gray-50">
-      <i class="fas fa-calendar-alt text-indigo-400 w-5 text-center"></i> All Events
+  <div x-show="mobileMenu" x-cloak class="lg:hidden bg-white border-t border-[#E3E8EF] px-4 py-3 space-y-0.5">
+    <a href="{{ url_for('events.event_list') }}" class="flex items-center gap-3 py-2 px-3 rounded text-sm text-[#4F566B] hover:bg-[#F7F8FC] hover:text-[#1A1F36]">
+      <i class="fas fa-calendar-alt w-4 text-center text-[#635BFF]"></i> All Events
     </a>
     {% for sport in sports_list %}
       <a href="{{ url_for('events.sport_page', slug=sport.slug) }}"
-         class="flex items-center gap-3 py-2.5 px-3 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-        <i class="fas fa-running text-indigo-300 w-5 text-center"></i> {{ sport.name }}
+         class="flex items-center gap-3 py-2 px-3 rounded text-sm text-[#697386] hover:bg-[#F7F8FC]">
+        <i class="fas fa-running w-4 text-center text-[#a89af9]"></i> {{ sport.name }}
       </a>
     {% endfor %}
     {% for item in nav_items %}
       <a href="{{ item.url }}" {% if item.open_in_new_tab %}target="_blank"{% endif %}
-         class="flex items-center gap-3 py-2.5 px-3 rounded-lg text-gray-700 hover:bg-gray-50">
-        <i class="fas fa-link text-indigo-300 w-5 text-center"></i> {{ item.label }}
+         class="flex items-center gap-3 py-2 px-3 rounded text-sm text-[#4F566B] hover:bg-[#F7F8FC]">
+        <i class="fas fa-link w-4 text-center text-[#a89af9]"></i> {{ item.label }}
       </a>
     {% endfor %}
-    <div class="border-t border-gray-100 pt-3 mt-2 space-y-1">
+    <div class="border-t border-[#E3E8EF] pt-2 mt-2 space-y-0.5">
       {% if current_user.is_authenticated %}
         {% if current_user.is_admin() %}
-          <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-3 py-2.5 px-3 rounded-lg text-gray-700 hover:bg-gray-50">
-            <i class="fas fa-cog text-indigo-400 w-5 text-center"></i> Admin Panel
+          <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-3 py-2 px-3 rounded text-sm text-[#4F566B] hover:bg-[#F7F8FC]">
+            <i class="fas fa-cog w-4 text-center text-[#635BFF]"></i> Admin Panel
           </a>
         {% endif %}
-        <a href="{{ url_for('user.dashboard') }}" class="flex items-center gap-3 py-2.5 px-3 rounded-lg text-gray-700 hover:bg-gray-50">
-          <i class="fas fa-user-circle text-indigo-400 w-5 text-center"></i> Dashboard
+        <a href="{{ url_for('user.dashboard') }}" class="flex items-center gap-3 py-2 px-3 rounded text-sm text-[#4F566B] hover:bg-[#F7F8FC]">
+          <i class="fas fa-user-circle w-4 text-center text-[#635BFF]"></i> Dashboard
         </a>
-        <a href="{{ url_for('auth.logout') }}" class="flex items-center gap-3 py-2.5 px-3 rounded-lg text-gray-700 hover:bg-gray-50">
-          <i class="fas fa-sign-out-alt text-indigo-400 w-5 text-center"></i> Logout
+        <a href="{{ url_for('auth.logout') }}" class="flex items-center gap-3 py-2 px-3 rounded text-sm text-[#4F566B] hover:bg-[#F7F8FC]">
+          <i class="fas fa-sign-out-alt w-4 text-center text-[#635BFF]"></i> Logout
         </a>
       {% else %}
-        <a href="{{ url_for('auth.login') }}" class="flex items-center gap-3 py-2.5 px-3 rounded-lg text-gray-700 hover:bg-gray-50">
-          <i class="fas fa-sign-in-alt text-indigo-400 w-5 text-center"></i> Login
+        <a href="{{ url_for('auth.login') }}" class="flex items-center gap-3 py-2 px-3 rounded text-sm text-[#4F566B] hover:bg-[#F7F8FC]">
+          <i class="fas fa-sign-in-alt w-4 text-center text-[#635BFF]"></i> Sign in
         </a>
         <a href="{{ url_for('auth.register') }}"
-           class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">
-          <i class="fas fa-user-plus"></i> Sign Up Free
+           class="flex items-center justify-center gap-2 py-2 px-3 rounded text-sm font-semibold text-white btn-brand transition">
+          <i class="fas fa-user-plus"></i> Get started free
         </a>
       {% endif %}
     </div>
   </div>
 </nav>
 
-  {% if current_user.is_authenticated and not current_user.is_verified %}
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3">
-      <div class="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
-        <i class="fas fa-exclamation-triangle text-amber-500 shrink-0"></i>
-        <span class="flex-1">Please verify your email address to fully activate your account.</span>
-        <a href="{{ url_for('auth.resend_verification') }}"
-           class="font-semibold underline hover:text-amber-900 shrink-0">Resend email</a>
-      </div>
+{% if current_user.is_authenticated and not current_user.is_verified %}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3">
+    <div class="flex items-center gap-3 bg-[#FFF8E6] border border-[#F5A623]/30 rounded px-4 py-2.5 text-sm text-[#7A5C00]">
+      <i class="fas fa-exclamation-triangle text-[#F5A623] shrink-0 text-xs"></i>
+      <span class="flex-1">Please verify your email address to fully activate your account.</span>
+      <a href="{{ url_for('auth.resend_verification') }}" class="font-semibold underline hover:text-[#5a4400] shrink-0">Resend email</a>
     </div>
-  {% endif %}
+  </div>
+{% endif %}
 
 <!-- Flash Messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 space-y-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3 space-y-2">
       {% for category, message in messages %}
-        <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
-          {% if category == 'success' %}bg-green-50 text-green-800 border border-green-200
-          {% elif category == 'danger' %}bg-red-50 text-red-800 border border-red-200
-          {% elif category == 'warning' %}bg-yellow-50 text-yellow-800 border border-yellow-200
-          {% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
-          <i class="fas {% if category == 'success' %}fa-check-circle text-green-500
-                        {% elif category == 'danger' %}fa-exclamation-circle text-red-500
-                        {% elif category == 'warning' %}fa-exclamation-triangle text-yellow-500
-                        {% else %}fa-info-circle text-blue-500{% endif %}"></i>
+        <div class="flex items-center gap-3 px-4 py-2.5 rounded text-sm font-medium
+          {% if category == 'success' %}bg-[#EDFAF1] text-[#0D6832] border border-[#A3E6C0]
+          {% elif category == 'danger' %}bg-[#FFF0F0] text-[#C0392B] border border-[#F5C6C6]
+          {% elif category == 'warning' %}bg-[#FFF8E6] text-[#7A5C00] border border-[#F5A623]/30
+          {% else %}bg-[#EEF2FF] text-[#3730A3] border border-[#C7D2FE]{% endif %}">
+          <i class="fas {% if category == 'success' %}fa-check-circle text-[#27AE60]
+                        {% elif category == 'danger' %}fa-exclamation-circle text-[#E74C3C]
+                        {% elif category == 'warning' %}fa-exclamation-triangle text-[#F5A623]
+                        {% else %}fa-info-circle text-[#635BFF]{% endif %} text-sm"></i>
           {{ message }}
         </div>
       {% endfor %}
@@ -171,94 +200,71 @@
 <main>{% block content %}{% endblock %}</main>
 
 <!-- Footer -->
-<footer class="bg-slate-900 text-slate-300 mt-16">
+<footer class="bg-[#1A1F36] text-[#8792A2] mt-16">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
     <div>
-      <h3 class="text-white font-bold text-lg mb-3">{{ site.site_name or 'KidsComp' }}</h3>
-      <p class="text-sm text-slate-400 leading-relaxed">{{ site.site_tagline or 'Find & Register Kids Competitions' }}</p>
-      <div class="flex gap-4 mt-4">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-6 h-6 rounded bg-[#635BFF] flex items-center justify-center">
+          <i class="fas fa-bolt text-white text-xs"></i>
+        </div>
+        <h3 class="text-white font-bold text-sm">{{ site.site_name or 'KidsComp' }}</h3>
+      </div>
+      <p class="text-xs text-[#697386] leading-relaxed">{{ site.site_tagline or 'Find & Register Kids Competitions' }}</p>
+      <div class="flex gap-3 mt-4">
         {% if site.facebook_url %}
-          <a href="{{ site.facebook_url }}" class="text-slate-400 hover:text-white transition">
-            <i class="fab fa-facebook text-xl"></i>
-          </a>
+          <a href="{{ site.facebook_url }}" class="text-[#697386] hover:text-white transition text-sm"><i class="fab fa-facebook"></i></a>
         {% endif %}
         {% if site.instagram_url %}
-          <a href="{{ site.instagram_url }}" class="text-slate-400 hover:text-white transition">
-            <i class="fab fa-instagram text-xl"></i>
-          </a>
+          <a href="{{ site.instagram_url }}" class="text-[#697386] hover:text-white transition text-sm"><i class="fab fa-instagram"></i></a>
         {% endif %}
         {% if site.twitter_url %}
-          <a href="{{ site.twitter_url }}" class="text-slate-400 hover:text-white transition">
-            <i class="fab fa-twitter text-xl"></i>
-          </a>
+          <a href="{{ site.twitter_url }}" class="text-[#697386] hover:text-white transition text-sm"><i class="fab fa-twitter"></i></a>
         {% endif %}
       </div>
     </div>
     <div>
-      <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Sports</h4>
-      <ul class="space-y-2 text-sm">
+      <h4 class="text-white font-semibold mb-3 text-xs uppercase tracking-widest">Sports</h4>
+      <ul class="space-y-2">
         {% for sport in sports_list %}
           <li>
             <a href="{{ url_for('events.sport_page', slug=sport.slug) }}"
-               class="text-slate-400 hover:text-white transition flex items-center gap-2">
-              <i class="fas fa-chevron-right text-xs text-indigo-500"></i>{{ sport.name }}
-            </a>
+               class="text-xs text-[#697386] hover:text-white transition">{{ sport.name }}</a>
           </li>
         {% endfor %}
       </ul>
     </div>
     <div>
-      <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Quick Links</h4>
-      <ul class="space-y-2 text-sm">
-        <li>
-          <a href="{{ url_for('events.event_list') }}" class="text-slate-400 hover:text-white transition flex items-center gap-2">
-            <i class="fas fa-chevron-right text-xs text-indigo-500"></i>All Events
-          </a>
-        </li>
+      <h4 class="text-white font-semibold mb-3 text-xs uppercase tracking-widest">Quick Links</h4>
+      <ul class="space-y-2 text-xs">
+        <li><a href="{{ url_for('events.event_list') }}" class="text-[#697386] hover:text-white transition">All Events</a></li>
         {% if current_user.is_authenticated %}
-          <li>
-            <a href="{{ url_for('user.dashboard') }}" class="text-slate-400 hover:text-white transition flex items-center gap-2">
-              <i class="fas fa-chevron-right text-xs text-indigo-500"></i>My Dashboard
-            </a>
-          </li>
-          <li>
-            <a href="{{ url_for('user.children') }}" class="text-slate-400 hover:text-white transition flex items-center gap-2">
-              <i class="fas fa-chevron-right text-xs text-indigo-500"></i>My Children
-            </a>
-          </li>
+          <li><a href="{{ url_for('user.dashboard') }}" class="text-[#697386] hover:text-white transition">My Dashboard</a></li>
+          <li><a href="{{ url_for('user.children') }}" class="text-[#697386] hover:text-white transition">My Children</a></li>
         {% else %}
-          <li>
-            <a href="{{ url_for('auth.register') }}" class="text-slate-400 hover:text-white transition flex items-center gap-2">
-              <i class="fas fa-chevron-right text-xs text-indigo-500"></i>Sign Up
-            </a>
-          </li>
-          <li>
-            <a href="{{ url_for('auth.login') }}" class="text-slate-400 hover:text-white transition flex items-center gap-2">
-              <i class="fas fa-chevron-right text-xs text-indigo-500"></i>Login
-            </a>
-          </li>
+          <li><a href="{{ url_for('auth.register') }}" class="text-[#697386] hover:text-white transition">Sign Up</a></li>
+          <li><a href="{{ url_for('auth.login') }}" class="text-[#697386] hover:text-white transition">Login</a></li>
         {% endif %}
       </ul>
     </div>
     <div>
-      <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Contact</h4>
-      <ul class="space-y-3 text-sm text-slate-400">
+      <h4 class="text-white font-semibold mb-3 text-xs uppercase tracking-widest">Contact</h4>
+      <ul class="space-y-2 text-xs text-[#697386]">
         {% if site.contact_email %}
           <li class="flex items-center gap-2">
-            <i class="fas fa-envelope text-indigo-400 w-4 text-center"></i>
+            <i class="fas fa-envelope text-[#635BFF] w-3"></i>
             <a href="mailto:{{ site.contact_email }}" class="hover:text-white transition">{{ site.contact_email }}</a>
           </li>
         {% endif %}
         {% if site.contact_phone %}
           <li class="flex items-center gap-2">
-            <i class="fas fa-phone text-indigo-400 w-4 text-center"></i>
+            <i class="fas fa-phone text-[#635BFF] w-3"></i>
             <span>{{ site.contact_phone }}</span>
           </li>
         {% endif %}
       </ul>
     </div>
   </div>
-  <div class="border-t border-slate-800 text-center py-5 text-sm text-slate-500">
+  <div class="border-t border-[#2D3561] text-center py-4 text-xs text-[#697386]">
     {{ site.footer_text or '© 2024 KidsComp. All rights reserved.' }}
   </div>
 </footer>

@@ -3,55 +3,72 @@
 {% block content %}
 
 <!-- Hero -->
-<section class="relative bg-gradient-to-br from-slate-900 to-indigo-900 text-white overflow-hidden min-h-[520px] flex items-center"
-  {% if site.hero_image %}style="background-image: linear-gradient(rgba(15,23,42,0.75),rgba(15,23,42,0.75)), url('{{ site.hero_image }}'); background-size: cover; background-position: center;"{% endif %}>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full text-center">
-    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight tracking-tight">
+<section class="bg-[#1A1F36] text-white overflow-hidden"
+  {% if site.hero_image %}style="background-image: linear-gradient(rgba(26,31,54,0.85),rgba(26,31,54,0.92)), url('{{ site.hero_image }}'); background-size: cover; background-position: center;"{% endif %}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+    <div class="inline-flex items-center gap-2 bg-[#635BFF]/20 border border-[#635BFF]/30 rounded-full px-4 py-1.5 text-xs font-semibold text-[#a89af9] mb-6">
+      <i class="fas fa-bolt text-[#635BFF]"></i> Kids Sports Registration Platform
+    </div>
+    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold mb-5 leading-tight tracking-tight">
       {{ site.hero_title or 'Find the Perfect Competition for Your Child' }}
     </h1>
-    <p class="text-lg sm:text-xl text-white/70 mb-10 max-w-2xl mx-auto">
+    <p class="text-base sm:text-lg text-[#8792A2] mb-10 max-w-2xl mx-auto">
       {{ site.hero_subtitle or 'Browse sports events for kids of all ages across the country' }}
     </p>
     <form action="{{ url_for('events.event_list') }}" method="GET"
-          class="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto" x-data="searchBar()">
+          class="flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto" x-data="searchBar()">
       <div class="relative flex-1">
+        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[#697386] text-sm"></i>
         <input type="text" name="q" x-model="query" @input.debounce.300ms="suggest()"
                @keydown.escape="results = []" @click.outside="results = []"
                placeholder="Search events or sports..."
-               class="w-full px-5 py-3 rounded-xl text-gray-800 text-base focus:outline-none focus:ring-2 focus:ring-indigo-400"/>
+               class="w-full bg-[#252B4A] border border-[#2D3561] text-white placeholder-[#697386] pl-10 pr-4 py-3 rounded text-sm focus:border-[#635BFF] focus:ring-0 focus:outline-none transition"/>
         <div x-show="results.length > 0" x-cloak
-             class="absolute top-full left-0 right-0 bg-white rounded-xl shadow-xl border border-gray-100 mt-1 z-50 overflow-hidden">
+             class="absolute top-full left-0 right-0 bg-white border border-[#E3E8EF] rounded shadow-xl mt-1 z-50 overflow-hidden">
           <template x-for="r in results" :key="r.url">
-            <a :href="r.url"
-               class="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 transition text-left">
-              <i :class="r.type === 'event' ? 'fas fa-calendar-alt text-indigo-400' : r.type === 'sport' ? 'fas fa-running text-green-400' : 'fas fa-map-marker-alt text-amber-400'"
-                 class="w-4 text-center shrink-0 text-sm"></i>
+            <a :href="r.url" class="flex items-center gap-3 px-4 py-2.5 hover:bg-[#F7F8FC] transition text-left">
+              <i :class="r.type === 'event' ? 'fas fa-calendar-alt text-[#635BFF]' : r.type === 'sport' ? 'fas fa-running text-[#27AE60]' : 'fas fa-map-marker-alt text-[#F5A623]'"
+                 class="w-4 text-center shrink-0 text-xs"></i>
               <div>
-                <div class="text-sm font-medium text-gray-800" x-text="r.label"></div>
-                <div class="text-xs text-gray-400" x-text="r.meta"></div>
+                <div class="text-xs font-semibold text-[#1A1F36]" x-text="r.label"></div>
+                <div class="text-[11px] text-[#697386]" x-text="r.meta"></div>
               </div>
             </a>
           </template>
         </div>
       </div>
-      <select name="sport" class="px-4 py-3 rounded-xl text-gray-800 focus:outline-none bg-white">
+      <select name="sport" class="bg-[#252B4A] border border-[#2D3561] text-white px-4 py-3 rounded text-sm focus:border-[#635BFF] focus:outline-none">
         <option value="">All Sports</option>
         {% for sport in sports_list %}
           <option value="{{ sport.id }}">{{ sport.name }}</option>
         {% endfor %}
       </select>
-      <button type="submit"
-              class="bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold text-base transition whitespace-nowrap">
+      <button type="submit" class="bg-[#635BFF] hover:bg-[#4f48e6] text-white px-6 py-3 rounded text-sm font-semibold transition whitespace-nowrap">
         <i class="fas fa-search mr-2"></i>Search
       </button>
     </form>
   </div>
 </section>
 
+<!-- Stats bar -->
+<div class="bg-white border-b border-[#E3E8EF]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap justify-center gap-8">
+    {% for label, icon in [('Trusted by parents', 'fa-heart'), ('Multiple sports', 'fa-running'), ('Secure payments', 'fa-shield-alt'), ('Instant confirmation', 'fa-check-circle')] %}
+      <div class="flex items-center gap-2 text-xs text-[#697386]">
+        <i class="fas {{ icon }} text-[#635BFF]"></i>
+        <span>{{ label }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
 <!-- Sports Grid -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">Browse by Sport</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-lg font-bold text-[#1A1F36]">Browse by Sport</h2>
+    <a href="{{ url_for('events.event_list') }}" class="text-xs font-semibold text-[#635BFF] hover:underline">View all events →</a>
+  </div>
+  <div class="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-8 gap-2">
     {% set sport_icons = {
         'soccer': 'fa-futbol', 'football': 'fa-futbol',
         'boxing': 'fa-hand-rock', 'wrestling': 'fa-people-arrows',
@@ -64,23 +81,22 @@
         'volleyball': 'fa-volleyball-ball', 'golf': 'fa-golf-ball',
         'archery': 'fa-bullseye', 'dance': 'fa-music',
         'netball': 'fa-circle', 'hockey': 'fa-hockey-puck',
-        'badminton': 'fa-shuttlecock', 'table-tennis': 'fa-table-tennis',
       } %}
     {% for sport in sports_list %}
       <a href="{{ url_for('events.sport_page', slug=sport.slug) }}"
-         class="flex flex-col items-center gap-2 p-4 bg-white border border-gray-200 hover:border-indigo-400 hover:shadow-sm transition-all text-center group rounded-xl">
+         class="flex flex-col items-center gap-2 p-3 bg-white border border-[#E3E8EF] hover:border-[#635BFF] hover:shadow-sm transition-all text-center group rounded">
         {% if sport.icon and sport.icon.startswith('http') %}
-          <img src="{{ sport.icon }}" alt="{{ sport.name }}" class="w-10 h-10 object-contain"/>
+          <img src="{{ sport.icon }}" alt="{{ sport.name }}" class="w-8 h-8 object-contain"/>
         {% elif sport.icon and sport.icon.startswith('fa-') %}
-          <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
-            <i class="fas {{ sport.icon }} text-indigo-500 text-lg"></i>
+          <div class="w-8 h-8 bg-[#F0EFFE] rounded flex items-center justify-center">
+            <i class="fas {{ sport.icon }} text-[#635BFF] text-sm"></i>
           </div>
         {% else %}
-          <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
-            <i class="fas {{ sport_icons.get(sport.slug, 'fa-medal') }} text-indigo-500 text-lg"></i>
+          <div class="w-8 h-8 bg-[#F0EFFE] rounded flex items-center justify-center">
+            <i class="fas {{ sport_icons.get(sport.slug, 'fa-medal') }} text-[#635BFF] text-sm"></i>
           </div>
         {% endif %}
-        <span class="text-xs font-semibold text-gray-700 group-hover:text-indigo-600 leading-tight">{{ sport.name }}</span>
+        <span class="text-[11px] font-semibold text-[#3C4257] group-hover:text-[#635BFF] leading-tight">{{ sport.name }}</span>
       </a>
     {% endfor %}
   </div>
@@ -88,12 +104,12 @@
 
 <!-- Featured Events -->
 {% if featured %}
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-  <div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Featured Events</h2>
-    <a href="{{ url_for('events.event_list') }}" class="text-indigo-600 font-semibold hover:underline text-sm">View All</a>
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+  <div class="flex justify-between items-center mb-5">
+    <h2 class="text-lg font-bold text-[#1A1F36]">Featured Events</h2>
+    <a href="{{ url_for('events.event_list') }}" class="text-xs font-semibold text-[#635BFF] hover:underline">View all →</a>
   </div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     {% for event in featured %}{% include 'events/_event_card.html' %}{% endfor %}
   </div>
 </section>
@@ -101,40 +117,41 @@
 
 <!-- Upcoming Events -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Upcoming Events</h2>
-    <a href="{{ url_for('events.event_list') }}" class="text-indigo-600 font-semibold hover:underline text-sm">View All</a>
+  <div class="flex justify-between items-center mb-5">
+    <h2 class="text-lg font-bold text-[#1A1F36]">Upcoming Events</h2>
+    <a href="{{ url_for('events.event_list') }}" class="text-xs font-semibold text-[#635BFF] hover:underline">View all →</a>
   </div>
   {% if upcoming %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {% for event in upcoming %}{% include 'events/_event_card.html' %}{% endfor %}
     </div>
   {% else %}
-    <div class="text-center py-16 text-gray-400">
-      <i class="fas fa-calendar-times text-5xl mb-4 block text-gray-200"></i>
-      <p class="text-lg font-medium">No upcoming events yet.</p>
-      <p class="text-sm mt-1">Check back soon or <a href="{{ url_for('auth.register') }}" class="text-indigo-600 hover:underline">sign up</a> to get notified.</p>
+    <div class="text-center py-16 bg-white border border-[#E3E8EF] rounded">
+      <i class="fas fa-calendar-times text-4xl mb-3 block text-[#E3E8EF]"></i>
+      <p class="text-sm font-semibold text-[#3C4257]">No upcoming events yet.</p>
+      <p class="text-xs text-[#697386] mt-1">Check back soon or <a href="{{ url_for('auth.register') }}" class="text-[#635BFF] hover:underline">sign up</a> to get notified.</p>
     </div>
   {% endif %}
 </section>
 
 <!-- How It Works -->
-<section class="bg-white py-16 border-t border-gray-100">
+<section class="bg-white border-t border-[#E3E8EF] py-16">
   <div class="max-w-5xl mx-auto px-4 text-center">
-    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-10">How It Works</h2>
+    <p class="text-xs font-semibold text-[#635BFF] uppercase tracking-widest mb-2">Simple Process</p>
+    <h2 class="text-2xl font-bold text-[#1A1F36] mb-10">How It Works</h2>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
       {% for step, icon, title, desc in [
-        ('1', 'fa-user-plus', 'Create Account', 'Sign up free and add your children\'s profiles with their details.'),
-        ('2', 'fa-search', 'Find Events', 'Browse competitions by sport, age group, location and date.'),
-        ('3', 'fa-clipboard-check', 'Register & Pay', 'Register your child, sign agreements and pay entry fees securely.'),
+        ('01', 'fa-user-plus', 'Create Account', 'Sign up free and add your children\'s profiles with their details.'),
+        ('02', 'fa-search', 'Find Events', 'Browse competitions by sport, age group, location and date.'),
+        ('03', 'fa-clipboard-check', 'Register & Pay', 'Register your child, sign agreements and pay entry fees securely.'),
       ] %}
         <div class="flex flex-col items-center gap-3">
-          <div class="w-14 h-14 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xl font-extrabold shadow-md">
-            {{ step }}
+          <div class="w-12 h-12 rounded bg-[#F0EFFE] flex items-center justify-center">
+            <i class="fas {{ icon }} text-[#635BFF] text-lg"></i>
           </div>
-          <i class="fas {{ icon }} text-indigo-400 text-2xl"></i>
-          <h3 class="font-bold text-gray-800 text-lg">{{ title }}</h3>
-          <p class="text-gray-500 text-sm leading-relaxed">{{ desc }}</p>
+          <span class="text-[10px] font-bold text-[#635BFF] tracking-widest uppercase">Step {{ step }}</span>
+          <h3 class="font-bold text-[#1A1F36] text-base">{{ title }}</h3>
+          <p class="text-[#697386] text-sm leading-relaxed">{{ desc }}</p>
         </div>
       {% endfor %}
     </div>
@@ -142,19 +159,18 @@
 </section>
 
 <!-- CTA -->
-<section class="bg-indigo-700 text-white py-16">
+<section class="bg-[#635BFF] py-14">
   <div class="max-w-3xl mx-auto text-center px-4">
-    <i class="fas fa-medal text-5xl text-indigo-300 mb-4"></i>
-    <h2 class="text-2xl sm:text-3xl font-bold mb-4">Ready to Register Your Child?</h2>
-    <p class="text-white/70 text-lg mb-8">Create a free account and start registering for competitions today.</p>
+    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3">Ready to Register Your Child?</h2>
+    <p class="text-[#c4c0fc] text-sm mb-8">Create a free account and start registering for competitions today.</p>
     {% if not current_user.is_authenticated %}
       <a href="{{ url_for('auth.register') }}"
-         class="bg-white text-indigo-700 font-bold px-8 py-4 rounded-xl text-lg hover:bg-gray-100 transition inline-block">
+         class="bg-white text-[#635BFF] font-bold px-8 py-3 rounded text-sm hover:bg-[#F0EFFE] transition inline-block">
         Get Started Free
       </a>
     {% else %}
       <a href="{{ url_for('events.event_list') }}"
-         class="bg-white text-indigo-700 font-bold px-8 py-4 rounded-xl text-lg hover:bg-gray-100 transition inline-block">
+         class="bg-white text-[#635BFF] font-bold px-8 py-3 rounded text-sm hover:bg-[#F0EFFE] transition inline-block">
         Browse Events
       </a>
     {% endif %}

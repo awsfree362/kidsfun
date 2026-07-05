@@ -1,50 +1,50 @@
 {% extends 'base.html' %}
-{% block title %}Login - {{ site.site_name }}{% endblock %}
+{% block title %}Sign in - {{ site.site_name }}{% endblock %}
 {% block content %}
-<div class="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4">
-  <div class="w-full max-w-md">
-    <div class="text-center mb-8">
-      <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-        <i class="fas fa-sign-in-alt text-white text-2xl"></i>
+<div class="min-h-[calc(100vh-56px)] flex items-center justify-center py-12 px-4 bg-[#F7F8FC]">
+  <div class="w-full max-w-sm">
+    <div class="text-center mb-6">
+      <div class="w-10 h-10 bg-[#635BFF] rounded flex items-center justify-center mx-auto mb-4">
+        <i class="fas fa-bolt text-white text-sm"></i>
       </div>
-      <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Welcome Back</h1>
-      <p class="text-gray-500 mt-2 text-sm">Sign in to your account</p>
+      <h1 class="text-xl font-bold text-[#1A1F36]">Welcome back</h1>
+      <p class="text-[#697386] mt-1 text-xs">Sign in to your account</p>
     </div>
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
-      <form method="POST" class="space-y-5">
+    <div class="bg-white border border-[#E3E8EF] rounded p-6">
+      <form method="POST" class="space-y-4">
         {{ form.hidden_tag() }}
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email Address</label>
+          <label class="block text-[11px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Email Address</label>
           <div class="relative">
-            <i class="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-            {{ form.email(class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent", placeholder="you@example.com") }}
+            <i class="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-[#697386] text-xs"></i>
+            {{ form.email(class="w-full border border-[#E3E8EF] rounded pl-9 pr-4 py-2.5 text-sm text-[#1A1F36] focus:border-[#635BFF] focus:outline-none transition", placeholder="you@example.com") }}
           </div>
-          {% for e in form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          {% for e in form.email.errors %}<p class="text-[#E74C3C] text-xs mt-1">{{ e }}</p>{% endfor %}
         </div>
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
+          <label class="block text-[11px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Password</label>
           <div class="relative">
-            <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-            {{ form.password(class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent", placeholder="••••••••") }}
+            <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-[#697386] text-xs"></i>
+            {{ form.password(class="w-full border border-[#E3E8EF] rounded pl-9 pr-4 py-2.5 text-sm text-[#1A1F36] focus:border-[#635BFF] focus:outline-none transition", placeholder="••••••••") }}
           </div>
-          {% for e in form.password.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          {% for e in form.password.errors %}<p class="text-[#E74C3C] text-xs mt-1">{{ e }}</p>{% endfor %}
         </div>
         <div class="flex items-center justify-between">
-          <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-            {{ form.remember(class="w-4 h-4 accent-indigo-600") }}
+          <label class="flex items-center gap-2 text-xs text-[#697386] cursor-pointer">
+            {{ form.remember(class="w-3.5 h-3.5 accent-[#635BFF]") }}
             <span>Remember me</span>
           </label>
-          <a href="{{ url_for('auth.forgot_password') }}" class="text-sm text-indigo-600 hover:underline">Forgot password?</a>
+          <a href="{{ url_for('auth.forgot_password') }}" class="text-xs text-[#635BFF] hover:underline">Forgot password?</a>
         </div>
         <button type="submit"
-                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-sm transition">
-          <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                class="w-full bg-[#635BFF] hover:bg-[#4f48e6] text-white font-semibold py-2.5 rounded text-sm transition">
+          Sign In
         </button>
       </form>
     </div>
-    <p class="text-center text-sm text-gray-500 mt-6">
+    <p class="text-center text-xs text-[#697386] mt-4">
       Don't have an account?
-      <a href="{{ url_for('auth.register') }}" class="text-indigo-600 font-semibold hover:underline">Sign Up Free</a>
+      <a href="{{ url_for('auth.register') }}" class="text-[#635BFF] font-semibold hover:underline">Get started free</a>
     </p>
   </div>
 </div>
