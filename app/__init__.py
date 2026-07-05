@@ -32,7 +32,16 @@ def create_app():
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-change-me')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+    db_url = os.getenv('DATABASE_URL', '')
+    # Railway MySQL URLs sometimes come as mysql:// — SQLAlchemy needs mysql+pymysql://
+    if db_url.startswith('mysql://') and 'pymysql' not in db_url:
+        db_url = db_url.replace('mysql://', 'mysql+pymysql://', 1)
+    if not db_url:
+        raise RuntimeError(
+            "DATABASE_URL environment variable is not set. "
+            "Add it in your Railway service Variables tab."
+        )
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         'pool_recycle': 280,
