@@ -1,0 +1,66 @@
+<a href="{{ url_for('events.event_detail', slug=event.slug) }}"
+   class="bg-white border border-gray-200 hover:shadow-md hover:border-indigo-300 transition-all overflow-hidden group flex flex-col">
+  <div class="relative h-44 bg-gray-100 overflow-hidden">
+    {% if event.cover_image %}
+      <img src="{{ event.cover_image }}" alt="{{ event.title }}"
+           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+    {% else %}
+      <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-slate-100">
+        {% set sport_icons = {
+          'soccer': 'fa-futbol', 'football': 'fa-futbol',
+          'boxing': 'fa-hand-rock', 'wrestling': 'fa-people-arrows',
+          'athletics': 'fa-running', 'swimming': 'fa-swimmer',
+          'martial-arts': 'fa-user-ninja', 'karate': 'fa-user-ninja',
+          'chess': 'fa-chess', 'school-sports': 'fa-school',
+          'basketball': 'fa-basketball-ball', 'tennis': 'fa-table-tennis',
+          'cricket': 'fa-baseball-ball', 'rugby': 'fa-football-ball',
+          'cycling': 'fa-bicycle', 'gymnastics': 'fa-child',
+          'volleyball': 'fa-volleyball-ball', 'golf': 'fa-golf-ball',
+          'archery': 'fa-bullseye', 'hockey': 'fa-hockey-puck',
+        } %}
+        {% if event.sport.icon and event.sport.icon.startswith('fa-') %}
+          <i class="fas {{ event.sport.icon }} text-indigo-300 text-5xl"></i>
+        {% else %}
+          <i class="fas {{ sport_icons.get(event.sport.slug, 'fa-medal') }} text-indigo-300 text-5xl"></i>
+        {% endif %}
+      </div>
+    {% endif %}
+    <div class="absolute top-2 left-2 flex gap-1.5 flex-wrap">
+      <span class="bg-indigo-600 text-white text-xs font-semibold px-2 py-0.5">{{ event.sport.name }}</span>
+      {% if event.featured %}
+        <span class="bg-amber-500 text-white text-xs font-semibold px-2 py-0.5">Featured</span>
+      {% endif %}
+    </div>
+    <div class="absolute top-2 right-2">
+      {% if event.registration_open %}
+        <span class="bg-green-600 text-white text-xs font-semibold px-2 py-0.5">Open</span>
+      {% else %}
+        <span class="bg-red-600 text-white text-xs font-semibold px-2 py-0.5">Closed</span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="p-4 flex flex-col flex-1 border-t border-gray-100">
+    <h3 class="font-bold text-gray-800 text-sm leading-snug mb-2 group-hover:text-indigo-600 transition line-clamp-2">{{ event.title }}</h3>
+    {% if event.short_description %}
+      <p class="text-gray-500 text-xs mb-3 line-clamp-2">{{ event.short_description }}</p>
+    {% endif %}
+    <div class="mt-auto space-y-1.5 text-xs text-gray-500">
+      <div class="flex items-center gap-2">
+        <i class="fas fa-calendar-alt text-indigo-400 w-3.5 text-center"></i>
+        <span>{{ event.start_date.strftime('%d %b %Y') }}</span>
+      </div>
+      {% if event.venue %}
+        <div class="flex items-center gap-2">
+          <i class="fas fa-map-marker-alt text-indigo-400 w-3.5 text-center"></i>
+          <span class="truncate">{{ event.venue.city }}{% if event.venue.state %}, {{ event.venue.state }}{% endif %}</span>
+        </div>
+      {% endif %}
+      {% if event.age_divisions %}
+        <div class="flex items-center gap-2">
+          <i class="fas fa-users text-indigo-400 w-3.5 text-center"></i>
+          <span>{{ event.age_divisions | length }} division(s)</span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</a>

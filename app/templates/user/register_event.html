@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}Register for {{ event.title }} - {{ site.site_name }}{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-10">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Register for Event</h1>
+    <a href="{{ url_for('events.event_detail', slug=event.slug) }}" class="text-sm text-gray-500 hover:text-gray-700">← Back to Event</a>
+  </div>
+
+  <!-- Event Summary -->
+  <div class="bg-indigo-50 rounded-2xl p-5 mb-6 flex gap-4 items-start">
+    {% if event.cover_image %}
+      <img src="{{ event.cover_image }}" class="w-20 h-20 rounded-xl object-cover shrink-0"/>
+    {% endif %}
+    <div>
+      <h2 class="font-bold text-gray-800 text-lg">{{ event.title }}</h2>
+      <p class="text-gray-500 text-sm">{{ event.start_date.strftime('%A, %d %B %Y') }}</p>
+      {% if event.venue %}<p class="text-gray-500 text-sm">{{ event.venue.name }}, {{ event.venue.city }}</p>{% endif %}
+    </div>
+  </div>
+
+  <form method="POST" enctype="multipart/form-data" class="space-y-6">
+    {{ csrf_token() | safe if false }}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+    <!-- Select Child -->
+    <div class="bg-white rounded-2xl shadow-sm p-6">
+      <h3 class="font-bold text-gray-700 mb-4">1. Select Child</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {% for child in children %}
+          <label class="flex items-center gap-3 p-3 border-2 rounded-xl cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-indigo-50">
+            <input type="radio" name="child_id" value="{{ child.id }}" required class="accent-primary"/>
+            {% if child.profile_image %}
+              <img src="{{ child.profile_image }}" class="w-10 h-10 rounded-full object-cover"/>
+            {% else %}
+              <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-600">{{ child.first_name[0] }}</div>
+            {% endif %}
+            <div>
+              <div class="font-semibold text-sm text-gray-800">{{ child.full_name }}</div>
+              <div class="text-xs text-gray-400">Age {{ child.age }} · {{ child.gender | title }}</div>
+            </div>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Select Division -->
+    {% if event.age_divisions %}
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="font-bold text-gray-700 mb-4">2. Select Age Division</h3>
+        <div class="space-y-3">
+          {% for div in event.age_divisions %}
+            <label class="flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-indigo-50">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="division_id" value="{{ div.id }}" class="accent-primary"/>
+                <div>
+                  <div class="font-semibold text-sm text-gray-800">{{ div.name }}</div>
+                  <div class="text-xs text-gray-400">
+                    Ages {{ div.min_age }}-{{ div.max_age }}
+                    {% if div.gender != 'all' %} · {{ div.gender | title }}{% endif %}
+                    {% if div.weight_class %} · {{ div.weight_class }}{% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-bold text-primary">{{ site.currency_symbol }}{{ "%.2f"|format(div.entry_fee|float) }}</div>
+                {% if div.spots_remaining is not none %}
+                  <div class="text-xs {% if div.spots_remaining == 0 %}text-red-500{% else %}text-gray-400{% endif %}">
+                    {{ div.spots_remaining }} spots left
+                  </div>
+                {% endif %}
+              </div>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Custom Fields -->
+    {% if custom_fields %}
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="font-bold text-gray-700 mb-4">3. Additional Information</h3>
+        <div class="space-y-4">
+          {% for cf in custom_fields %}
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                {{ cf.field_label or cf.field_name }}
+                {% if cf.required %}<span class="text-red-500">*</span>{% endif %}
+              </label>
+              {% if cf.field_type == 'text' %}
+                <input type="text" name="cf_{{ cf.field_name }}" {% if cf.required %}required{% endif %}
+                       class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary"/>
+              {% elif cf.field_type == 'select' %}
+                <select name="cf_{{ cf.field_name }}" {% if cf.required %}required{% endif %}
+                        class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary">
+                  <option value="">-- Select --</option>
+                  {% for opt in (cf.options | fromjson if cf.options else []) %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                  {% endfor %}
+                </select>
+              {% elif cf.field_type == 'checkbox' %}
+                <label class="flex items-center gap-2 text-sm">
+                  <input type="checkbox" name="cf_{{ cf.field_name }}" value="yes" class="accent-primary"/>
+                  {{ cf.field_label }}
+                </label>
+              {% elif cf.field_type == 'file' %}
+                <input type="file" name="cf_{{ cf.field_name }}" {% if cf.required %}required{% endif %}
+                       class="w-full text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700"/>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Agreements -->
+    {% if agreements %}
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="font-bold text-gray-700 mb-4">{{ 4 if custom_fields else 3 }}. Agreements</h3>
+        <div class="space-y-4">
+          {% for ag in agreements %}
+            <div class="border rounded-xl p-4">
+              <div class="flex items-start gap-3">
+                <input type="checkbox" name="agreements" value="{{ ag.id }}"
+                       {% if ag.required %}required{% endif %}
+                       class="mt-1 accent-primary w-4 h-4 shrink-0"/>
+                <div>
+                  <p class="font-semibold text-sm text-gray-800">
+                    {{ ag.title }}
+                    {% if ag.required %}<span class="text-red-500 text-xs ml-1">*Required</span>{% endif %}
+                  </p>
+                  <div class="text-xs text-gray-500 mt-2 max-h-32 overflow-y-auto bg-gray-50 rounded p-2">
+                    {{ ag.content | safe }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <button type="submit" class="w-full btn-primary text-white font-bold py-4 rounded-xl text-lg hover:opacity-90 transition">
+      Complete Registration
+    </button>
+  </form>
+</div>
+{% endblock %}

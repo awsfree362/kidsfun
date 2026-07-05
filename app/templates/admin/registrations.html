@@ -1,0 +1,90 @@
+{% extends 'admin/base.html' %}
+{% block title %}Registrations{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold text-gray-800 mb-6">Registrations</h1>
+<div class="flex justify-between items-center mb-4 flex-wrap gap-3">
+  <form method="GET" class="flex gap-3 flex-wrap">
+    <select name="event_id" class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      <option value="">All Events</option>
+      {% for e in events %}
+        <option value="{{ e.id }}" {% if event_id == e.id %}selected{% endif %}>{{ e.title }}</option>
+      {% endfor %}
+    </select>
+    <select name="status" class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      <option value="">All Statuses</option>
+      {% for s in ['pending','confirmed','cancelled','waitlist'] %}
+        <option value="{{ s }}" {% if status == s %}selected{% endif %}>{{ s | title }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Filter</button>
+  </form>
+  <a href="{{ url_for('admin.registrations_export', status=status, event_id=event_id) }}"
+     class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 flex items-center gap-2">
+    <i class="fas fa-download"></i> Export CSV
+  </a>
+</div>
+<div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-500 text-left">
+      <tr>
+        <th class="px-4 py-3 font-semibold">Parent</th>
+        <th class="px-4 py-3 font-semibold">Child</th>
+        <th class="px-4 py-3 font-semibold">Event</th>
+        <th class="px-4 py-3 font-semibold">Division</th>
+        <th class="px-4 py-3 font-semibold">Status</th>
+        <th class="px-4 py-3 font-semibold">Payment</th>
+        <th class="px-4 py-3 font-semibold">Amount</th>
+        <th class="px-4 py-3 font-semibold">Date</th>
+        <th class="px-4 py-3 font-semibold">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y">
+      {% for reg in regs.items %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3">{{ reg.user.full_name }}<br/><span class="text-gray-400 text-xs">{{ reg.user.email }}</span></td>
+          <td class="px-4 py-3">{{ reg.child.full_name }}<br/><span class="text-gray-400 text-xs">Age {{ reg.child.age }}</span></td>
+          <td class="px-4 py-3 max-w-xs truncate">{{ reg.event.title }}</td>
+          <td class="px-4 py-3">{{ reg.division.name if reg.division else '-' }}</td>
+          <td class="px-4 py-3">
+            <form method="POST" action="{{ url_for('admin.registration_status', reg_id=reg.id) }}" class="flex gap-1">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              <select name="status" class="border rounded px-2 py-1 text-xs focus:outline-none">
+                {% for s in ['pending','confirmed','cancelled','waitlist'] %}
+                  <option value="{{ s }}" {% if reg.status == s %}selected{% endif %}>{{ s | title }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="bg-indigo-600 text-white px-2 py-1 rounded text-xs">✓</button>
+            </form>
+          </td>
+          <td class="px-4 py-3">
+            <span class="px-2 py-0.5 rounded-full text-xs font-semibold {% if reg.payment_status == 'paid' %}bg-green-100 text-green-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+              {{ reg.payment_status | title }}
+            </span>
+          </td>
+          <td class="px-4 py-3">{{ site.currency_symbol }}{{ "%.2f"|format(reg.amount_paid|float) }}</td>
+          <td class="px-4 py-3 text-gray-400">{{ reg.registered_at.strftime('%d %b %Y') }}</td>
+          <td class="px-4 py-3">
+            <a href="{{ url_for('admin.registration_detail', reg_id=reg.id) }}"
+               class="text-indigo-600 hover:underline text-xs font-semibold">View</a>
+            {% if reg.documents %}
+              <span class="text-xs text-gray-400 ml-2">{{ reg.documents | length }} doc(s)</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="9" class="px-4 py-10 text-center text-gray-400">No registrations found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if regs.pages > 1 %}
+    <div class="flex gap-2 p-4">
+      {% if regs.has_prev %}
+        <a href="{{ url_for('admin.registrations', page=regs.prev_num, status=status, event_id=event_id) }}" class="px-3 py-1 border rounded text-sm">← Prev</a>
+      {% endif %}
+      {% if regs.has_next %}
+        <a href="{{ url_for('admin.registrations', page=regs.next_num, status=status, event_id=event_id) }}" class="px-3 py-1 border rounded text-sm">Next →</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

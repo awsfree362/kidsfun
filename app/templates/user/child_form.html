@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if child else 'Add' }} Child - {{ site.site_name }}{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-10">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">{{ 'Edit' if child else 'Add' }} Child Profile</h1>
+    <a href="{{ url_for('user.children') }}" class="text-sm text-gray-500 hover:text-gray-700">← Back</a>
+  </div>
+  <div class="bg-white rounded-2xl shadow-sm p-6">
+    <form method="POST" enctype="multipart/form-data" class="space-y-5">
+      {{ form.hidden_tag() }}
+      {% if child and child.profile_image %}
+        <div class="text-center">
+          <img src="{{ child.profile_image }}" class="w-24 h-24 rounded-full object-cover mx-auto mb-2"/>
+        </div>
+      {% endif %}
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
+        {{ form.profile_image(class="w-full text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700") }}
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+          {{ form.first_name(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary") }}
+          {% for e in form.first_name.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+          {{ form.last_name(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary") }}
+          {% for e in form.last_name.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth *</label>
+        {{ form.date_of_birth(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary") }}
+        {% for e in form.date_of_birth.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+        {{ form.gender(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary") }}
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Medical Notes (optional)</label>
+        {{ form.medical_notes(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary", rows=3, placeholder="Allergies, conditions, etc.") }}
+      </div>
+      <button type="submit" class="w-full btn-primary text-white font-bold py-3 rounded-xl text-lg hover:opacity-90 transition">
+        {{ 'Update' if child else 'Add' }} Child
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

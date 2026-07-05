@@ -1,0 +1,294 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ 'Edit' if event else 'New' }} Event{% endblock %}
+{% block head %}
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet"/>
+{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold text-gray-800">{{ 'Edit' if event else 'New' }} Event</h1>
+  <a href="{{ url_for('admin.events') }}" class="text-sm text-gray-500 hover:text-gray-700">← Back to Events</a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Main Form -->
+  <div class="lg:col-span-2 space-y-6">
+    <form method="POST" enctype="multipart/form-data" id="eventForm">
+      {{ form.hidden_tag() }}
+      <div class="bg-white rounded-2xl shadow-sm p-6 space-y-5">
+        <h2 class="font-bold text-gray-700 text-lg border-b pb-2">Basic Info</h2>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Event Title *</label>
+          {{ form.title(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
+          {% for e in form.title.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Sport *</label>
+            {{ form.sport_id(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Venue</label>
+            {{ form.venue_id(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Short Description</label>
+          {{ form.short_description(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Description</label>
+          <div id="description_editor" class="bg-white border rounded-xl" style="min-height:180px"></div>
+          {{ form.description(id="description", class="hidden") }}
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm p-6 space-y-5">
+        <h2 class="font-bold text-gray-700 text-lg border-b pb-2">Dates & Settings</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+            {{ form.start_date(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+            {{ form.end_date(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Registration Deadline</label>
+            {{ form.registration_deadline(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Max Participants</label>
+            {{ form.max_participants(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            {{ form.status(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Gender Category</label>
+            {{ form.gender_category(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          {{ form.featured(class="w-4 h-4 text-indigo-600") }}
+          <label class="text-sm font-medium text-gray-700">Featured Event</label>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm p-6 space-y-5">
+        <h2 class="font-bold text-gray-700 text-lg border-b pb-2">Rules & Requirements</h2>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Rules</label>
+          <div id="rules_editor" class="bg-white border rounded-xl" style="min-height:150px"></div>
+          {{ form.rules(id="rules", class="hidden") }}
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Requirements</label>
+          <div id="requirements_editor" class="bg-white border rounded-xl" style="min-height:150px"></div>
+          {{ form.requirements(id="requirements", class="hidden") }}
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+        <h2 class="font-bold text-gray-700 text-lg border-b pb-2">Cover Image</h2>
+        {% if event and event.cover_image %}
+          <img src="{{ event.cover_image }}" class="w-full h-48 object-cover rounded-xl mb-3"/>
+        {% endif %}
+        {{ form.cover_image(class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100") }}
+      </div>
+
+      <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl text-lg hover:bg-indigo-700 transition">
+        {{ 'Update Event' if event else 'Create Event' }}
+      </button>
+    </form>
+  </div>
+
+  <!-- Right Panel: Divisions & Custom Fields (only on edit) -->
+  {% if event %}
+  <div class="space-y-6">
+
+    <!-- Age Divisions -->
+    <div class="bg-white rounded-2xl shadow-sm p-6" x-data="divisionsManager({{ event.id }})">
+      <h2 class="font-bold text-gray-700 text-lg border-b pb-2 mb-4">Age Divisions</h2>
+      <div class="space-y-2 mb-4" id="divisionsList">
+        <template x-for="div in divisions" :key="div.id">
+          <div class="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 text-sm">
+            <span x-text="div.name + ' (' + div.min_age + '-' + div.max_age + ' yrs) — ' + currencySymbol + div.entry_fee"></span>
+            <button @click="deleteDivision(div.id)" class="text-red-400 hover:text-red-600 ml-2">
+              <i class="fas fa-trash text-xs"></i>
+            </button>
+          </div>
+        </template>
+      </div>
+      <div class="space-y-2 border-t pt-4">
+        <input x-model="newDiv.name" placeholder="Division name (e.g. U9 Boys)" class="w-full border rounded-lg px-3 py-2 text-sm"/>
+        <div class="grid grid-cols-2 gap-2">
+          <input x-model="newDiv.min_age" type="number" placeholder="Min age" class="border rounded-lg px-3 py-2 text-sm"/>
+          <input x-model="newDiv.max_age" type="number" placeholder="Max age" class="border rounded-lg px-3 py-2 text-sm"/>
+          <input x-model="newDiv.entry_fee" type="number" step="0.01" placeholder="Entry fee" class="border rounded-lg px-3 py-2 text-sm"/>
+          <input x-model="newDiv.max_spots" type="number" placeholder="Max spots" class="border rounded-lg px-3 py-2 text-sm"/>
+          <input x-model="newDiv.weight_class" placeholder="Weight class" class="border rounded-lg px-3 py-2 text-sm"/>
+          <select x-model="newDiv.gender" class="border rounded-lg px-3 py-2 text-sm">
+            <option value="all">All</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+        <button @click="addDivision()" class="w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700">
+          + Add Division
+        </button>
+      </div>
+    </div>
+
+    <!-- Custom Fields -->
+    <div class="bg-white rounded-2xl shadow-sm p-6" x-data="customFieldsManager({{ event.id }})">
+      <h2 class="font-bold text-gray-700 text-lg border-b pb-2 mb-4">Custom Fields</h2>
+      <div class="space-y-2 mb-4">
+        <template x-for="cf in fields" :key="cf.id">
+          <div class="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 text-sm">
+            <span x-text="cf.field_label + ' (' + cf.field_type + ')'"></span>
+            <button @click="deleteField(cf.id)" class="text-red-400 hover:text-red-600 ml-2">
+              <i class="fas fa-trash text-xs"></i>
+            </button>
+          </div>
+        </template>
+      </div>
+      <div class="space-y-2 border-t pt-4">
+        <input x-model="newField.field_name" placeholder="Field name (no spaces)" class="w-full border rounded-lg px-3 py-2 text-sm"/>
+        <input x-model="newField.field_label" placeholder="Label (shown to user)" class="w-full border rounded-lg px-3 py-2 text-sm"/>
+        <select x-model="newField.field_type" class="w-full border rounded-lg px-3 py-2 text-sm">
+          <option value="text">Text</option>
+          <option value="select">Dropdown</option>
+          <option value="checkbox">Checkbox</option>
+          <option value="file">File Upload</option>
+        </select>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" x-model="newField.required"/> Required
+        </label>
+        <button @click="addField()" class="w-full bg-green-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-green-700">
+          + Add Field
+        </button>
+      </div>
+    </div>
+
+    <!-- Event Images -->
+    <div class="bg-white rounded-2xl shadow-sm p-6" x-data="imagesManager({{ event.id }})">
+      <h2 class="font-bold text-gray-700 text-lg border-b pb-2 mb-4">Gallery Images</h2>
+      <div class="grid grid-cols-3 gap-2 mb-4">
+        {% for img in event.images %}
+          <div class="relative group">
+            <img src="{{ img.image_url }}" class="w-full h-20 object-cover rounded-lg"/>
+            <form method="POST" action="{{ url_for('admin.event_image_delete', img_id=img.id) }}"
+                  class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 rounded-lg transition">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              <button type="submit" class="text-white text-xs font-bold">Delete</button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+      <form method="POST" action="{{ url_for('admin.event_images_upload', event_id=event.id) }}"
+            enctype="multipart/form-data" @submit.prevent="uploadImages($event)">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <input type="file" name="images" multiple accept="image/*"
+               class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700"/>
+        <button type="submit" class="mt-2 w-full bg-gray-700 text-white py-2 rounded-lg text-sm font-semibold hover:bg-gray-800">
+          Upload Images
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+// Quill editors
+const toolbarOptions = [['bold','italic','underline'],['blockquote'],
+  [{'list':'ordered'},{'list':'bullet'}],['link'],['clean']];
+
+function makeQuill(editorId, hiddenId) {
+  const q = new Quill('#' + editorId, { theme: 'snow', modules: { toolbar: toolbarOptions } });
+  const hidden = document.getElementById(hiddenId);
+  // Pre-fill from existing value
+  if (hidden.value) q.root.innerHTML = hidden.value;
+  // Sync on every change
+  q.on('text-change', () => { hidden.value = q.root.innerHTML; });
+  return q;
+}
+
+const qDesc = makeQuill('description_editor', 'description');
+const qRules = makeQuill('rules_editor', 'rules');
+const qReqs = makeQuill('requirements_editor', 'requirements');
+
+// Ensure hidden fields are synced before form submit
+document.getElementById('eventForm').addEventListener('submit', () => {
+  document.getElementById('description').value = qDesc.root.innerHTML;
+  document.getElementById('rules').value = qRules.root.innerHTML;
+  document.getElementById('requirements').value = qReqs.root.innerHTML;
+});
+
+function divisionsManager(eventId) {
+  return {
+    divisions: [],
+    currencySymbol: '{{ site.currency_symbol or "R" }}',
+    newDiv: { name:'', min_age:'', max_age:'', entry_fee:'', max_spots:'', gender:'all', weight_class:'' },
+    async init() {
+      const r = await fetch(`/admin/events/${eventId}/divisions`);
+      this.divisions = await r.json();
+    },
+    async addDivision() {
+      const r = await fetch(`/admin/events/${eventId}/divisions`, {
+        method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken': document.querySelector('[name=csrf_token]').value},
+        body: JSON.stringify(this.newDiv)
+      });
+      const d = await r.json();
+      this.divisions.push(d);
+      this.newDiv = { name:'', min_age:'', max_age:'', entry_fee:'', max_spots:'', gender:'all', weight_class:'' };
+    },
+    async deleteDivision(id) {
+      if(!confirm('Delete this division?')) return;
+      await fetch(`/admin/events/divisions/${id}`, { method:'DELETE',
+        headers:{'X-CSRFToken': document.querySelector('[name=csrf_token]').value} });
+      this.divisions = this.divisions.filter(d => d.id !== id);
+    }
+  }
+}
+
+function customFieldsManager(eventId) {
+  return {
+    fields: [],
+    newField: { field_name:'', field_label:'', field_type:'text', required:false },
+    async init() {
+      const r = await fetch(`/admin/events/${eventId}/custom-fields`);
+      this.fields = await r.json();
+    },
+    async addField() {
+      const r = await fetch(`/admin/events/${eventId}/custom-fields`, {
+        method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken': document.querySelector('[name=csrf_token]').value},
+        body: JSON.stringify(this.newField)
+      });
+      const d = await r.json();
+      this.fields.push({...this.newField, id: d.id});
+      this.newField = { field_name:'', field_label:'', field_type:'text', required:false };
+    },
+    async deleteField(id) {
+      await fetch(`/admin/events/custom-fields/${id}`, { method:'DELETE',
+        headers:{'X-CSRFToken': document.querySelector('[name=csrf_token]').value} });
+      this.fields = this.fields.filter(f => f.id !== id);
+    }
+  }
+}
+
+function imagesManager(eventId) {
+  return {
+    async uploadImages(e) {
+      const form = e.target;
+      const fd = new FormData(form);
+      await fetch(form.action, { method:'POST', body: fd });
+      location.reload();
+    }
+  }
+}
+</script>
+{% endblock %}

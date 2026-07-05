@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>Redirecting to PayFast...</title></head>
+<body onload="document.getElementById('pf').submit()">
+  <p>Redirecting to PayFast payment gateway...</p>
+  <form id="pf" method="POST" action="{{ form_action }}">
+    {% for key, value in form_data.items() %}
+      <input type="hidden" name="{{ key }}" value="{{ value }}"/>
+    {% endfor %}
+  </form>
+</body>
+</html>

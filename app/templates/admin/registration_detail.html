@@ -1,0 +1,184 @@
+{% extends 'admin/base.html' %}
+{% block title %}Registration #{{ reg.id }}{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold text-gray-800">Registration #{{ reg.id }}</h1>
+  <a href="{{ url_for('admin.registrations') }}" class="text-sm text-gray-500 hover:text-gray-700">← Back</a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Main Info -->
+  <div class="lg:col-span-2 space-y-6">
+
+    <!-- Status & Payment -->
+    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
+      <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Status Management</h2>
+      <div class="flex flex-wrap gap-3 mb-4">
+        <span class="px-3 py-1.5 rounded-full text-sm font-bold
+          {% if reg.status == 'confirmed' %}bg-green-100 text-green-700
+          {% elif reg.status == 'pending' %}bg-amber-100 text-amber-700
+          {% elif reg.status == 'cancelled' %}bg-red-100 text-red-700
+          {% else %}bg-gray-100 text-gray-600{% endif %}">
+          {{ reg.status | title }}
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-sm font-bold
+          {% if reg.payment_status == 'paid' %}bg-green-100 text-green-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+          Payment: {{ reg.payment_status | title }}
+        </span>
+      </div>
+      <form method="POST" action="{{ url_for('admin.registration_status', reg_id=reg.id) }}" class="flex gap-3 flex-wrap">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <select name="status" class="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          {% for s in ['pending', 'confirmed', 'cancelled', 'waitlist'] %}
+            <option value="{{ s }}" {% if reg.status == s %}selected{% endif %}>{{ s | title }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-indigo-700">
+          Update Status
+        </button>
+      </form>
+    </div>
+
+    <!-- Event Info -->
+    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
+      <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Event</h2>
+      <div class="flex gap-4 items-start">
+        {% if reg.event.cover_image %}
+          <img src="{{ reg.event.cover_image }}" class="w-20 h-20 object-cover rounded shrink-0"/>
+        {% endif %}
+        <div>
+          <p class="font-bold text-gray-800 text-lg">{{ reg.event.title }}</p>
+          <p class="text-gray-500 text-sm">{{ reg.event.start_date.strftime('%A, %d %B %Y') }}</p>
+          {% if reg.event.venue %}
+            <p class="text-gray-500 text-sm">{{ reg.event.venue.name }}, {{ reg.event.venue.full_address }}</p>
+          {% endif %}
+          <a href="{{ url_for('events.event_detail', slug=reg.event.slug) }}" target="_blank"
+             class="text-indigo-600 text-xs hover:underline mt-1 inline-block">View Event →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Field Values -->
+    {% if reg.custom_fields_dict %}
+      <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
+        <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Custom Field Responses</h2>
+        <dl class="space-y-2">
+          {% for key, val in reg.custom_fields_dict.items() %}
+            <div class="flex gap-4 text-sm">
+              <dt class="font-medium text-gray-600 w-40 shrink-0">{{ key }}</dt>
+              <dd class="text-gray-800">{{ val or '—' }}</dd>
+            </div>
+          {% endfor %}
+        </dl>
+      </div>
+    {% endif %}
+
+    <!-- Documents -->
+    {% if reg.documents %}
+      <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
+        <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Submitted Documents</h2>
+        <div class="space-y-2">
+          {% for doc in reg.documents %}
+            <div class="flex items-center justify-between bg-gray-50 rounded px-4 py-3 text-sm">
+              <div class="flex items-center gap-3">
+                <i class="fas fa-file text-indigo-400"></i>
+                <div>
+                  <p class="font-medium text-gray-800">{{ doc.file_name }}</p>
+                  <p class="text-gray-400 text-xs">{{ doc.doc_type }} · {{ doc.uploaded_at.strftime('%d %b %Y') }}</p>
+                </div>
+              </div>
+              <a href="{{ doc.file_url }}" target="_blank"
+                 class="text-indigo-600 hover:underline text-xs font-semibold">View / Download</a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Sidebar -->
+  <div class="space-y-6">
+    <!-- Athlete -->
+    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
+      <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Athlete</h2>
+      <div class="flex items-center gap-3 mb-3">
+        {% if reg.child.profile_image %}
+          <img src="{{ reg.child.profile_image }}" class="w-12 h-12 rounded-full object-cover"/>
+        {% else %}
+          <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-600">
+            {{ reg.child.first_name[0] }}
+          </div>
+        {% endif %}
+        <div>
+          <p class="font-bold text-gray-800">{{ reg.child.full_name }}</p>
+          <p class="text-gray-400 text-sm">Age {{ reg.child.age }} · {{ reg.child.gender | title }}</p>
+          <p class="text-gray-400 text-xs">DOB: {{ reg.child.date_of_birth.strftime('%d %b %Y') }}</p>
+        </div>
+      </div>
+      {% if reg.child.medical_notes %}
+        <div class="bg-yellow-50 rounded p-3 text-xs text-yellow-800 border border-yellow-100">
+          <i class="fas fa-notes-medical mr-1"></i>{{ reg.child.medical_notes }}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Parent -->
+    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
+      <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Parent / Guardian</h2>
+      <div class="space-y-2 text-sm">
+        <div class="flex items-center gap-2 text-gray-600">
+          <i class="fas fa-user text-indigo-400 w-4 text-center"></i>
+          <span>{{ reg.user.full_name }}</span>
+        </div>
+        <div class="flex items-center gap-2 text-gray-600">
+          <i class="fas fa-envelope text-indigo-400 w-4 text-center"></i>
+          <a href="mailto:{{ reg.user.email }}" class="hover:text-indigo-600">{{ reg.user.email }}</a>
+        </div>
+        {% if reg.user.phone %}
+          <div class="flex items-center gap-2 text-gray-600">
+            <i class="fas fa-phone text-indigo-400 w-4 text-center"></i>
+            <span>{{ reg.user.phone }}</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Division & Fee -->
+    {% if reg.division %}
+      <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
+        <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Division & Fee</h2>
+        <p class="font-semibold text-gray-800">{{ reg.division.name }}</p>
+        <p class="text-gray-500 text-sm">Ages {{ reg.division.min_age }}–{{ reg.division.max_age }}</p>
+        {% if reg.division.gender != 'all' %}
+          <p class="text-gray-500 text-sm">{{ reg.division.gender | title }}</p>
+        {% endif %}
+        <p class="text-2xl font-extrabold text-indigo-600 mt-2">
+          {{ site.currency_symbol }}{{ "%.2f"|format(reg.division.entry_fee|float) }}
+        </p>
+        <p class="text-sm text-gray-500">Paid: {{ site.currency_symbol }}{{ "%.2f"|format(reg.amount_paid|float) }}</p>
+      </div>
+    {% endif %}
+
+    <!-- Timestamps -->
+    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
+      <h2 class="font-bold text-gray-700 mb-3 border-b pb-2">Timeline</h2>
+      <div class="space-y-2 text-xs text-gray-500">
+        <div class="flex justify-between">
+          <span>Registered</span>
+          <span class="font-medium text-gray-700">{{ reg.registered_at.strftime('%d %b %Y %H:%M') }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Last Updated</span>
+          <span class="font-medium text-gray-700">{{ reg.updated_at.strftime('%d %b %Y %H:%M') }}</span>
+        </div>
+        {% if reg.payment_intent_id %}
+          <div class="flex justify-between">
+            <span>Payment Ref</span>
+            <span class="font-medium text-gray-700 truncate max-w-[120px]">{{ reg.payment_intent_id }}</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

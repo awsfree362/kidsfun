@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Complete Payment - {{ site.site_name }}{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-16 text-center">
+  <h1 class="text-2xl font-bold text-gray-800 mb-2">Complete Payment</h1>
+  <p class="text-gray-500 mb-2">{{ description }}</p>
+  <p class="text-3xl font-extrabold text-primary mb-8">
+    {{ site.currency_symbol }}{{ "%.2f"|format(amount_cents / 100) }}
+  </p>
+  <div id="yoco-pay-btn" class="mb-4"></div>
+  <a href="{{ url_for('user.registration_detail', reg_id=reg.id) }}" class="text-sm text-gray-400 hover:underline">Cancel</a>
+</div>
+<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
+<script>
+const sdk = new YocoSDK({ publicKey: '{{ result.yoco_public_key }}' });
+sdk.showPopup({
+  amountInCents: {{ amount_cents }},
+  currency: '{{ currency }}',
+  description: '{{ description }}',
+  callback: async function(result) {
+    if (result.error) { alert('Payment failed: ' + result.error.message); return; }
+    const r = await fetch('/payments/yoco/charge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token() }}' },
+      body: JSON.stringify({ reg_id: {{ reg.id }}, token: result.id })
+    });
+    const data = await r.json();
+    if (data.success) window.location.href = data.redirect;
+    else alert('Charge failed: ' + data.error);
+  }
+});
+</script>
+{% endblock %}

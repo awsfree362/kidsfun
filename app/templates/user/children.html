@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}My Children - {{ site.site_name }}{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-10">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">My Children</h1>
+    <a href="{{ url_for('user.child_form') }}" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-semibold">+ Add Child</a>
+  </div>
+  {% if children %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {% for child in children %}
+        <div class="bg-white rounded-2xl shadow-sm p-6">
+          <div class="flex items-center gap-4 mb-4">
+            {% if child.profile_image %}
+              <img src="{{ child.profile_image }}" class="w-16 h-16 rounded-full object-cover"/>
+            {% else %}
+              <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-2xl font-bold text-indigo-600">
+                {{ child.first_name[0] }}
+              </div>
+            {% endif %}
+            <div>
+              <h3 class="font-bold text-gray-800 text-lg">{{ child.full_name }}</h3>
+              <p class="text-gray-500 text-sm">Age {{ child.age }} · {{ child.gender | title }}</p>
+              <p class="text-gray-400 text-xs">DOB: {{ child.date_of_birth.strftime('%d %b %Y') }}</p>
+            </div>
+          </div>
+          {% if child.medical_notes %}
+            <p class="text-sm text-gray-500 mb-3 bg-yellow-50 rounded-lg p-2">
+              <i class="fas fa-notes-medical text-yellow-500 mr-1"></i>{{ child.medical_notes }}
+            </p>
+          {% endif %}
+          <div class="flex gap-2 mb-4">
+            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">{{ child.documents | length }} doc(s)</span>
+            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">{{ child.registrations | length }} registration(s)</span>
+          </div>
+          <div class="mb-4">
+            <p class="text-xs font-semibold text-gray-500 mb-2">Documents</p>
+            <div class="space-y-1">
+              {% for doc in child.documents %}
+                <div class="flex items-center justify-between text-xs bg-gray-50 rounded px-2 py-1">
+                  <span><i class="fas fa-file mr-1 text-gray-400"></i>{{ doc.file_name }} ({{ doc.doc_type }})</span>
+                  <a href="{{ doc.file_url }}" target="_blank" class="text-indigo-600 hover:underline">View</a>
+                </div>
+              {% endfor %}
+            </div>
+            <form class="mt-2 flex gap-2" onsubmit="uploadDoc(event, {{ child.id }})">
+              <select name="doc_type" class="border rounded px-2 py-1 text-xs">
+                <option value="birth_certificate">Birth Certificate</option>
+                <option value="medical">Medical</option>
+                <option value="id">ID</option>
+                <option value="other">Other</option>
+              </select>
+              <input type="file" name="document" class="text-xs flex-1"/>
+              <button type="submit" class="bg-indigo-600 text-white px-3 py-1 rounded text-xs">Upload</button>
+            </form>
+          </div>
+          <div class="flex gap-2">
+            <a href="{{ url_for('user.child_form', child_id=child.id) }}"
+               class="flex-1 text-center border border-primary text-primary py-2 rounded-lg text-sm font-semibold hover:bg-primary hover:text-white transition">Edit</a>
+            <a href="{{ url_for('events.event_list') }}"
+               class="flex-1 text-center btn-primary text-white py-2 rounded-lg text-sm font-semibold">Find Events</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-20 text-gray-400">
+      <i class="fas fa-child text-6xl mb-4"></i>
+      <p class="text-xl mb-4">No children added yet.</p>
+      <a href="{{ url_for('user.child_form') }}" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold">Add Your First Child</a>
+    </div>
+  {% endif %}
+</div>
+<script>
+async function uploadDoc(e, childId) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const r = await fetch(`/dashboard/children/${childId}/documents`, { method: 'POST', body: fd });
+  if (r.ok) location.reload();
+  else alert('Upload failed');
+}
+</script>
+{% endblock %}

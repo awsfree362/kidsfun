@@ -1,0 +1,78 @@
+{% extends 'admin/base.html' %}
+{% block title %}Events{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold text-gray-800">Events</h1>
+  <a href="{{ url_for('admin.event_new') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700">
+    + New Event
+  </a>
+</div>
+
+<form method="GET" class="mb-4">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search events..."
+         class="border rounded-lg px-4 py-2 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-indigo-400"/>
+  <button type="submit" class="ml-2 bg-gray-200 px-4 py-2 rounded-lg text-sm hover:bg-gray-300">Search</button>
+</form>
+
+<div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-500 text-left">
+      <tr>
+        <th class="px-4 py-3 font-semibold">Title</th>
+        <th class="px-4 py-3 font-semibold">Sport</th>
+        <th class="px-4 py-3 font-semibold">Date</th>
+        <th class="px-4 py-3 font-semibold">Status</th>
+        <th class="px-4 py-3 font-semibold">Registrations</th>
+        <th class="px-4 py-3 font-semibold">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y">
+      {% for event in events.items %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 font-medium max-w-xs truncate">
+            {% if event.cover_image %}
+              <img src="{{ event.cover_image }}" class="w-8 h-8 rounded object-cover inline-block mr-2"/>
+            {% endif %}
+            {{ event.title }}
+          </td>
+          <td class="px-4 py-3">{{ event.sport.name }}</td>
+          <td class="px-4 py-3 text-gray-500">{{ event.start_date.strftime('%d %b %Y') }}</td>
+          <td class="px-4 py-3">
+            <span class="px-2 py-0.5 rounded-full text-xs font-semibold
+              {% if event.status == 'published' %}bg-green-100 text-green-700
+              {% elif event.status == 'draft' %}bg-gray-100 text-gray-600
+              {% elif event.status == 'cancelled' %}bg-red-100 text-red-700
+              {% else %}bg-blue-100 text-blue-700{% endif %}">
+              {{ event.status | title }}
+            </span>
+          </td>
+          <td class="px-4 py-3">{{ event.participant_count }}</td>
+          <td class="px-4 py-3 flex gap-2">
+            <a href="{{ url_for('admin.event_edit', event_id=event.id) }}"
+               class="text-indigo-600 hover:text-indigo-800 text-xs font-semibold">Edit</a>
+            <a href="{{ url_for('events.event_detail', slug=event.slug) }}" target="_blank"
+               class="text-gray-500 hover:text-gray-700 text-xs">View</a>
+            <form method="POST" action="{{ url_for('admin.event_delete', event_id=event.id) }}"
+                  onsubmit="return confirm('Delete this event?')">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-semibold">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6" class="px-4 py-10 text-center text-gray-400">No events found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if events.pages > 1 %}
+    <div class="flex gap-2 p-4">
+      {% if events.has_prev %}
+        <a href="{{ url_for('admin.events', page=events.prev_num, q=q) }}" class="px-3 py-1 border rounded text-sm">← Prev</a>
+      {% endif %}
+      {% if events.has_next %}
+        <a href="{{ url_for('admin.events', page=events.next_num, q=q) }}" class="px-3 py-1 border rounded text-sm">Next →</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

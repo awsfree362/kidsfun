@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}{{ sport.name }} Events - {{ site.site_name }}{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="flex items-center gap-4 mb-8">
+    <div class="w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center shrink-0">
+      {% if sport.icon and sport.icon.startswith('http') %}
+        <img src="{{ sport.icon }}" class="w-8 h-8 object-contain"/>
+      {% elif sport.icon and sport.icon.startswith('fa-') %}
+        <i class="fas {{ sport.icon }} text-indigo-500 text-2xl"></i>
+      {% else %}
+        {% set sport_icons = {
+          'soccer': 'fa-futbol', 'football': 'fa-futbol',
+          'boxing': 'fa-hand-rock', 'wrestling': 'fa-people-arrows',
+          'athletics': 'fa-running', 'swimming': 'fa-swimmer',
+          'martial-arts': 'fa-user-ninja', 'karate': 'fa-user-ninja', 'judo': 'fa-user-ninja',
+          'chess': 'fa-chess', 'school-sports': 'fa-school',
+          'basketball': 'fa-basketball-ball', 'tennis': 'fa-table-tennis',
+          'cricket': 'fa-baseball-ball', 'rugby': 'fa-football-ball',
+          'cycling': 'fa-bicycle', 'gymnastics': 'fa-child',
+          'volleyball': 'fa-volleyball-ball', 'golf': 'fa-golf-ball',
+          'archery': 'fa-bullseye', 'dance': 'fa-music',
+          'hockey': 'fa-hockey-puck', 'table-tennis': 'fa-table-tennis',
+        } %}
+        <i class="fas {{ sport_icons.get(sport.slug, 'fa-medal') }} text-indigo-500 text-2xl"></i>
+      {% endif %}
+    </div>
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">{{ sport.name }}</h1>
+      {% if sport.description %}<p class="text-gray-500 mt-1 text-sm">{{ sport.description }}</p>{% endif %}
+    </div>
+  </div>
+  {% if events.items %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      {% for event in events.items %}{% include 'events/_event_card.html' %}{% endfor %}
+    </div>
+    {% if events.pages > 1 %}
+      <div class="flex justify-center gap-2 mt-10">
+        {% if events.has_prev %}
+          <a href="{{ url_for('events.sport_page', slug=sport.slug, page=events.prev_num) }}"
+             class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:bg-gray-50">
+            <i class="fas fa-chevron-left mr-1"></i> Prev
+          </a>
+        {% endif %}
+        {% if events.has_next %}
+          <a href="{{ url_for('events.sport_page', slug=sport.slug, page=events.next_num) }}"
+             class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:bg-gray-50">
+            Next <i class="fas fa-chevron-right ml-1"></i>
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="text-center py-20 text-gray-400">
+      <i class="fas fa-calendar-times text-5xl mb-4 block"></i>
+      <p class="text-xl font-medium">No {{ sport.name }} events available right now.</p>
+      <a href="{{ url_for('events.event_list') }}" class="mt-4 inline-block text-indigo-600 hover:underline text-sm">Browse all events</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

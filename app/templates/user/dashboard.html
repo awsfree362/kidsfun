@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - {{ site.site_name }}{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Welcome back, {{ current_user.first_name }}!</h1>
+    <p class="text-gray-500 mt-1 text-sm">Manage your children's registrations and profiles.</p>
+  </div>
+
+  {% if notifications %}
+    <div class="mb-6 space-y-2">
+      {% for n in notifications %}
+        <div class="flex items-start gap-3 bg-blue-50 border border-blue-100 rounded px-4 py-3 text-sm text-blue-800">
+          <i class="fas fa-bell text-blue-400 mt-0.5 shrink-0"></i>
+          <span class="flex-1">{{ n.message }}</span>
+          <button onclick="markRead({{ n.id }}, this)" class="text-blue-400 hover:text-blue-600 text-xs shrink-0">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    {% for label, value, icon, bg, color in [
+      ('Children', children | length, 'fa-user-friends', 'bg-indigo-50', 'text-indigo-600'),
+      ('Registrations', registrations | length, 'fa-clipboard-list', 'bg-green-50', 'text-green-600'),
+      ('Confirmed', registrations | selectattr('status','eq','confirmed') | list | length, 'fa-check-circle', 'bg-emerald-50', 'text-emerald-600'),
+      ('Pending', registrations | selectattr('status','eq','pending') | list | length, 'fa-clock', 'bg-amber-50', 'text-amber-600'),
+    ] %}
+      <div class="bg-white rounded border border-gray-100 shadow-sm p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-gray-500 text-sm font-medium">{{ label }}</span>
+          <div class="w-9 h-9 rounded {{ bg }} flex items-center justify-center">
+            <i class="fas {{ icon }} {{ color }}"></i>
+          </div>
+        </div>
+        <span class="text-3xl font-extrabold text-gray-800">{{ value }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+    <a href="{{ url_for('user.child_form') }}"
+       class="bg-indigo-600 hover:bg-indigo-700 text-white rounded p-4 flex flex-col sm:flex-row items-center gap-2 transition text-center sm:text-left">
+      <i class="fas fa-user-plus text-xl"></i>
+      <span class="font-semibold text-sm">Add Child</span>
+    </a>
+    <a href="{{ url_for('events.event_list') }}"
+       class="bg-green-600 hover:bg-green-700 text-white rounded p-4 flex flex-col sm:flex-row items-center gap-2 transition text-center sm:text-left">
+      <i class="fas fa-search text-xl"></i>
+      <span class="font-semibold text-sm">Find Events</span>
+    </a>
+    <a href="{{ url_for('user.registrations') }}"
+       class="bg-blue-600 hover:bg-blue-700 text-white rounded p-4 flex flex-col sm:flex-row items-center gap-2 transition text-center sm:text-left">
+      <i class="fas fa-list-alt text-xl"></i>
+      <span class="font-semibold text-sm">Registrations</span>
+    </a>
+    <a href="{{ url_for('user.profile') }}"
+       class="bg-slate-700 hover:bg-slate-800 text-white rounded p-4 flex flex-col sm:flex-row items-center gap-2 transition text-center sm:text-left">
+      <i class="fas fa-user-cog text-xl"></i>
+      <span class="font-semibold text-sm">My Profile</span>
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Children -->
+    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="font-bold text-gray-800 text-lg flex items-center gap-2">
+          <i class="fas fa-user-friends text-indigo-500"></i> My Children
+        </h2>
+        <a href="{{ url_for('user.children') }}" class="text-indigo-600 text-sm hover:underline">View All</a>
+      </div>
+      {% if children %}
+        <div class="space-y-3">
+          {% for child in children %}
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded border border-gray-100">
+              {% if child.profile_image %}
+                <img src="{{ child.profile_image }}" class="w-10 h-10 rounded-full object-cover shrink-0"/>
+              {% else %}
+                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-600 shrink-0">
+                  {{ child.first_name[0] | upper }}
+                </div>
+              {% endif %}
+              <div class="flex-1 min-w-0">
+                <div class="font-semibold text-gray-800 text-sm truncate">{{ child.full_name }}</div>
+                <div class="text-gray-400 text-xs">Age {{ child.age }} &middot; {{ child.gender | title }}</div>
+              </div>
+              <a href="{{ url_for('user.child_form', child_id=child.id) }}"
+                 class="text-indigo-600 text-xs hover:underline shrink-0">Edit</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-10 text-gray-400">
+          <i class="fas fa-user-friends text-4xl mb-3 block text-gray-200"></i>
+          <p class="text-sm">No children added yet.</p>
+          <a href="{{ url_for('user.child_form') }}" class="mt-2 inline-block text-indigo-600 text-sm hover:underline">
+            Add your first child
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Recent Registrations -->
+    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="font-bold text-gray-800 text-lg flex items-center gap-2">
+          <i class="fas fa-clipboard-list text-indigo-500"></i> Recent Registrations
+        </h2>
+        <a href="{{ url_for('user.registrations') }}" class="text-indigo-600 text-sm hover:underline">View All</a>
+      </div>
+      {% if registrations %}
+        <div class="space-y-3">
+          {% for reg in registrations %}
+            <a href="{{ url_for('user.registration_detail', reg_id=reg.id) }}"
+               class="flex items-center gap-3 p-3 bg-gray-50 rounded border border-gray-100 hover:bg-indigo-50 hover:border-indigo-100 transition">
+              <div class="w-9 h-9 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
+                <i class="fas fa-running text-indigo-500 text-sm"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="font-semibold text-gray-800 text-sm truncate">{{ reg.event.title }}</div>
+                <div class="text-gray-400 text-xs">{{ reg.child.full_name }} &middot; {{ reg.registered_at.strftime('%d %b %Y') }}</div>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0
+                {% if reg.status == 'confirmed' %}bg-green-100 text-green-700
+                {% elif reg.status == 'pending' %}bg-amber-100 text-amber-700
+                {% else %}bg-red-100 text-red-700{% endif %}">
+                {{ reg.status | title }}
+              </span>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-10 text-gray-400">
+          <i class="fas fa-clipboard-list text-4xl mb-3 block text-gray-200"></i>
+          <p class="text-sm">No registrations yet.</p>
+          <a href="{{ url_for('events.event_list') }}" class="mt-2 inline-block text-indigo-600 text-sm hover:underline">
+            Browse events
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+async function markRead(id, btn) {
+  await fetch(`/dashboard/notifications/read/${id}`, { method: 'POST' });
+  btn.closest('.flex').remove();
+}
+</script>
+{% endblock %}
