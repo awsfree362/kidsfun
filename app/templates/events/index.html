@@ -64,38 +64,77 @@
 </div>
 
 <!-- BROWSE BY SPORT -->
-<section class="section" style="background:#fff;">
-  <div class="section-inner">
-    <div class="section-center">
+<section style="background:#fff;padding:88px 0;overflow:hidden;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 32px;">
+    <div style="text-align:center;margin-bottom:56px;">
       <span class="section-tag">Sports</span>
       <h2 class="section-title">Browse by Sport</h2>
       <p class="section-sub">From football to chess — find competitions across every sport your child loves.</p>
     </div>
-    {% set sport_icons = {
-      'soccer':'fa-futbol','football':'fa-futbol','boxing':'fa-hand-rock',
-      'wrestling':'fa-people-arrows','athletics':'fa-running','swimming':'fa-swimmer',
-      'martial-arts':'fa-user-ninja','karate':'fa-user-ninja','judo':'fa-user-ninja',
-      'chess':'fa-chess','school-sports':'fa-school','basketball':'fa-basketball-ball',
-      'tennis':'fa-table-tennis','cricket':'fa-baseball-ball','rugby':'fa-football-ball',
-      'cycling':'fa-bicycle','gymnastics':'fa-child','volleyball':'fa-volleyball-ball',
-      'golf':'fa-golf-ball','archery':'fa-bullseye','dance':'fa-music',
-      'netball':'fa-circle','hockey':'fa-hockey-puck',
-    } %}
-    <div class="sports-grid">
-      {% for sport in sports_list %}
-        <a href="{{ url_for('events.sport_page', slug=sport.slug) }}" class="sport-pill">
-          <div class="sport-pill-icon">
-            {% if sport.icon and sport.icon.startswith('fa-') %}
-              <i class="fas {{ sport.icon }}"></i>
-            {% else %}
-              <i class="fas {{ sport_icons.get(sport.slug, 'fa-medal') }}"></i>
-            {% endif %}
-          </div>
-          <span>{{ sport.name }}</span>
-        </a>
-      {% endfor %}
-    </div>
   </div>
+
+  {% set sport_icons = {
+    'soccer':'fa-futbol','football':'fa-futbol','boxing':'fa-hand-rock',
+    'wrestling':'fa-people-arrows','athletics':'fa-running','swimming':'fa-swimmer',
+    'martial-arts':'fa-user-ninja','karate':'fa-user-ninja','judo':'fa-user-ninja',
+    'chess':'fa-chess','school-sports':'fa-school','basketball':'fa-basketball-ball',
+    'tennis':'fa-table-tennis','cricket':'fa-baseball-ball','rugby':'fa-football-ball',
+    'cycling':'fa-bicycle','gymnastics':'fa-child','volleyball':'fa-volleyball-ball',
+    'golf':'fa-golf-ball','archery':'fa-bullseye','dance':'fa-music',
+    'netball':'fa-circle','hockey':'fa-hockey-puck',
+  } %}
+  {% set sport_colors = [
+    {'bg':'#1A1F36','icon':'#6E41E2','glow':'rgba(110,65,226,0.35)'},
+    {'bg':'#7C1D1D','icon':'#F87171','glow':'rgba(248,113,113,0.35)'},
+    {'bg':'#14532D','icon':'#4ADE80','glow':'rgba(74,222,128,0.35)'},
+    {'bg':'#1E3A5F','icon':'#60A5FA','glow':'rgba(96,165,250,0.35)'},
+    {'bg':'#0C4A6E','icon':'#38BDF8','glow':'rgba(56,189,248,0.35)'},
+    {'bg':'#4A1D96','icon':'#C084FC','glow':'rgba(192,132,252,0.35)'},
+    {'bg':'#1C3D2E','icon':'#34D399','glow':'rgba(52,211,153,0.35)'},
+    {'bg':'#7C2D12','icon':'#FB923C','glow':'rgba(251,146,60,0.35)'},
+    {'bg':'#1E1B4B','icon':'#818CF8','glow':'rgba(129,140,248,0.35)'},
+    {'bg':'#064E3B','icon':'#6EE7B7','glow':'rgba(110,231,183,0.35)'},
+  ] %}
+
+  <!-- Slider -->
+  <div style="position:relative;" id="sportSliderWrap">
+
+    <!-- Overflow viewport -->
+    <div style="overflow:hidden;" id="sportViewport">
+      <div id="sportTrack" style="display:flex;will-change:transform;">
+        <!-- slides injected by JS -->
+      </div>
+    </div>
+
+    <!-- Arrows -->
+    <button id="sportPrev"
+            style="position:absolute;left:48px;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:#fff;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:200ms ease;z-index:10;"
+            onmouseover="this.style.boxShadow='0 8px 32px rgba(0,0,0,.18)';this.style.transform='translateY(-50%) scale(1.05)'"
+            onmouseout="this.style.boxShadow='0 4px 20px rgba(0,0,0,.12)';this.style.transform='translateY(-50%) scale(1)'">
+      <i class="fas fa-chevron-left" style="color:var(--text);font-size:16px;"></i>
+    </button>
+    <button id="sportNext"
+            style="position:absolute;right:48px;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:#fff;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:200ms ease;z-index:10;"
+            onmouseover="this.style.boxShadow='0 8px 32px rgba(0,0,0,.18)';this.style.transform='translateY(-50%) scale(1.05)'"
+            onmouseout="this.style.boxShadow='0 4px 20px rgba(0,0,0,.12)';this.style.transform='translateY(-50%) scale(1)'">
+      <i class="fas fa-chevron-right" style="color:var(--text);font-size:16px;"></i>
+    </button>
+
+    <!-- Dots -->
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:32px;" id="sportDots"></div>
+  </div>
+
+  <!-- Sport data for JS -->
+  <script id="sportData" type="application/json">[
+    {% for sport in sports_list %}
+    {
+      "name": {{ sport.name | tojson }},
+      "url": {{ url_for('events.sport_page', slug=sport.slug) | tojson }},
+      "icon": {{ (sport.icon if sport.icon and sport.icon.startswith('fa-') else sport_icons.get(sport.slug, 'fa-medal')) | tojson }},
+      "desc": {{ (sport.description or 'Find upcoming ' + sport.name + ' competitions for kids of all ages. Register your child today and let them shine.') | tojson }}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]</script>
 </section>
 
 <!-- FEATURES -->
@@ -237,6 +276,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
+/* ── Search suggestions ── */
 function searchBar() {
   return {
     query: '',
@@ -248,5 +288,150 @@ function searchBar() {
     }
   }
 }
+
+/* ── Infinite-loop sport slider ── */
+(function () {
+  const COLORS = [
+    { bg: '#1A1F36', icon: '#6E41E2', glow: 'rgba(110,65,226,0.3)' },
+    { bg: '#7C1D1D', icon: '#F87171', glow: 'rgba(248,113,113,0.3)' },
+    { bg: '#14532D', icon: '#4ADE80', glow: 'rgba(74,222,128,0.3)'  },
+    { bg: '#1E3A5F', icon: '#60A5FA', glow: 'rgba(96,165,250,0.3)'  },
+    { bg: '#0C4A6E', icon: '#38BDF8', glow: 'rgba(56,189,248,0.3)'  },
+    { bg: '#4A1D96', icon: '#C084FC', glow: 'rgba(192,132,252,0.3)' },
+    { bg: '#1C3D2E', icon: '#34D399', glow: 'rgba(52,211,153,0.3)'  },
+    { bg: '#7C2D12', icon: '#FB923C', glow: 'rgba(251,146,60,0.3)'  },
+    { bg: '#1E1B4B', icon: '#818CF8', glow: 'rgba(129,140,248,0.3)' },
+    { bg: '#064E3B', icon: '#6EE7B7', glow: 'rgba(110,231,183,0.3)' },
+  ];
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const raw   = document.getElementById('sportData');
+    const track = document.getElementById('sportTrack');
+    const dots  = document.getElementById('sportDots');
+    if (!raw || !track) return;
+
+    const sports = JSON.parse(raw.textContent);
+    const total  = sports.length;
+    if (total === 0) return;
+
+    /* Build slide HTML */
+    function makeSlide(s, ci) {
+      const c = COLORS[ci % COLORS.length];
+      return `
+        <div style="min-width:100%;padding:0 32px;box-sizing:border-box;">
+          <a href="${s.url}"
+             style="display:flex;align-items:stretch;border-radius:24px;overflow:hidden;text-decoration:none;max-width:1136px;margin:0 auto;min-height:320px;box-shadow:0 24px 80px ${c.glow};">
+            <div style="background:${c.bg};flex:0 0 45%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:48px;">
+              <div style="width:120px;height:120px;border-radius:28px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;">
+                <i class="fas ${s.icon}" style="font-size:56px;color:${c.icon};"></i>
+              </div>
+              <span style="font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;text-align:center;">${s.name}</span>
+            </div>
+            <div style="flex:1;background:#fff;display:flex;flex-direction:column;justify-content:center;padding:48px 56px;gap:20px;">
+              <div style="display:inline-flex;align-items:center;gap:8px;background:${c.bg};padding:6px 14px;border-radius:100px;width:fit-content;">
+                <i class="fas ${s.icon}" style="color:${c.icon};font-size:12px;"></i>
+                <span style="font-size:12px;font-weight:700;color:${c.icon};text-transform:uppercase;letter-spacing:.08em;">${s.name}</span>
+              </div>
+              <h3 style="font-size:28px;font-weight:900;color:#1a1a2e;letter-spacing:-0.03em;line-height:1.15;margin:0;">Compete in<br/>${s.name}</h3>
+              <p style="font-size:15px;color:#4a4a68;line-height:1.65;margin:0;max-width:380px;">${s.desc}</p>
+              <span style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:${c.bg};">
+                View Events <i class="fas fa-arrow-right" style="font-size:12px;"></i>
+              </span>
+            </div>
+          </a>
+        </div>`;
+    }
+
+    /* Clone last slide before first, clone first slide after last */
+    const allSlides = [
+      makeSlide(sports[total - 1], total - 1),   /* clone of last  */
+      ...sports.map((s, i) => makeSlide(s, i)),
+      makeSlide(sports[0], 0),                    /* clone of first */
+    ];
+    track.innerHTML = allSlides.join('');
+
+    /* Dots */
+    sports.forEach((_, i) => {
+      const btn = document.createElement('button');
+      btn.style.cssText = 'width:8px;height:8px;border-radius:50%;background:#D1D5DB;border:none;cursor:pointer;transition:all 0.3s;padding:0;';
+      btn.addEventListener('click', () => goTo(i));
+      dots.appendChild(btn);
+    });
+
+    let real   = 0;          /* 0-based real index */
+    let locked = false;
+    const SPEED = 500;
+
+    function setTrack(index, animate) {
+      track.style.transition = animate ? `transform ${SPEED}ms cubic-bezier(0.4,0,0.2,1)` : 'none';
+      track.style.transform  = `translateX(-${(index + 1) * 100}%)`;
+    }
+
+    function updateDots() {
+      dots.querySelectorAll('button').forEach((b, i) => {
+        b.style.width      = i === real ? '28px' : '8px';
+        b.style.borderRadius = i === real ? '4px' : '50%';
+        b.style.background = i === real ? '#6E41E2' : '#D1D5DB';
+      });
+    }
+
+    function goTo(index) {
+      if (locked) return;
+      locked = true;
+      real = index;
+      setTrack(real, true);
+      updateDots();
+      setTimeout(() => { locked = false; }, SPEED + 50);
+    }
+
+    function next() {
+      if (locked) return;
+      locked = true;
+      const nextReal = real + 1;
+      setTrack(nextReal, true);
+      setTimeout(() => {
+        if (nextReal >= total) {
+          real = 0;
+          setTrack(real, false);
+        } else {
+          real = nextReal;
+        }
+        updateDots();
+        locked = false;
+      }, SPEED + 50);
+    }
+
+    function prev() {
+      if (locked) return;
+      locked = true;
+      const prevReal = real - 1;
+      setTrack(prevReal, true);
+      setTimeout(() => {
+        if (prevReal < 0) {
+          real = total - 1;
+          setTrack(real, false);
+        } else {
+          real = prevReal;
+        }
+        updateDots();
+        locked = false;
+      }, SPEED + 50);
+    }
+
+    /* Init position (no animation) */
+    setTrack(0, false);
+    updateDots();
+
+    /* Wire buttons */
+    document.getElementById('sportPrev').addEventListener('click', prev);
+    document.getElementById('sportNext').addEventListener('click', next);
+
+    /* Auto-play — pause on hover */
+    let timer = setInterval(next, 4500);
+    const wrap = document.getElementById('sportSliderWrap');
+    wrap.addEventListener('mouseenter', () => clearInterval(timer));
+    wrap.addEventListener('mouseleave', () => { timer = setInterval(next, 4500); });
+  });
+}());
 </script>
 {% endblock %}
