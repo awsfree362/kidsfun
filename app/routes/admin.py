@@ -538,6 +538,9 @@ def settings():
                 url = upload_file(f, folder)
                 if url:
                     SiteSettings.set(file_key, url, 'string', group='appearance')
+        # Save hero_video URL directly from form field
+        hero_video = request.form.get('hero_video', '').strip()
+        SiteSettings.set('hero_video', hero_video, 'string', group='appearance')
         invalidate_cache('settings:*')
         flash('Settings saved.', 'success')
         return redirect(url_for('admin.settings'))

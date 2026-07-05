@@ -3,65 +3,104 @@
 {% block content %}
 
 <!-- HERO -->
-<section class="hero">
-  <div style="max-width:1200px;margin:0 auto;">
-    <div class="hero-badge">
+<section style="position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+
+  <!-- Video background -->
+  <video
+    autoplay muted loop playsinline
+    style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;"
+    poster="{{ site.hero_image or '' }}">
+    {% if site.hero_video %}
+      <source src="{{ site.hero_video }}" type="video/mp4"/>
+    {% else %}
+      <!-- Fallback: free stock video of kids sports / parent registering -->
+      <source src="https://videos.pexels.com/video-files/6253526/6253526-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
+    {% endif %}
+  </video>
+
+  <!-- Dark gradient overlay so text is readable -->
+  <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,10,30,0.78) 0%,rgba(10,10,30,0.55) 60%,rgba(10,10,30,0.35) 100%);z-index:1;"></div>
+
+  <!-- Content -->
+  <div style="position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:120px 32px 100px;text-align:center;">
+
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(110,65,226,0.25);backdrop-filter:blur(8px);border:1px solid rgba(110,65,226,0.5);color:#c4b5fd;font-size:13px;font-weight:600;padding:7px 16px;border-radius:100px;margin-bottom:32px;">
       <i class="fas fa-star" style="font-size:11px;"></i>
       The #1 Kids Sports Registration Platform
     </div>
-    <h1>
+
+    <h1 style="font-size:clamp(2.8rem,6vw,4.4rem);font-weight:900;color:#fff;letter-spacing:-0.04em;line-height:1.06;max-width:860px;margin:0 auto 24px;">
       Register Your Child for<br/>
-      <span>Sports Competitions</span><br/>
+      <span style="color:#a78bfa;">Sports Competitions</span><br/>
       in Minutes
     </h1>
-    <p>{{ site.hero_subtitle or 'Find local and national competitions, register online, pay securely — all in one place. Built for parents, loved by kids.' }}</p>
-    <div class="hero-actions">
+
+    <p style="font-size:18px;color:rgba(255,255,255,0.8);max-width:560px;margin:0 auto 44px;line-height:1.65;font-weight:400;">
+      {{ site.hero_subtitle or 'Find local and national competitions, register online, pay securely — all in one place. Built for parents, loved by kids.' }}
+    </p>
+
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:56px;">
       {% if current_user.is_authenticated %}
-        <a href="{{ url_for('events.event_list') }}" class="btn-hero">
+        <a href="{{ url_for('events.event_list') }}"
+           style="display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:#fff;font-size:16px;font-weight:700;padding:15px 34px;border-radius:12px;text-decoration:none;transition:200ms ease;"
+           onmouseover="this.style.background='var(--purple-dark)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(110,65,226,.5)'"
+           onmouseout="this.style.background='var(--purple)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
           Browse Events <i class="fas fa-arrow-right" style="font-size:13px;"></i>
         </a>
-        <a href="{{ url_for('user.dashboard') }}" class="btn-hero-ghost">
+        <a href="{{ url_for('user.dashboard') }}"
+           style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.12);backdrop-filter:blur(8px);color:#fff;font-size:16px;font-weight:600;padding:15px 34px;border-radius:12px;text-decoration:none;border:1.5px solid rgba(255,255,255,0.25);transition:200ms ease;"
+           onmouseover="this.style.background='rgba(255,255,255,0.2)';this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.background='rgba(255,255,255,0.12)';this.style.transform='translateY(0)'">
           My Dashboard
         </a>
       {% else %}
-        <a href="{{ url_for('auth.register') }}" class="btn-hero">
+        <a href="{{ url_for('auth.register') }}"
+           style="display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:#fff;font-size:16px;font-weight:700;padding:15px 34px;border-radius:12px;text-decoration:none;transition:200ms ease;"
+           onmouseover="this.style.background='var(--purple-dark)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(110,65,226,.5)'"
+           onmouseout="this.style.background='var(--purple)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
           Get started free <i class="fas fa-arrow-right" style="font-size:13px;"></i>
         </a>
-        <a href="{{ url_for('events.event_list') }}" class="btn-hero-ghost">
+        <a href="{{ url_for('events.event_list') }}"
+           style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.12);backdrop-filter:blur(8px);color:#fff;font-size:16px;font-weight:600;padding:15px 34px;border-radius:12px;text-decoration:none;border:1.5px solid rgba(255,255,255,0.25);transition:200ms ease;"
+           onmouseover="this.style.background='rgba(255,255,255,0.2)';this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.background='rgba(255,255,255,0.12)';this.style.transform='translateY(0)'">
           Browse events
         </a>
       {% endif %}
     </div>
-    <div class="hero-trust">
-      <div class="hero-trust-item"><i class="fas fa-check-circle"></i> Free to sign up</div>
-      <div class="hero-trust-item"><i class="fas fa-shield-alt"></i> Secure payments</div>
-      <div class="hero-trust-item"><i class="fas fa-bolt"></i> Instant confirmation</div>
-      <div class="hero-trust-item"><i class="fas fa-users"></i> Trusted by parents</div>
+
+    <!-- Trust badges -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.65);font-weight:500;">
+        <i class="fas fa-check-circle" style="color:#4ADE80;"></i> Free to sign up
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.65);font-weight:500;">
+        <i class="fas fa-shield-alt" style="color:#60A5FA;"></i> Secure payments
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.65);font-weight:500;">
+        <i class="fas fa-bolt" style="color:#FBBF24;"></i> Instant confirmation
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.65);font-weight:500;">
+        <i class="fas fa-users" style="color:#C084FC;"></i> Trusted by parents
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div style="position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;animation:bounce 2s infinite;">
+      <span style="font-size:11px;color:rgba(255,255,255,0.4);font-weight:500;letter-spacing:.08em;text-transform:uppercase;">Scroll</span>
+      <i class="fas fa-chevron-down" style="color:rgba(255,255,255,0.4);font-size:14px;"></i>
     </div>
   </div>
 </section>
 
-<!-- STATS BAR -->
-<div class="stats-bar">
-  <div class="stats-inner">
-    <div>
-      <div class="stat-num">500+</div>
-      <div class="stat-label">Events Listed</div>
-    </div>
-    <div>
-      <div class="stat-num">10k+</div>
-      <div class="stat-label">Kids Registered</div>
-    </div>
-    <div>
-      <div class="stat-num">{{ sports_list | length }}+</div>
-      <div class="stat-label">Sports Covered</div>
-    </div>
-    <div>
-      <div class="stat-num">100%</div>
-      <div class="stat-label">Secure & Trusted</div>
-    </div>
-  </div>
-</div>
+<style>
+@keyframes bounce {
+  0%,100% { transform:translateX(-50%) translateY(0); }
+  50%      { transform:translateX(-50%) translateY(8px); }
+}
+</style>
+
+
 
 <!-- BROWSE BY SPORT -->
 <section style="background:#fff;padding:88px 0;overflow:hidden;">

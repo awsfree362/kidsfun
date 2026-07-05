@@ -61,9 +61,16 @@
         {{ form.site_favicon(class="w-full text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700") }}
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Hero Image</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Hero Image (poster/fallback)</label>
         {{ form.hero_image(class="w-full text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700") }}
       </div>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Hero Video URL <span class="text-gray-400 font-normal">(MP4 link — leave blank to use default)</span></label>
+      <input type="text" name="hero_video" value="{{ site.hero_video or '' }}"
+             placeholder="https://example.com/your-video.mp4"
+             class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm"/>
+      <p class="text-xs text-gray-400 mt-1">Upload your video to S3 or paste any public MP4 URL. Recommended: 1920×1080, under 20MB.</p>
     </div>
   </div>
 
