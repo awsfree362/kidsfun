@@ -1,28 +1,32 @@
 {% extends 'base.html' %}
 {% block title %}Dashboard - {{ site.site_name }}{% endblock %}
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div style="max-width:1200px;margin:0 auto;padding:48px 24px;">
 
   <!-- Header -->
-  <div class="flex items-center justify-between mb-6">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:16px;">
     <div>
-      <h1 class="text-xl font-bold text-[#1A1F36]">Welcome back, {{ current_user.first_name }}!</h1>
-      <p class="text-[#697386] mt-0.5 text-xs">Manage your children's registrations and profiles.</p>
+      <h1 style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:-0.03em;margin:0 0 4px;">Welcome back, {{ current_user.first_name }}!</h1>
+      <p style="font-size:14px;color:var(--text-2);margin:0;">Manage your children's registrations and profiles.</p>
     </div>
     <a href="{{ url_for('user.child_form') }}"
-       class="bg-[#635BFF] hover:bg-[#4f48e6] text-white text-xs font-semibold px-4 py-2 rounded transition flex items-center gap-1.5">
-      <i class="fas fa-plus text-[10px]"></i> Add Child
+       style="display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:#fff;font-size:14px;font-weight:600;padding:10px 20px;border-radius:10px;text-decoration:none;transition:200ms ease;"
+       onmouseover="this.style.background='var(--purple-dark)'" onmouseout="this.style.background='var(--purple)'">
+      <i class="fas fa-plus" style="font-size:12px;"></i> Add Child
     </a>
   </div>
 
+  <!-- Notifications -->
   {% if notifications %}
-    <div class="mb-5 space-y-2">
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
       {% for n in notifications %}
-        <div class="flex items-start gap-3 bg-[#EEF2FF] border border-[#C7D2FE] rounded px-4 py-2.5 text-xs text-[#3730A3]">
-          <i class="fas fa-bell text-[#635BFF] mt-0.5 shrink-0 text-xs"></i>
-          <span class="flex-1">{{ n.message }}</span>
-          <button onclick="markRead({{ n.id }}, this)" class="text-[#635BFF] hover:text-[#4f48e6] shrink-0">
-            <i class="fas fa-times text-[10px]"></i>
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;font-size:14px;font-weight:500;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <i class="fas fa-bell" style="flex-shrink:0;"></i>
+            <span>{{ n.message }}</span>
+          </div>
+          <button onclick="markRead({{ n.id }}, this)" style="background:none;border:none;cursor:pointer;color:inherit;padding:4px;border-radius:4px;flex-shrink:0;">
+            <i class="fas fa-times" style="font-size:12px;"></i>
           </button>
         </div>
       {% endfor %}
@@ -30,123 +34,147 @@
   {% endif %}
 
   <!-- Stats -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px;">
     {% for label, value, icon, bg, color in [
-      ('Children',      children | length,                                                          'fa-user-friends',  'bg-[#F0EFFE]', 'text-[#635BFF]'),
-      ('Registrations', registrations | length,                                                     'fa-clipboard-list','bg-[#EDFAF1]', 'text-[#27AE60]'),
-      ('Confirmed',     registrations | selectattr('status','eq','confirmed') | list | length,      'fa-check-circle',  'bg-[#EDFAF1]', 'text-[#0D6832]'),
-      ('Pending',       registrations | selectattr('status','eq','pending')   | list | length,      'fa-clock',         'bg-[#FFF8E6]', 'text-[#7A5C00]'),
+      ('Children',      children | length,                                                        'fa-user-friends',  'var(--purple-light)', 'var(--purple)'),
+      ('Registrations', registrations | length,                                                   'fa-clipboard-list','#F0FDF4', '#15803D'),
+      ('Confirmed',     registrations | selectattr('status','eq','confirmed') | list | length,    'fa-check-circle',  '#F0FDF4', '#15803D'),
+      ('Pending',       registrations | selectattr('status','eq','pending')   | list | length,    'fa-clock',         '#FFFBEB', '#92400E'),
     ] %}
-      <div class="bg-white border border-[#E3E8EF] rounded p-4">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-[#697386] text-xs font-medium">{{ label }}</span>
-          <div class="w-8 h-8 rounded {{ bg }} flex items-center justify-center">
-            <i class="fas {{ icon }} {{ color }} text-xs"></i>
+      <div style="background:#fff;border-radius:14px;padding:20px 24px;border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <span style="font-size:13px;font-weight:500;color:var(--text-2);">{{ label }}</span>
+          <div style="width:36px;height:36px;border-radius:8px;background:{{ bg }};display:flex;align-items:center;justify-content:center;">
+            <i class="fas {{ icon }}" style="color:{{ color }};font-size:14px;"></i>
           </div>
         </div>
-        <span class="text-2xl font-extrabold text-[#1A1F36]">{{ value }}</span>
+        <span style="font-size:28px;font-weight:800;color:var(--text);letter-spacing:-0.03em;">{{ value }}</span>
       </div>
     {% endfor %}
   </div>
 
   <!-- Quick Actions -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:32px;">
     <a href="{{ url_for('user.child_form') }}"
-       class="bg-[#635BFF] hover:bg-[#4f48e6] text-white rounded p-3.5 flex items-center gap-2.5 transition">
-      <i class="fas fa-user-plus text-sm shrink-0"></i>
-      <span class="font-semibold text-xs">Add Child</span>
+       style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:var(--purple);border-radius:10px;text-decoration:none;transition:200ms ease;"
+       onmouseover="this.style.background='var(--purple-dark)';this.style.transform='translateY(-1px)'"
+       onmouseout="this.style.background='var(--purple)';this.style.transform='translateY(0)'">
+      <i class="fas fa-user-plus" style="color:#fff;font-size:16px;flex-shrink:0;"></i>
+      <span style="font-weight:600;font-size:14px;color:#fff;">Add Child</span>
     </a>
     <a href="{{ url_for('events.event_list') }}"
-       class="bg-[#27AE60] hover:bg-[#219a52] text-white rounded p-3.5 flex items-center gap-2.5 transition">
-      <i class="fas fa-search text-sm shrink-0"></i>
-      <span class="font-semibold text-xs">Find Events</span>
+       style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:#22C55E;border-radius:10px;text-decoration:none;transition:200ms ease;"
+       onmouseover="this.style.background='#16A34A';this.style.transform='translateY(-1px)'"
+       onmouseout="this.style.background='#22C55E';this.style.transform='translateY(0)'">
+      <i class="fas fa-search" style="color:#fff;font-size:16px;flex-shrink:0;"></i>
+      <span style="font-weight:600;font-size:14px;color:#fff;">Find Events</span>
     </a>
     <a href="{{ url_for('user.registrations') }}"
-       class="bg-[#2D9CDB] hover:bg-[#2487c2] text-white rounded p-3.5 flex items-center gap-2.5 transition">
-      <i class="fas fa-list-alt text-sm shrink-0"></i>
-      <span class="font-semibold text-xs">Registrations</span>
+       style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:#0EA5E9;border-radius:10px;text-decoration:none;transition:200ms ease;"
+       onmouseover="this.style.background='#0284C7';this.style.transform='translateY(-1px)'"
+       onmouseout="this.style.background='#0EA5E9';this.style.transform='translateY(0)'">
+      <i class="fas fa-list-alt" style="color:#fff;font-size:16px;flex-shrink:0;"></i>
+      <span style="font-weight:600;font-size:14px;color:#fff;">Registrations</span>
     </a>
     <a href="{{ url_for('user.profile') }}"
-       class="bg-[#1A1F36] hover:bg-[#252B4A] text-white rounded p-3.5 flex items-center gap-2.5 transition">
-      <i class="fas fa-user-cog text-sm shrink-0"></i>
-      <span class="font-semibold text-xs">My Profile</span>
+       style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:#1A1F36;border-radius:10px;text-decoration:none;transition:200ms ease;"
+       onmouseover="this.style.background='#2d3452';this.style.transform='translateY(-1px)'"
+       onmouseout="this.style.background='#1A1F36';this.style.transform='translateY(0)'">
+      <i class="fas fa-user-cog" style="color:#fff;font-size:16px;flex-shrink:0;"></i>
+      <span style="font-weight:600;font-size:14px;color:#fff;">My Profile</span>
     </a>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;">
+
     <!-- Children -->
-    <div class="bg-white border border-[#E3E8EF] rounded p-5">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="font-bold text-[#1A1F36] text-sm flex items-center gap-2">
-          <i class="fas fa-user-friends text-[#635BFF] text-xs"></i> My Children
+    <div style="background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);overflow:hidden;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);">
+        <h2 style="font-size:15px;font-weight:700;color:var(--text);margin:0;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-user-friends" style="color:var(--purple);font-size:14px;"></i> My Children
         </h2>
-        <a href="{{ url_for('user.children') }}" class="text-[#635BFF] text-xs hover:underline">View All</a>
+        <a href="{{ url_for('user.children') }}" style="font-size:13px;font-weight:600;color:var(--purple);text-decoration:none;">View All</a>
       </div>
-      {% if children %}
-        <div class="space-y-2">
-          {% for child in children %}
-            <div class="flex items-center gap-3 p-3 bg-[#F7F8FC] border border-[#E3E8EF] rounded">
-              {% if child.profile_image %}
-                <img src="{{ child.profile_image }}" class="w-9 h-9 rounded-full object-cover shrink-0"/>
-              {% else %}
-                <div class="w-9 h-9 rounded-full bg-[#F0EFFE] flex items-center justify-center font-bold text-[#635BFF] text-sm shrink-0">
-                  {{ child.first_name[0] | upper }}
+      <div style="padding:16px;">
+        {% if children %}
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            {% for child in children %}
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#F9FAFB;border-radius:10px;border:1px solid var(--border);">
+                {% if child.profile_image %}
+                  <img src="{{ child.profile_image }}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;"/>
+                {% else %}
+                  <div style="width:36px;height:36px;border-radius:50%;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--purple);font-size:14px;flex-shrink:0;">
+                    {{ child.first_name[0] | upper }}
+                  </div>
+                {% endif %}
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ child.full_name }}</div>
+                  <div style="font-size:12px;color:var(--text-2);">Age {{ child.age }} · {{ child.gender | title }}</div>
                 </div>
-              {% endif %}
-              <div class="flex-1 min-w-0">
-                <div class="font-semibold text-[#1A1F36] text-xs truncate">{{ child.full_name }}</div>
-                <div class="text-[#697386] text-[11px]">Age {{ child.age }} · {{ child.gender | title }}</div>
+                <a href="{{ url_for('user.child_form', child_id=child.id) }}" style="font-size:13px;font-weight:600;color:var(--purple);text-decoration:none;flex-shrink:0;">Edit</a>
               </div>
-              <a href="{{ url_for('user.child_form', child_id=child.id) }}"
-                 class="text-[#635BFF] text-xs hover:underline shrink-0">Edit</a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div style="text-align:center;padding:40px 16px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+              <i class="fas fa-user-friends" style="color:var(--purple);font-size:18px;"></i>
             </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <div class="text-center py-8 text-[#697386]">
-          <i class="fas fa-user-friends text-3xl mb-2 block text-[#E3E8EF]"></i>
-          <p class="text-xs">No children added yet.</p>
-          <a href="{{ url_for('user.child_form') }}" class="mt-2 inline-block text-[#635BFF] text-xs hover:underline">Add your first child</a>
-        </div>
-      {% endif %}
+            <p style="font-size:14px;color:var(--text-2);margin:0 0 12px;">No children added yet.</p>
+            <a href="{{ url_for('user.child_form') }}"
+               style="display:inline-flex;align-items:center;gap:6px;background:var(--purple);color:#fff;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;text-decoration:none;">
+              Add your first child
+            </a>
+          </div>
+        {% endif %}
+      </div>
     </div>
 
     <!-- Recent Registrations -->
-    <div class="bg-white border border-[#E3E8EF] rounded p-5">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="font-bold text-[#1A1F36] text-sm flex items-center gap-2">
-          <i class="fas fa-clipboard-list text-[#635BFF] text-xs"></i> Recent Registrations
+    <div style="background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);overflow:hidden;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);">
+        <h2 style="font-size:15px;font-weight:700;color:var(--text);margin:0;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-clipboard-list" style="color:var(--purple);font-size:14px;"></i> Recent Registrations
         </h2>
-        <a href="{{ url_for('user.registrations') }}" class="text-[#635BFF] text-xs hover:underline">View All</a>
+        <a href="{{ url_for('user.registrations') }}" style="font-size:13px;font-weight:600;color:var(--purple);text-decoration:none;">View All</a>
       </div>
-      {% if registrations %}
-        <div class="space-y-2">
-          {% for reg in registrations %}
-            <a href="{{ url_for('user.registration_detail', reg_id=reg.id) }}"
-               class="flex items-center gap-3 p-3 bg-[#F7F8FC] border border-[#E3E8EF] rounded hover:border-[#635BFF] transition">
-              <div class="w-8 h-8 rounded bg-[#F0EFFE] flex items-center justify-center shrink-0">
-                <i class="fas fa-running text-[#635BFF] text-xs"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="font-semibold text-[#1A1F36] text-xs truncate">{{ reg.event.title }}</div>
-                <div class="text-[#697386] text-[11px]">{{ reg.child.full_name }} · {{ reg.registered_at.strftime('%d %b %Y') }}</div>
-              </div>
-              <span class="px-2 py-0.5 rounded text-[10px] font-semibold shrink-0
-                {% if reg.status == 'confirmed' %}bg-[#EDFAF1] text-[#0D6832]
-                {% elif reg.status == 'pending' %}bg-[#FFF8E6] text-[#7A5C00]
-                {% else %}bg-[#FFF0F0] text-[#C0392B]{% endif %}">
-                {{ reg.status | title }}
-              </span>
+      <div style="padding:16px;">
+        {% if registrations %}
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            {% for reg in registrations[:5] %}
+              <a href="{{ url_for('user.registration_detail', reg_id=reg.id) }}"
+                 style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#F9FAFB;border-radius:10px;border:1px solid var(--border);text-decoration:none;transition:200ms ease;"
+                 onmouseover="this.style.borderColor='var(--purple)';this.style.background='var(--purple-light)'"
+                 onmouseout="this.style.borderColor='var(--border)';this.style.background='#F9FAFB'">
+                <div style="width:36px;height:36px;border-radius:8px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <i class="fas fa-running" style="color:var(--purple);font-size:14px;"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ reg.event.title }}</div>
+                  <div style="font-size:12px;color:var(--text-2);">{{ reg.child.full_name }} · {{ reg.registered_at.strftime('%d %b %Y') }}</div>
+                </div>
+                <span style="padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;flex-shrink:0;
+                  {% if reg.status == 'confirmed' %}background:#F0FDF4;color:#15803D;
+                  {% elif reg.status == 'pending' %}background:#FFFBEB;color:#92400E;
+                  {% else %}background:#FEF2F2;color:#B91C1C;{% endif %}">
+                  {{ reg.status | title }}
+                </span>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div style="text-align:center;padding:40px 16px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+              <i class="fas fa-clipboard-list" style="color:var(--purple);font-size:18px;"></i>
+            </div>
+            <p style="font-size:14px;color:var(--text-2);margin:0 0 12px;">No registrations yet.</p>
+            <a href="{{ url_for('events.event_list') }}"
+               style="display:inline-flex;align-items:center;gap:6px;background:var(--purple);color:#fff;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;text-decoration:none;">
+              Browse events
             </a>
-          {% endfor %}
-        </div>
-      {% else %}
-        <div class="text-center py-8 text-[#697386]">
-          <i class="fas fa-clipboard-list text-3xl mb-2 block text-[#E3E8EF]"></i>
-          <p class="text-xs">No registrations yet.</p>
-          <a href="{{ url_for('events.event_list') }}" class="mt-2 inline-block text-[#635BFF] text-xs hover:underline">Browse events</a>
-        </div>
-      {% endif %}
+          </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
@@ -154,7 +182,7 @@
 <script>
 async function markRead(id, btn) {
   await fetch(`/dashboard/notifications/read/${id}`, { method: 'POST' });
-  btn.closest('.flex').remove();
+  btn.closest('[style*="background:#EFF6FF"]').remove();
 }
 </script>
 {% endblock %}

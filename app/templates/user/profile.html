@@ -1,56 +1,93 @@
 {% extends 'base.html' %}
 {% block title %}My Profile - {{ site.site_name }}{% endblock %}
 {% block content %}
-<div class="max-w-lg mx-auto px-4 py-10">
-  <h1 class="text-2xl font-bold text-gray-800 mb-6">My Profile</h1>
-  <div class="bg-white rounded-2xl shadow-sm p-6">
-    <form method="POST" enctype="multipart/form-data" class="space-y-5">
+<div style="max-width:640px;margin:0 auto;padding:48px 24px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;">
+    <div>
+      <h1 style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.02em;margin:0 0 4px;">My Profile</h1>
+      <p style="font-size:14px;color:var(--text-2);margin:0;">Update your personal information and password.</p>
+    </div>
+    <a href="{{ url_for('user.dashboard') }}" style="font-size:13px;font-weight:600;color:var(--purple);display:flex;align-items:center;gap:6px;">
+      <i class="fas fa-arrow-left" style="font-size:11px;"></i> Dashboard
+    </a>
+  </div>
+
+  <div style="background:#fff;border-radius:16px;border:1px solid var(--border);padding:32px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
+    <form method="POST" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:20px;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-      <div class="text-center mb-4">
+
+      <!-- Avatar -->
+      <div style="display:flex;align-items:center;gap:20px;padding-bottom:20px;border-bottom:1px solid var(--border);">
         {% if current_user.profile_image %}
-          <img src="{{ current_user.profile_image }}" class="w-24 h-24 rounded-full object-cover mx-auto mb-2"/>
+          <img src="{{ current_user.profile_image }}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;"/>
         {% else %}
-          <div class="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center text-3xl font-bold text-indigo-600 mx-auto mb-2">
-            {{ current_user.first_name[0] if current_user.first_name else '?' }}
+          <div style="width:72px;height:72px;border-radius:50%;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:var(--purple);flex-shrink:0;">
+            {{ current_user.first_name[0] | upper if current_user.first_name else '?' }}
           </div>
         {% endif %}
-        <input type="file" name="profile_image" accept="image/*" class="text-xs text-gray-500"/>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Profile Photo</label>
+          <input type="file" name="profile_image" accept="image/*" style="font-size:13px;color:var(--text-2);"/>
+        </div>
+      </div>
+
+      <!-- Name -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">First Name</label>
           <input type="text" name="first_name" value="{{ current_user.first_name or '' }}"
-                 class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary"/>
+                 style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;"
+                 onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'"
+                 onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'"/>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Last Name</label>
           <input type="text" name="last_name" value="{{ current_user.last_name or '' }}"
-                 class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary"/>
+                 style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;"
+                 onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'"
+                 onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'"/>
         </div>
       </div>
+
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Email Address</label>
         <input type="email" value="{{ current_user.email }}" disabled
-               class="w-full border rounded-xl px-4 py-2.5 bg-gray-50 text-gray-400"/>
+               style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;background:#F9FAFB;color:var(--text-3);cursor:not-allowed;"/>
       </div>
+
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Phone <span style="font-weight:400;color:var(--text-3);">(optional)</span></label>
         <input type="text" name="phone" value="{{ current_user.phone or '' }}"
-               class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary"/>
+               style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;"
+               onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'"
+               onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'"/>
       </div>
-      <hr/>
-      <p class="text-sm font-semibold text-gray-600">Change Password (leave blank to keep current)</p>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-        <input type="password" name="current_password"
-               class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary"/>
+
+      <!-- Password section -->
+      <div style="padding-top:20px;border-top:1px solid var(--border);">
+        <p style="font-size:14px;font-weight:700;color:var(--text);margin:0 0 16px;">Change Password <span style="font-size:12px;font-weight:400;color:var(--text-3);">— leave blank to keep current</span></p>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Current Password</label>
+            <input type="password" name="current_password"
+                   style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;"
+                   onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'"
+                   onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">New Password</label>
+            <input type="password" name="new_password"
+                   style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;"
+                   onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'"
+                   onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'"/>
+          </div>
+        </div>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-        <input type="password" name="new_password"
-               class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary"/>
-      </div>
-      <button type="submit" class="w-full btn-primary text-white font-bold py-3 rounded-xl text-lg hover:opacity-90 transition">
+
+      <button type="submit"
+              style="height:48px;background:var(--purple);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:200ms ease;"
+              onmouseover="this.style.background='var(--purple-dark)';this.style.boxShadow='0 4px 16px rgba(110,65,226,.3)'"
+              onmouseout="this.style.background='var(--purple)';this.style.boxShadow='none'">
         Save Changes
       </button>
     </form>

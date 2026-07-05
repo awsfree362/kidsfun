@@ -1,153 +1,157 @@
 {% extends 'admin/base.html' %}
 {% block title %}Dashboard{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
 {% block head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 {% block content %}
-<div class="flex justify-between items-center mb-5">
+
+<div class="page-header">
   <div>
-    <h1 class="text-base font-bold text-[#1A1F36]">Dashboard</h1>
-    <p class="text-xs text-[#697386] mt-0.5">Welcome back, {{ current_user.first_name }}</p>
+    <div class="page-title">Dashboard</div>
+    <div class="page-subtitle">Welcome back, {{ current_user.first_name }} — here's what's happening.</div>
   </div>
-  <a href="{{ url_for('admin.event_new') }}" class="btn-primary">
-    <i class="fas fa-plus text-[10px]"></i> New Event
+  <a href="{{ url_for('admin.event_new') }}" class="btn btn-primary">
+    <i class="fas fa-plus" style="font-size:12px;"></i> New Event
   </a>
 </div>
 
-<!-- Primary Stats -->
-<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
+<!-- Primary KPI Stats -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;">
   {% for label, value, icon, bg, color in [
-    ('Published Events', stats.published,      'fa-calendar-check',  'bg-[#F0EFFE]',  'text-[#635BFF]'),
-    ('Total Parents',    stats.users,           'fa-user-friends',    'bg-[#EEF2FF]',  'text-[#3730A3]'),
-    ('Confirmed Regs',   stats.confirmed,       'fa-check-circle',    'bg-[#EDFAF1]',  'text-[#0D6832]'),
-    ('Pending Regs',     stats.pending,         'fa-clock',           'bg-[#FFF8E6]',  'text-[#7A5C00]'),
-    ('Revenue',          site.currency_symbol ~ "%.2f"|format(stats.revenue|float), 'fa-coins', 'bg-[#EDFAF1]', 'text-[#0D6832]'),
+    ('Published Events', stats.published,      'fa-calendar-check',  '#EEF0FF',  'var(--primary)'),
+    ('Total Parents',    stats.users,           'fa-user-friends',    '#EFF6FF',  '#1D4ED8'),
+    ('Confirmed Regs',   stats.confirmed,       'fa-check-circle',    '#F0FDF4',  '#15803D'),
+    ('Pending Regs',     stats.pending,         'fa-clock',           '#FFFBEB',  '#92400E'),
+    ('Revenue',          site.currency_symbol ~ "%.2f"|format(stats.revenue|float), 'fa-coins', '#F0FDF4', '#15803D'),
   ] %}
-    <div class="card p-4">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-[#697386] text-[10px] font-semibold uppercase tracking-wider">{{ label }}</span>
-        <div class="w-7 h-7 rounded {{ bg }} flex items-center justify-center shrink-0">
-          <i class="fas {{ icon }} {{ color }} text-xs"></i>
+    <div class="stat-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <span class="stat-label">{{ label }}</span>
+        <div class="stat-icon" style="background:{{ bg }};">
+          <i class="fas {{ icon }}" style="color:{{ color }};font-size:15px;"></i>
         </div>
       </div>
-      <span class="text-xl font-extrabold text-[#1A1F36]">{{ value }}</span>
+      <div class="stat-value">{{ value }}</div>
     </div>
   {% endfor %}
 </div>
 
 <!-- Secondary Stats -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px;">
   {% for label, value, icon in [
     ('Total Events',   stats.events,        'fa-calendar-alt'),
     ('Total Regs',     stats.registrations, 'fa-clipboard-list'),
     ('Sports',         stats.sports,        'fa-running'),
     ('Venues',         stats.venues,        'fa-map-marker-alt'),
   ] %}
-    <div class="card p-3.5 flex items-center gap-3">
-      <div class="w-8 h-8 bg-[#F7F8FC] rounded flex items-center justify-center shrink-0">
-        <i class="fas {{ icon }} text-[#697386] text-xs"></i>
+    <div style="background:var(--surface);border-radius:var(--radius-md);padding:16px 20px;border:1px solid var(--border);display:flex;align-items:center;gap:12px;">
+      <div style="width:36px;height:36px;border-radius:var(--radius-sm);background:var(--background);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas {{ icon }}" style="color:var(--text-secondary);font-size:14px;"></i>
       </div>
       <div>
-        <p class="text-[10px] text-[#697386] font-medium">{{ label }}</p>
-        <p class="text-lg font-bold text-[#1A1F36]">{{ value }}</p>
+        <div style="font-size:12px;color:var(--text-secondary);font-weight:500;">{{ label }}</div>
+        <div style="font-size:20px;font-weight:800;color:var(--text);letter-spacing:-0.02em;">{{ value }}</div>
       </div>
     </div>
   {% endfor %}
 </div>
 
 <!-- Quick Actions -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:32px;">
   <a href="{{ url_for('admin.event_new') }}"
-     class="bg-[#635BFF] hover:bg-[#4f48e6] text-white rounded p-3.5 flex items-center gap-2.5 transition">
-    <i class="fas fa-plus-circle text-sm shrink-0"></i>
-    <span class="font-semibold text-xs">New Event</span>
+     style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:var(--primary);border-radius:var(--radius-md);text-decoration:none;transition:200ms ease;"
+     onmouseover="this.style.background='var(--primary-hover)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--primary)';this.style.transform='translateY(0)'">
+    <i class="fas fa-plus-circle" style="color:#fff;font-size:16px;flex-shrink:0;"></i>
+    <span style="font-weight:600;font-size:14px;color:#fff;">New Event</span>
   </a>
   <a href="{{ url_for('admin.sport_form') }}"
-     class="bg-[#27AE60] hover:bg-[#219a52] text-white rounded p-3.5 flex items-center gap-2.5 transition">
-    <i class="fas fa-running text-sm shrink-0"></i>
-    <span class="font-semibold text-xs">Add Sport</span>
+     style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:#22C55E;border-radius:var(--radius-md);text-decoration:none;transition:200ms ease;"
+     onmouseover="this.style.background='#16A34A';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#22C55E';this.style.transform='translateY(0)'">
+    <i class="fas fa-running" style="color:#fff;font-size:16px;flex-shrink:0;"></i>
+    <span style="font-weight:600;font-size:14px;color:#fff;">Add Sport</span>
   </a>
   <a href="{{ url_for('admin.send_notification') }}"
-     class="bg-[#F5A623] hover:bg-[#e09510] text-white rounded p-3.5 flex items-center gap-2.5 transition">
-    <i class="fas fa-bell text-sm shrink-0"></i>
-    <span class="font-semibold text-xs">Notify Users</span>
+     style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:#F59E0B;border-radius:var(--radius-md);text-decoration:none;transition:200ms ease;"
+     onmouseover="this.style.background='#D97706';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#F59E0B';this.style.transform='translateY(0)'">
+    <i class="fas fa-bell" style="color:#fff;font-size:16px;flex-shrink:0;"></i>
+    <span style="font-weight:600;font-size:14px;color:#fff;">Notify Users</span>
   </a>
   <a href="{{ url_for('admin.settings') }}"
-     class="bg-[#1A1F36] hover:bg-[#252B4A] text-white rounded p-3.5 flex items-center gap-2.5 transition">
-    <i class="fas fa-cog text-sm shrink-0"></i>
-    <span class="font-semibold text-xs">Settings</span>
+     style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:#111827;border-radius:var(--radius-md);text-decoration:none;transition:200ms ease;"
+     onmouseover="this.style.background='#1F2937';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#111827';this.style.transform='translateY(0)'">
+    <i class="fas fa-cog" style="color:#fff;font-size:16px;flex-shrink:0;"></i>
+    <span style="font-weight:600;font-size:14px;color:#fff;">Settings</span>
   </a>
 </div>
 
 <!-- Charts -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
-  <div class="card p-5">
-    <h2 class="text-xs font-bold text-[#697386] mb-4 flex items-center gap-2 uppercase tracking-wider">
-      <i class="fas fa-chart-line text-[#635BFF]"></i> Monthly Revenue
-    </h2>
-    <canvas id="revenueChart" height="110"></canvas>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:20px;margin-bottom:24px;">
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--primary);"></div>
+      <span style="font-size:13px;font-weight:700;color:var(--text);">Monthly Revenue</span>
+    </div>
+    <canvas id="revenueChart" height="120"></canvas>
   </div>
-  <div class="card p-5">
-    <h2 class="text-xs font-bold text-[#697386] mb-4 flex items-center gap-2 uppercase tracking-wider">
-      <i class="fas fa-chart-bar text-[#27AE60]"></i> Monthly Registrations
-    </h2>
-    <canvas id="regsChart" height="110"></canvas>
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:#22C55E;"></div>
+      <span style="font-size:13px;font-weight:700;color:var(--text);">Monthly Registrations</span>
+    </div>
+    <canvas id="regsChart" height="120"></canvas>
   </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-  <!-- Recent Registrations -->
-  <div class="lg:col-span-2 card p-5">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xs font-bold text-[#697386] flex items-center gap-2 uppercase tracking-wider">
-        <i class="fas fa-clipboard-list text-[#635BFF]"></i> Recent Registrations
-      </h2>
-      <div class="flex gap-3">
-        <a href="{{ url_for('admin.registrations_export') }}" class="text-[#27AE60] text-xs hover:underline flex items-center gap-1">
-          <i class="fas fa-download text-[10px]"></i>CSV
+<div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;">
+  <!-- Recent Registrations Table -->
+  <div class="table-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);">
+      <h2 style="font-size:15px;font-weight:700;color:var(--text);margin:0;">Recent Registrations</h2>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <a href="{{ url_for('admin.registrations_export') }}" style="font-size:13px;font-weight:600;color:#22C55E;text-decoration:none;display:flex;align-items:center;gap:4px;">
+          <i class="fas fa-download" style="font-size:11px;"></i> CSV
         </a>
-        <a href="{{ url_for('admin.registrations') }}" class="text-[#635BFF] text-xs hover:underline">View All</a>
+        <a href="{{ url_for('admin.registrations') }}" style="font-size:13px;font-weight:600;color:var(--primary);text-decoration:none;">View All</a>
       </div>
     </div>
-    <div class="overflow-x-auto">
-      <table class="w-full atera-table min-w-[500px]">
+    <div style="overflow-x:auto;">
+      <table class="data-table" style="min-width:560px;">
         <thead>
           <tr>
-            <th class="text-left">Parent</th>
-            <th class="text-left">Child</th>
-            <th class="text-left">Event</th>
-            <th class="text-left">Status</th>
-            <th class="text-left">Payment</th>
-            <th class="text-left">Date</th>
+            <th>Parent</th>
+            <th>Child</th>
+            <th>Event</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Date</th>
           </tr>
         </thead>
         <tbody>
           {% for reg in recent_regs %}
             <tr>
-              <td class="font-medium text-[#1A1F36]">
-                <a href="{{ url_for('admin.registration_detail', reg_id=reg.id) }}" class="hover:text-[#635BFF]">
+              <td style="font-weight:600;">
+                <a href="{{ url_for('admin.registration_detail', reg_id=reg.id) }}" style="color:var(--text);text-decoration:none;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text)'">
                   {{ reg.user.full_name }}
                 </a>
               </td>
-              <td>{{ reg.child.full_name }}</td>
-              <td class="max-w-[140px] truncate">{{ reg.event.title }}</td>
+              <td style="color:var(--text-secondary);">{{ reg.child.full_name }}</td>
+              <td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-secondary);">{{ reg.event.title }}</td>
               <td>
                 <span class="badge {% if reg.status == 'confirmed' %}badge-green{% elif reg.status == 'pending' %}badge-amber{% elif reg.status == 'cancelled' %}badge-red{% else %}badge-gray{% endif %}">
                   {{ reg.status | title }}
                 </span>
               </td>
               <td>
-                <span class="badge {% if reg.payment_status == 'paid' %}badge-green{% else %}badge-amber{% endif %}">
+                <span class="badge {% if reg.payment_status == 'paid' %}badge-green{% else %}badge-orange{% endif %}">
                   {{ reg.payment_status | title }}
                 </span>
               </td>
-              <td class="text-[#697386]">{{ reg.registered_at.strftime('%d %b %Y') }}</td>
+              <td style="color:var(--text-secondary);">{{ reg.registered_at.strftime('%d %b %Y') }}</td>
             </tr>
           {% else %}
             <tr>
-              <td colspan="6" class="py-10 text-center text-[#697386]">
-                <i class="fas fa-inbox text-3xl mb-2 block text-[#E3E8EF]"></i>
+              <td colspan="6" style="text-align:center;padding:48px;color:var(--text-secondary);">
+                <i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;color:var(--border);"></i>
                 No registrations yet.
               </td>
             </tr>
@@ -158,37 +162,38 @@
   </div>
 
   <!-- Right Panel -->
-  <div class="space-y-4">
+  <div style="display:flex;flex-direction:column;gap:16px;">
     <!-- Top Events -->
-    <div class="card p-5">
-      <h2 class="text-xs font-bold text-[#697386] mb-4 flex items-center gap-2 uppercase tracking-wider">
-        <i class="fas fa-trophy text-[#F5A623]"></i> Top Events
+    <div class="card" style="padding:20px;">
+      <h2 style="font-size:14px;font-weight:700;color:var(--text);margin:0 0 16px;display:flex;align-items:center;gap:8px;">
+        <i class="fas fa-trophy" style="color:#F59E0B;font-size:13px;"></i> Top Events
       </h2>
       {% if top_events %}
-        <div class="space-y-3">
+        <div style="display:flex;flex-direction:column;gap:12px;">
           {% for event, count in top_events %}
-            <div class="flex items-center gap-3">
-              <div class="w-7 h-7 bg-[#F0EFFE] rounded flex items-center justify-center shrink-0">
-                <i class="fas fa-calendar-alt text-[#635BFF] text-[10px]"></i>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:var(--radius-sm);background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-calendar-alt" style="color:var(--primary);font-size:11px;"></i>
               </div>
-              <div class="flex-1 min-w-0">
+              <div style="flex:1;min-width:0;">
                 <a href="{{ url_for('admin.event_edit', event_id=event.id) }}"
-                   class="text-xs font-semibold text-[#1A1F36] truncate block hover:text-[#635BFF]">{{ event.title }}</a>
-                <p class="text-[10px] text-[#697386]">{{ event.sport.name }}</p>
+                   style="font-size:13px;font-weight:600;color:var(--text);text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                   onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text)'">{{ event.title }}</a>
+                <span style="font-size:12px;color:var(--text-secondary);">{{ event.sport.name }}</span>
               </div>
-              <span class="badge badge-purple shrink-0">{{ count }}</span>
+              <span class="badge badge-purple" style="flex-shrink:0;">{{ count }}</span>
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <p class="text-[#697386] text-xs text-center py-4">No registrations yet.</p>
+        <p style="font-size:13px;color:var(--text-secondary);text-align:center;padding:16px 0;margin:0;">No registrations yet.</p>
       {% endif %}
     </div>
 
     <!-- Quick Links -->
-    <div class="card p-5">
-      <h3 class="text-[10px] font-bold text-[#697386] mb-3 uppercase tracking-widest">Quick Links</h3>
-      <div class="space-y-1">
+    <div class="card" style="padding:20px;">
+      <h3 style="font-size:13px;font-weight:700;color:var(--text);margin:0 0 12px;text-transform:uppercase;letter-spacing:.05em;">Quick Links</h3>
+      <div style="display:flex;flex-direction:column;gap:2px;">
         {% for label, endpoint, icon in [
           ('Export Registrations', 'admin.registrations_export', 'fa-download'),
           ('Export Users',         'admin.users_export',         'fa-download'),
@@ -199,37 +204,54 @@
           ('Age Groups',           'admin.age_groups',           'fa-users'),
         ] %}
           <a href="{{ url_for(endpoint) }}"
-             class="flex items-center gap-2 text-xs text-[#697386] hover:text-[#635BFF] transition py-1.5">
-            <i class="fas {{ icon }} text-[#635BFF] w-3.5 text-center text-[10px]"></i> {{ label }}
+             style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary);text-decoration:none;padding:8px 10px;border-radius:var(--radius-sm);transition:200ms ease;"
+             onmouseover="this.style.background='var(--background)';this.style.color='var(--primary)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+            <i class="fas {{ icon }}" style="color:var(--primary);width:14px;text-align:center;font-size:12px;"></i> {{ label }}
           </a>
         {% endfor %}
       </div>
     </div>
   </div>
 </div>
+
 {% endblock %}
 {% block scripts %}
 <script>
-async function loadChart(url, canvasId, label, color) {
+const chartDefaults = {
+  responsive: true,
+  plugins: { legend: { display: false } },
+  scales: {
+    y: {
+      beginAtZero: true,
+      grid: { color: '#F3F4F6', drawBorder: false },
+      ticks: { font: { size: 11, family: 'Inter' }, color: '#9CA3AF' }
+    },
+    x: {
+      grid: { display: false },
+      ticks: { font: { size: 11, family: 'Inter' }, color: '#9CA3AF' }
+    }
+  }
+};
+async function loadChart(url, canvasId, color) {
   const r = await fetch(url);
   const d = await r.json();
   new Chart(document.getElementById(canvasId), {
     type: 'bar',
     data: {
       labels: d.labels,
-      datasets: [{ label, data: d.data, backgroundColor: color, borderRadius: 3, borderSkipped: false }]
+      datasets: [{
+        data: d.data,
+        backgroundColor: color + '33',
+        borderColor: color,
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
     },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, grid: { color: '#F0F2F7' }, ticks: { font: { size: 10 }, color: '#697386' } },
-        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#697386' } }
-      }
-    }
+    options: chartDefaults
   });
 }
-loadChart('/admin/api/revenue-chart', 'revenueChart', 'Revenue', '#635BFF');
-loadChart('/admin/api/registrations-chart', 'regsChart', 'Registrations', '#27AE60');
+loadChart('/admin/api/revenue-chart',       'revenueChart', '#5B5CEB');
+loadChart('/admin/api/registrations-chart', 'regsChart',    '#22C55E');
 </script>
 {% endblock %}

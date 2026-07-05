@@ -3,155 +3,247 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin — {% block title %}{% endblock %}</title>
+  <title>{% block title %}Admin{% endblock %} — {{ site.site_name if site is defined else 'KidsComp' }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
-        }
-      }
-    }
-  </script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    * { font-family: 'Inter', sans-serif; }
-    [x-cloak] { display: none !important; }
-    :root { --brand: #635BFF; }
-    .nav-active { border-left: 3px solid #635BFF; background: rgba(99,91,255,0.08); color: #635BFF !important; }
-    .nav-item { border-left: 3px solid transparent; }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #635BFF !important;
-      box-shadow: 0 0 0 3px rgba(99,91,255,0.12);
+    :root {
+      --primary:        #5B5CEB;
+      --primary-hover:  #4C4DD9;
+      --primary-light:  #EEF0FF;
+      --secondary:      #0EA5E9;
+      --success:        #22C55E;
+      --warning:        #F59E0B;
+      --danger:         #EF4444;
+      --background:     #F7F9FC;
+      --surface:        #FFFFFF;
+      --text:           #111827;
+      --text-secondary: #6B7280;
+      --text-light:     #9CA3AF;
+      --border:         #E5E7EB;
+      --sidebar-bg:     #FFFFFF;
+      --sidebar-width:  260px;
+      --topbar-height:  72px;
+      --radius-sm:      8px;
+      --radius-md:      10px;
+      --radius-lg:      14px;
+      --radius-xl:      16px;
+      --shadow-sm:      0 1px 2px rgba(0,0,0,.05);
+      --shadow-md:      0 1px 2px rgba(0,0,0,.05), 0 8px 20px rgba(0,0,0,.04);
+      --transition:     200ms ease;
     }
-    .atera-table thead th { background: #F7F8FC; color: #697386; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 16px; border-bottom: 1px solid #E3E8EF; }
-    .atera-table tbody td { padding: 12px 16px; border-bottom: 1px solid #F0F2F7; font-size: 13px; color: #3C4257; }
-    .atera-table tbody tr:hover td { background: #F7F8FC; }
-    .atera-table tbody tr:last-child td { border-bottom: none; }
-    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-    .badge-green  { background: #EDFAF1; color: #0D6832; }
-    .badge-amber  { background: #FFF8E6; color: #7A5C00; }
-    .badge-red    { background: #FFF0F0; color: #C0392B; }
-    .badge-blue   { background: #EEF2FF; color: #3730A3; }
-    .badge-gray   { background: #F0F2F7; color: #697386; }
-    .badge-purple { background: #F0EFFE; color: #4f48e6; }
-    .card { background: #fff; border: 1px solid #E3E8EF; border-radius: 6px; }
-    .btn-primary { background: #635BFF; color: #fff; border-radius: 4px; padding: 7px 16px; font-size: 13px; font-weight: 600; transition: background 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-primary:hover { background: #4f48e6; }
-    .btn-secondary { background: #fff; color: #3C4257; border: 1px solid #E3E8EF; border-radius: 4px; padding: 7px 16px; font-size: 13px; font-weight: 500; transition: background 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-secondary:hover { background: #F7F8FC; }
-    .btn-danger { background: #FFF0F0; color: #C0392B; border: 1px solid #F5C6C6; border-radius: 4px; padding: 7px 16px; font-size: 13px; font-weight: 600; transition: background 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-danger:hover { background: #ffe0e0; }
-    .form-input { width: 100%; border: 1px solid #E3E8EF; border-radius: 4px; padding: 8px 12px; font-size: 13px; color: #1A1F36; background: #fff; transition: border-color 0.15s; }
-    .form-label { display: block; font-size: 12px; font-weight: 600; color: #697386; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--text); -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; }
+    [x-cloak] { display: none !important; }
+
+    /* Layout */
+    .admin-layout { display: flex; height: 100vh; overflow: hidden; }
+    .admin-sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    .admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+    .admin-topbar { height: var(--topbar-height); background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
+    .admin-content { flex: 1; overflow-y: auto; padding: 32px 24px; }
+
+    /* Sidebar nav */
+    .sidebar-logo { height: 72px; padding: 0 20px; display: flex; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .sidebar-section { padding: 8px 12px; }
+    .sidebar-section-label { font-size: 11px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: .07em; padding: 8px 8px 4px; }
+    .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; color: var(--text-secondary); text-decoration: none; transition: var(--transition); }
+    .sidebar-link:hover { background: var(--background); color: var(--text); }
+    .sidebar-link.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    .sidebar-link .icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; }
+    .sidebar-link.active .icon { color: var(--primary); }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; border-radius: var(--radius-md); padding: 10px 20px; transition: var(--transition); cursor: pointer; border: none; line-height: 1; text-decoration: none; font-family: 'Inter', sans-serif; }
+    .btn-sm { padding: 7px 14px; font-size: 13px; }
+    .btn-xs { padding: 5px 10px; font-size: 12px; border-radius: var(--radius-sm); }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px rgba(91,92,235,.3); }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--background); }
+    .btn-danger { background: #FEF2F2; color: var(--danger); border: 1px solid #FECACA; }
+    .btn-danger:hover { background: #FEE2E2; }
+    .btn-success { background: #F0FDF4; color: #15803D; border: 1px solid #BBF7D0; }
+    .btn-success:hover { background: #DCFCE7; }
+    .btn-warning { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
+    .btn-warning:hover { background: #FEF3C7; }
+
+    /* Cards */
+    .card { background: var(--surface); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-md); }
+    .card-sm { padding: 16px; }
+    .card-hover { transition: var(--transition); }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 12px 28px rgba(0,0,0,.07); }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .badge-green   { background: #F0FDF4; color: #15803D; }
+    .badge-amber   { background: #FFFBEB; color: #92400E; }
+    .badge-red     { background: #FEF2F2; color: #B91C1C; }
+    .badge-blue    { background: #EFF6FF; color: #1D4ED8; }
+    .badge-purple  { background: var(--primary-light); color: var(--primary); }
+    .badge-gray    { background: #F9FAFB; color: var(--text-secondary); border: 1px solid var(--border); }
+    .badge-orange  { background: #FFF7ED; color: #C2410C; }
+
+    /* Tables */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead th { background: #F9FAFB; color: var(--text-secondary); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; padding: 12px 16px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+    .data-table tbody td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text); vertical-align: middle; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: #F9FAFB; }
+    .table-wrap { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-md); overflow: hidden; }
+
+    /* Form inputs */
+    .form-input { height: 44px; width: 100%; border-radius: var(--radius-md); border: 1px solid #D1D5DB; padding: 0 16px; background: var(--surface); font-size: 14px; color: var(--text); transition: var(--transition); font-family: 'Inter', sans-serif; }
+    .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(91,92,235,.15); }
+    .form-textarea { height: auto; padding: 12px 16px; resize: vertical; }
+    .form-select { height: 44px; width: 100%; border-radius: var(--radius-md); border: 1px solid #D1D5DB; padding: 0 16px; background: var(--surface); font-size: 14px; color: var(--text); transition: var(--transition); font-family: 'Inter', sans-serif; }
+    .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(91,92,235,.15); }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .form-hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+    .form-error { font-size: 12px; color: var(--danger); margin-top: 4px; }
+
+    /* Alerts */
+    .alert { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; }
+    .alert-success { background: #F0FDF4; color: #15803D; border: 1px solid #BBF7D0; }
+    .alert-danger  { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+    .alert-warning { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
+    .alert-info    { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+
+    /* Page header */
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .page-title { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+    .page-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 2px; }
+
+    /* Stat card */
+    .stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 20px 24px; border: 1px solid var(--border); box-shadow: var(--shadow-md); }
+    .stat-label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+    .stat-value { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; margin-top: 4px; }
+    .stat-icon { width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
+    /* Search input */
+    .search-wrap { position: relative; }
+    .search-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light); font-size: 13px; pointer-events: none; }
+    .search-input { height: 40px; border-radius: var(--radius-md); border: 1px solid var(--border); padding: 0 16px 0 40px; background: var(--background); font-size: 14px; color: var(--text); font-family: 'Inter', sans-serif; transition: var(--transition); width: 280px; }
+    .search-input:focus { outline: none; border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 4px rgba(91,92,235,.15); }
+
+    /* Avatar */
+    .avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; background: var(--primary); flex-shrink: 0; }
   </style>
   {% block head %}{% endblock %}
 </head>
-<body class="bg-[#F7F8FC] text-[#1A1F36] antialiased">
-<div class="flex h-screen overflow-hidden">
+<body>
+<div class="admin-layout">
 
   <!-- Sidebar -->
-  <aside x-show="sidebarOpen" x-cloak
-         class="fixed lg:relative inset-y-0 left-0 z-40 bg-[#1A1F36] text-white w-[220px] shrink-0 flex flex-col overflow-y-auto">
+  <aside x-show="sidebarOpen" x-cloak class="admin-sidebar" style="position:fixed;top:0;left:0;bottom:0;z-index:40;" :style="sidebarOpen ? '' : 'display:none'">
     <!-- Logo -->
-    <div class="h-14 px-5 flex items-center justify-between border-b border-[#2D3561] shrink-0">
-      <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-2">
-        <div class="w-6 h-6 rounded bg-[#635BFF] flex items-center justify-center shrink-0">
-          <i class="fas fa-bolt text-white text-xs"></i>
+    <div class="sidebar-logo">
+      <a href="{{ url_for('admin.dashboard') }}" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div style="width:32px;height:32px;border-radius:8px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-bolt" style="color:#fff;font-size:14px;"></i>
         </div>
-        <span class="text-sm font-bold text-white tracking-tight">Admin Panel</span>
+        <span style="font-size:15px;font-weight:700;color:var(--text);letter-spacing:-0.02em;">Admin Panel</span>
       </a>
-      <button @click="sidebarOpen = false" class="lg:hidden text-[#697386] hover:text-white p-1">
-        <i class="fas fa-times text-xs"></i>
+      <button @click="sidebarOpen = false" class="lg:hidden" style="margin-left:auto;padding:6px;border-radius:6px;border:none;background:transparent;cursor:pointer;color:var(--text-secondary);">
+        <i class="fas fa-times" style="font-size:14px;"></i>
       </button>
     </div>
 
-    <!-- User info -->
-    <div class="px-4 py-3 border-b border-[#2D3561]">
-      <div class="flex items-center gap-2.5">
-        <div class="w-7 h-7 rounded-full bg-[#635BFF] flex items-center justify-center text-xs font-bold text-white shrink-0">
-          {{ current_user.first_name[0] | upper }}
-        </div>
-        <div class="min-w-0">
-          <p class="text-xs font-semibold text-white truncate">{{ current_user.full_name }}</p>
-          <p class="text-[10px] text-[#697386] capitalize">{{ current_user.role }}</p>
+    <!-- User chip -->
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="avatar" style="width:36px;height:36px;font-size:14px;">{{ current_user.first_name[0] | upper }}</div>
+        <div style="min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ current_user.full_name }}</div>
+          <div style="font-size:12px;color:var(--text-secondary);text-transform:capitalize;">{{ current_user.role }}</div>
         </div>
       </div>
     </div>
 
     <!-- Nav -->
-    <nav class="flex-1 py-3 overflow-y-auto">
-      {% set nav = [
-        ('admin.dashboard',         'fa-th-large',        'Dashboard'),
-        ('admin.events',            'fa-calendar-alt',    'Events'),
-        ('admin.sports',            'fa-running',         'Sports'),
-        ('admin.age_groups',        'fa-users',           'Age Groups'),
-        ('admin.venues',            'fa-map-marker-alt',  'Venues'),
-        ('admin.registrations',     'fa-clipboard-list',  'Registrations'),
-        ('admin.payment_logs',      'fa-credit-card',     'Payments'),
-        ('admin.users',             'fa-user-friends',    'Users'),
-        ('admin.send_notification', 'fa-bell',            'Notifications'),
-        ('admin.agreements',        'fa-file-signature',  'Agreements'),
-        ('admin.pages',             'fa-file-alt',        'Pages'),
-        ('admin.navigation',        'fa-bars',            'Navigation'),
-        ('admin.settings',          'fa-cog',             'Settings'),
+    <nav style="flex:1;padding:12px;overflow-y:auto;">
+      {% set nav_groups = [
+        ('Main', [
+          ('admin.dashboard',         'fa-th-large',        'Dashboard'),
+          ('admin.events',            'fa-calendar-alt',    'Events'),
+          ('admin.registrations',     'fa-clipboard-list',  'Registrations'),
+          ('admin.payment_logs',      'fa-credit-card',     'Payments'),
+          ('admin.users',             'fa-user-friends',    'Users'),
+        ]),
+        ('Manage', [
+          ('admin.sports',            'fa-running',         'Sports'),
+          ('admin.age_groups',        'fa-users',           'Age Groups'),
+          ('admin.venues',            'fa-map-marker-alt',  'Venues'),
+          ('admin.agreements',        'fa-file-signature',  'Agreements'),
+        ]),
+        ('Content', [
+          ('admin.pages',             'fa-file-alt',        'Pages'),
+          ('admin.navigation',        'fa-bars',            'Navigation'),
+          ('admin.send_notification', 'fa-bell',            'Notifications'),
+          ('admin.settings',          'fa-cog',             'Settings'),
+        ]),
       ] %}
-      {% for endpoint, icon, label in nav %}
-        <a href="{{ url_for(endpoint) }}"
-           class="nav-item flex items-center gap-3 px-5 py-2.5 text-[13px] font-medium transition
-                  {% if request.endpoint == endpoint %}nav-active{% else %}text-[#8792A2] hover:text-white hover:bg-[#252B4A]{% endif %}">
-          <i class="fas {{ icon }} w-3.5 text-center text-[11px] shrink-0"></i>
-          <span>{{ label }}</span>
-        </a>
+      {% for group_label, group_items in nav_groups %}
+        <div style="margin-bottom:4px;">
+          <div class="sidebar-section-label">{{ group_label }}</div>
+          {% for endpoint, icon, label in group_items %}
+            <a href="{{ url_for(endpoint) }}"
+               class="sidebar-link {% if request.endpoint == endpoint %}active{% endif %}">
+              <span class="icon"><i class="fas {{ icon }}"></i></span>
+              <span>{{ label }}</span>
+            </a>
+          {% endfor %}
+        </div>
       {% endfor %}
     </nav>
 
-    <!-- Bottom links -->
-    <div class="border-t border-[#2D3561] py-3">
-      <a href="{{ url_for('events.index') }}" target="_blank"
-         class="nav-item flex items-center gap-3 px-5 py-2 text-[12px] text-[#697386] hover:text-white hover:bg-[#252B4A] transition">
-        <i class="fas fa-external-link-alt w-3.5 text-center text-[11px]"></i> View Site
+    <!-- Bottom -->
+    <div style="padding:12px;border-top:1px solid var(--border);">
+      <a href="{{ url_for('events.index') }}" target="_blank" class="sidebar-link">
+        <span class="icon"><i class="fas fa-external-link-alt"></i></span>
+        <span>View Site</span>
       </a>
-      <a href="{{ url_for('auth.logout') }}"
-         class="nav-item flex items-center gap-3 px-5 py-2 text-[12px] text-[#697386] hover:text-white hover:bg-[#252B4A] transition">
-        <i class="fas fa-sign-out-alt w-3.5 text-center text-[11px]"></i> Logout
+      <a href="{{ url_for('auth.logout') }}" class="sidebar-link">
+        <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+        <span>Logout</span>
       </a>
     </div>
   </aside>
 
   <!-- Mobile overlay -->
   <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false"
-       class="fixed inset-0 bg-black/40 z-30 lg:hidden"></div>
+       style="position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;" class="lg:hidden"></div>
 
-  <!-- Main -->
-  <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+  <!-- Main area — offset by sidebar width on desktop -->
+  <div class="admin-main" :style="sidebarOpen ? 'margin-left:260px' : 'margin-left:0'" style="transition:margin-left 200ms ease;">
 
     <!-- Top bar -->
-    <header class="h-14 bg-white border-b border-[#E3E8EF] px-4 sm:px-6 flex items-center justify-between shrink-0">
-      <div class="flex items-center gap-3">
-        <button @click="sidebarOpen = !sidebarOpen" class="text-[#697386] hover:text-[#1A1F36] p-1">
-          <i class="fas fa-bars text-sm"></i>
+    <header class="admin-topbar">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <button @click="sidebarOpen = !sidebarOpen" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--text-secondary);transition:var(--transition);" onmouseover="this.style.background='var(--background)'" onmouseout="this.style.background='transparent'">
+          <i class="fas fa-bars" style="font-size:15px;"></i>
         </button>
-        <span class="text-sm font-semibold text-[#1A1F36] hidden sm:block">{% block page_title %}{% endblock %}</span>
+        <div class="search-wrap hidden sm:block">
+          <i class="fas fa-search"></i>
+          <input type="text" class="search-input" placeholder="Search..."/>
+        </div>
       </div>
-      <div class="flex items-center gap-3">
-        <a href="{{ url_for('events.index') }}" target="_blank"
-           class="text-xs text-[#697386] hover:text-[#635BFF] transition flex items-center gap-1">
-          <i class="fas fa-external-link-alt text-[10px]"></i>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a href="{{ url_for('events.index') }}" target="_blank" style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary);text-decoration:none;padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);transition:var(--transition);" onmouseover="this.style.background='var(--background)'" onmouseout="this.style.background='transparent'">
+          <i class="fas fa-external-link-alt" style="font-size:11px;"></i>
           <span class="hidden sm:inline">View Site</span>
         </a>
-        <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-full bg-[#635BFF] flex items-center justify-center text-xs font-bold text-white">
-            {{ current_user.first_name[0] | upper }}
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="avatar" style="width:34px;height:34px;font-size:13px;">{{ current_user.first_name[0] | upper }}</div>
+          <div class="hidden sm:block">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">{{ current_user.full_name }}</div>
+            <div style="font-size:11px;color:var(--text-secondary);text-transform:capitalize;">{{ current_user.role }}</div>
           </div>
-          <span class="text-xs font-medium text-[#3C4257] hidden sm:block">{{ current_user.full_name }}</span>
-          <span class="badge badge-purple">{{ current_user.role | title }}</span>
         </div>
       </div>
     </header>
@@ -159,17 +251,10 @@
     <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="px-4 sm:px-6 pt-4 space-y-2">
+        <div style="padding:16px 24px 0;display:flex;flex-direction:column;gap:8px;">
           {% for category, message in messages %}
-            <div class="px-4 py-2.5 rounded text-sm font-medium flex items-center gap-2
-              {% if category == 'success' %}bg-[#EDFAF1] text-[#0D6832] border border-[#A3E6C0]
-              {% elif category == 'danger' %}bg-[#FFF0F0] text-[#C0392B] border border-[#F5C6C6]
-              {% elif category == 'warning' %}bg-[#FFF8E6] text-[#7A5C00] border border-[#F5A623]/30
-              {% else %}bg-[#EEF2FF] text-[#3730A3] border border-[#C7D2FE]{% endif %}">
-              <i class="fas {% if category == 'success' %}fa-check-circle text-[#27AE60]
-                            {% elif category == 'danger' %}fa-exclamation-circle text-[#E74C3C]
-                            {% elif category == 'warning' %}fa-exclamation-triangle text-[#F5A623]
-                            {% else %}fa-info-circle text-[#635BFF]{% endif %} text-sm"></i>
+            <div class="alert alert-{% if category == 'success' %}success{% elif category == 'danger' %}danger{% elif category == 'warning' %}warning{% else %}info{% endif %}">
+              <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'danger' %}fa-exclamation-circle{% elif category == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}" style="flex-shrink:0;"></i>
               {{ message }}
             </div>
           {% endfor %}
@@ -177,8 +262,8 @@
       {% endif %}
     {% endwith %}
 
-    <!-- Content -->
-    <main class="flex-1 overflow-y-auto p-4 sm:p-6">
+    <!-- Page content -->
+    <main class="admin-content">
       {% block content %}{% endblock %}
     </main>
   </div>

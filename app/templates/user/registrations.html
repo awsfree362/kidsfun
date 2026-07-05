@@ -1,80 +1,87 @@
 {% extends 'base.html' %}
 {% block title %}My Registrations - {{ site.site_name }}{% endblock %}
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-5">
-    <h1 class="text-lg font-bold text-[#1A1F36]">My Registrations</h1>
+<div style="max-width:960px;margin:0 auto;padding:48px 24px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.02em;margin:0 0 4px;">My Registrations</h1>
+      <p style="font-size:14px;color:var(--text-2);margin:0;">Track all your children's event registrations.</p>
+    </div>
     <a href="{{ url_for('events.event_list') }}"
-       class="text-xs bg-[#635BFF] text-white px-4 py-2 rounded font-semibold hover:bg-[#4f48e6] transition flex items-center gap-1.5">
-      <i class="fas fa-search text-[10px]"></i> Find Events
+       style="display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:#fff;font-size:14px;font-weight:600;padding:10px 20px;border-radius:10px;text-decoration:none;transition:200ms ease;"
+       onmouseover="this.style.background='var(--purple-dark)'" onmouseout="this.style.background='var(--purple)'">
+      <i class="fas fa-search" style="font-size:12px;"></i> Find Events
     </a>
   </div>
 
   {% if registrations %}
     <!-- Filter tabs -->
-    <div class="flex gap-1.5 mb-5 flex-wrap">
-      {% set statuses = ['all', 'confirmed', 'pending', 'cancelled'] %}
-      {% for s in statuses %}
+    <div style="display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap;">
+      {% for s in ['all', 'confirmed', 'pending', 'cancelled'] %}
         <button onclick="filterRegs('{{ s }}')" id="tab-{{ s }}"
-                class="px-3 py-1.5 rounded text-xs font-semibold border transition tab-btn
-                       {% if s == 'all' %}bg-[#635BFF] text-white border-[#635BFF]{% else %}bg-white text-[#697386] border-[#E3E8EF] hover:border-[#635BFF] hover:text-[#635BFF]{% endif %}">
+                style="padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid var(--border);cursor:pointer;transition:200ms ease;font-family:'Inter',sans-serif;
+                       {% if s == 'all' %}background:var(--purple);color:#fff;border-color:var(--purple);{% else %}background:#fff;color:var(--text-2);{% endif %}">
           {{ s | title }}
         </button>
       {% endfor %}
     </div>
 
-    <div class="space-y-3" id="regsList">
+    <div style="display:flex;flex-direction:column;gap:12px;" id="regsList">
       {% for reg in registrations %}
-        <div class="bg-white border border-[#E3E8EF] rounded p-4 flex flex-col sm:flex-row gap-4 items-start reg-item hover:border-[#635BFF] transition"
-             data-status="{{ reg.status }}">
-          <div class="w-16 h-16 rounded shrink-0 overflow-hidden bg-[#F0EFFE] flex items-center justify-center">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px 24px;display:flex;gap:16px;align-items:flex-start;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);transition:200ms ease;"
+             data-status="{{ reg.status }}"
+             class="reg-item"
+             onmouseover="this.style.borderColor='var(--purple)';this.style.transform='translateY(-1px)'"
+             onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+
+          <!-- Thumbnail -->
+          <div style="width:60px;height:60px;border-radius:10px;flex-shrink:0;overflow:hidden;background:var(--purple-light);display:flex;align-items:center;justify-content:center;">
             {% if reg.event.cover_image %}
-              <img src="{{ reg.event.cover_image }}" class="w-full h-full object-cover"/>
+              <img src="{{ reg.event.cover_image }}" style="width:100%;height:100%;object-fit:cover;"/>
             {% elif reg.event.sport.icon and reg.event.sport.icon.startswith('fa-') %}
-              <i class="fas {{ reg.event.sport.icon }} text-[#c4c0fc] text-2xl"></i>
+              <i class="fas {{ reg.event.sport.icon }}" style="color:var(--purple);font-size:22px;opacity:.6;"></i>
             {% else %}
-              <i class="fas fa-medal text-[#c4c0fc] text-2xl"></i>
+              <i class="fas fa-medal" style="color:var(--purple);font-size:22px;opacity:.6;"></i>
             {% endif %}
           </div>
 
-          <div class="flex-1 min-w-0">
-            <h3 class="font-bold text-[#1A1F36] text-sm truncate">{{ reg.event.title }}</h3>
-            <p class="text-[#697386] text-xs mt-0.5">
-              <i class="fas fa-user-circle text-[#635BFF] mr-1 text-[10px]"></i>{{ reg.child.full_name }}
-              &nbsp;·&nbsp;
-              <i class="fas fa-calendar-alt text-[#635BFF] mr-1 text-[10px]"></i>{{ reg.event.start_date.strftime('%d %b %Y') }}
-            </p>
-            {% if reg.event.venue %}
-              <p class="text-[#697386] text-[11px] mt-0.5">
-                <i class="fas fa-map-marker-alt text-[#635BFF] mr-1 text-[10px]"></i>{{ reg.event.venue.name }}, {{ reg.event.venue.city }}
-              </p>
-            {% endif %}
-            {% if reg.division %}
-              <p class="text-[#697386] text-[11px] mt-0.5">
-                <i class="fas fa-layer-group text-[#635BFF] mr-1 text-[10px]"></i>{{ reg.division.name }}
-                &nbsp;·&nbsp; {{ site.currency_symbol }}{{ "%.2f"|format(reg.division.entry_fee|float) }}
-              </p>
-            {% endif %}
+          <!-- Info -->
+          <div style="flex:1;min-width:0;">
+            <h3 style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ reg.event.title }}</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--text-2);">
+              <span><i class="fas fa-user-circle" style="color:var(--purple);margin-right:4px;font-size:11px;"></i>{{ reg.child.full_name }}</span>
+              <span><i class="fas fa-calendar-alt" style="color:var(--purple);margin-right:4px;font-size:11px;"></i>{{ reg.event.start_date.strftime('%d %b %Y') }}</span>
+              {% if reg.event.venue %}
+                <span><i class="fas fa-map-marker-alt" style="color:var(--purple);margin-right:4px;font-size:11px;"></i>{{ reg.event.venue.city }}</span>
+              {% endif %}
+              {% if reg.division %}
+                <span><i class="fas fa-layer-group" style="color:var(--purple);margin-right:4px;font-size:11px;"></i>{{ reg.division.name }} · {{ site.currency_symbol }}{{ "%.2f"|format(reg.division.entry_fee|float) }}</span>
+              {% endif %}
+            </div>
           </div>
 
-          <div class="flex flex-col items-end gap-1.5 shrink-0">
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold
-              {% if reg.status == 'confirmed' %}bg-[#EDFAF1] text-[#0D6832]
-              {% elif reg.status == 'pending' %}bg-[#FFF8E6] text-[#7A5C00]
-              {% elif reg.status == 'cancelled' %}bg-[#FFF0F0] text-[#C0392B]
-              {% else %}bg-[#F0F2F7] text-[#697386]{% endif %}">
+          <!-- Status & actions -->
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+            <span style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;
+              {% if reg.status == 'confirmed' %}background:#F0FDF4;color:#15803D;
+              {% elif reg.status == 'pending' %}background:#FFFBEB;color:#92400E;
+              {% elif reg.status == 'cancelled' %}background:#FEF2F2;color:#B91C1C;
+              {% else %}background:#F9FAFB;color:var(--text-2);{% endif %}">
               {{ reg.status | title }}
             </span>
-            <span class="px-2 py-0.5 rounded text-[10px] font-semibold
-              {% if reg.payment_status == 'paid' %}bg-[#EDFAF1] text-[#0D6832]{% else %}bg-[#FFF8E6] text-[#7A5C00]{% endif %}">
+            <span style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;
+              {% if reg.payment_status == 'paid' %}background:#F0FDF4;color:#15803D;
+              {% elif reg.payment_status == 'refunded' %}background:#EFF6FF;color:#1D4ED8;
+              {% else %}background:#FFF7ED;color:#C2410C;{% endif %}">
               {{ reg.payment_status | title }}
             </span>
-            <div class="flex gap-2 mt-1">
+            <div style="display:flex;gap:8px;margin-top:4px;">
               <a href="{{ url_for('user.registration_detail', reg_id=reg.id) }}"
-                 class="text-[11px] text-[#635BFF] hover:underline font-semibold">Details</a>
+                 style="font-size:13px;font-weight:600;color:var(--purple);text-decoration:none;">Details</a>
               {% if reg.payment_status == 'unpaid' and reg.status != 'cancelled' %}
                 <a href="{{ url_for('payments.checkout', reg_id=reg.id) }}"
-                   class="text-[11px] bg-[#27AE60] text-white px-2.5 py-0.5 rounded hover:bg-[#219a52] font-semibold">
+                   style="font-size:12px;font-weight:700;padding:5px 12px;border-radius:6px;background:#22C55E;color:#fff;text-decoration:none;transition:200ms ease;"
+                   onmouseover="this.style.background='#16A34A'" onmouseout="this.style.background='#22C55E'">
                   Pay Now
                 </a>
               {% endif %}
@@ -84,12 +91,14 @@
       {% endfor %}
     </div>
   {% else %}
-    <div class="text-center py-20 bg-white border border-[#E3E8EF] rounded">
-      <i class="fas fa-clipboard-list text-5xl mb-3 block text-[#E3E8EF]"></i>
-      <p class="text-sm font-semibold text-[#3C4257] mb-1">No registrations yet.</p>
-      <p class="text-xs text-[#697386] mb-5">Find an event and register your child today.</p>
+    <div style="text-align:center;padding:80px 24px;background:#fff;border-radius:16px;border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
+      <div style="width:64px;height:64px;border-radius:16px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+        <i class="fas fa-clipboard-list" style="color:var(--purple);font-size:26px;"></i>
+      </div>
+      <p style="font-size:18px;font-weight:700;color:var(--text);margin:0 0 8px;">No registrations yet</p>
+      <p style="font-size:14px;color:var(--text-2);margin:0 0 24px;">Find an event and register your child today.</p>
       <a href="{{ url_for('events.event_list') }}"
-         class="bg-[#635BFF] text-white px-5 py-2 rounded text-xs font-semibold hover:bg-[#4f48e6] transition">
+         style="display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:#fff;font-size:14px;font-weight:600;padding:12px 24px;border-radius:10px;text-decoration:none;">
         Browse Events
       </a>
     </div>
@@ -98,13 +107,15 @@
 
 <script>
 function filterRegs(status) {
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.classList.remove('bg-[#635BFF]', 'text-white', 'border-[#635BFF]');
-    btn.classList.add('bg-white', 'text-[#697386]', 'border-[#E3E8EF]');
+  document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+    btn.style.background = '#fff';
+    btn.style.color = 'var(--text-2)';
+    btn.style.borderColor = 'var(--border)';
   });
   const active = document.getElementById('tab-' + status);
-  active.classList.add('bg-[#635BFF]', 'text-white', 'border-[#635BFF]');
-  active.classList.remove('bg-white', 'text-[#697386]', 'border-[#E3E8EF]');
+  active.style.background = 'var(--purple)';
+  active.style.color = '#fff';
+  active.style.borderColor = 'var(--purple)';
   document.querySelectorAll('.reg-item').forEach(item => {
     item.style.display = (status === 'all' || item.dataset.status === status) ? '' : 'none';
   });

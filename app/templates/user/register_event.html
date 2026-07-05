@@ -1,72 +1,101 @@
 {% extends 'base.html' %}
 {% block title %}Register for {{ event.title }} - {{ site.site_name }}{% endblock %}
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 py-10">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">Register for Event</h1>
-    <a href="{{ url_for('events.event_detail', slug=event.slug) }}" class="text-sm text-gray-500 hover:text-gray-700">← Back to Event</a>
+<div style="max-width:760px;margin:0 auto;padding:48px 24px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.02em;margin:0 0 4px;">Register for Event</h1>
+      <p style="font-size:14px;color:var(--text-2);margin:0;">Complete all steps below to register your child.</p>
+    </div>
+    <a href="{{ url_for('events.event_detail', slug=event.slug) }}" style="font-size:13px;font-weight:600;color:var(--purple);display:flex;align-items:center;gap:6px;">
+      <i class="fas fa-arrow-left" style="font-size:11px;"></i> Back to Event
+    </a>
   </div>
 
-  <!-- Event Summary -->
-  <div class="bg-indigo-50 rounded-2xl p-5 mb-6 flex gap-4 items-start">
+  <!-- Event summary card -->
+  <div style="background:var(--purple-light);border:1px solid var(--purple-mid);border-radius:14px;padding:20px 24px;margin-bottom:28px;display:flex;gap:16px;align-items:center;">
     {% if event.cover_image %}
-      <img src="{{ event.cover_image }}" class="w-20 h-20 rounded-xl object-cover shrink-0"/>
+      <img src="{{ event.cover_image }}" style="width:72px;height:72px;border-radius:10px;object-fit:cover;flex-shrink:0;"/>
+    {% else %}
+      <div style="width:72px;height:72px;border-radius:10px;background:var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas fa-trophy" style="color:#fff;font-size:26px;"></i>
+      </div>
     {% endif %}
     <div>
-      <h2 class="font-bold text-gray-800 text-lg">{{ event.title }}</h2>
-      <p class="text-gray-500 text-sm">{{ event.start_date.strftime('%A, %d %B %Y') }}</p>
-      {% if event.venue %}<p class="text-gray-500 text-sm">{{ event.venue.name }}, {{ event.venue.city }}</p>{% endif %}
+      <h2 style="font-size:16px;font-weight:700;color:var(--text);margin:0 0 4px;">{{ event.title }}</h2>
+      <p style="font-size:13px;color:var(--text-2);margin:0 0 2px;"><i class="fas fa-calendar-alt" style="color:var(--purple);margin-right:6px;font-size:11px;"></i>{{ event.start_date.strftime('%A, %d %B %Y') }}</p>
+      {% if event.venue %}<p style="font-size:13px;color:var(--text-2);margin:0;"><i class="fas fa-map-marker-alt" style="color:var(--purple);margin-right:6px;font-size:11px;"></i>{{ event.venue.name }}, {{ event.venue.city }}</p>{% endif %}
     </div>
   </div>
 
-  <form method="POST" enctype="multipart/form-data" class="space-y-6">
-    {{ csrf_token() | safe if false }}
+  <form method="POST" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:20px;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-    <!-- Select Child -->
-    <div class="bg-white rounded-2xl shadow-sm p-6">
-      <h3 class="font-bold text-gray-700 mb-4">1. Select Child</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <!-- Step 1: Select Child -->
+    <div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
+      <h3 style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 16px;display:flex;align-items:center;gap:10px;">
+        <span style="width:26px;height:26px;border-radius:50%;background:var(--purple);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+        Select Child
+      </h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
         {% for child in children %}
-          <label class="flex items-center gap-3 p-3 border-2 rounded-xl cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-indigo-50">
-            <input type="radio" name="child_id" value="{{ child.id }}" required class="accent-primary"/>
+          <label style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:200ms ease;"
+                 onmouseover="this.style.borderColor='var(--purple)'" onmouseout="if(!this.querySelector('input').checked)this.style.borderColor='var(--border)'">
+            <input type="radio" name="child_id" value="{{ child.id }}" required
+                   style="accent-color:var(--purple);width:16px;height:16px;flex-shrink:0;"
+                   onchange="document.querySelectorAll('[data-child-label]').forEach(l=>{l.style.borderColor='var(--border)';l.style.background='#fff'});this.closest('label').style.borderColor='var(--purple)';this.closest('label').style.background='var(--purple-light)'"
+                   data-child-label/>
             {% if child.profile_image %}
-              <img src="{{ child.profile_image }}" class="w-10 h-10 rounded-full object-cover"/>
+              <img src="{{ child.profile_image }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;"/>
             {% else %}
-              <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-600">{{ child.first_name[0] }}</div>
+              <div style="width:40px;height:40px;border-radius:50%;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--purple);font-size:16px;flex-shrink:0;">
+                {{ child.first_name[0] | upper }}
+              </div>
             {% endif %}
             <div>
-              <div class="font-semibold text-sm text-gray-800">{{ child.full_name }}</div>
-              <div class="text-xs text-gray-400">Age {{ child.age }} · {{ child.gender | title }}</div>
+              <div style="font-size:14px;font-weight:600;color:var(--text);">{{ child.full_name }}</div>
+              <div style="font-size:12px;color:var(--text-2);">Age {{ child.age }} · {{ child.gender | title }}</div>
             </div>
           </label>
         {% endfor %}
       </div>
+      {% if not children %}
+        <div style="text-align:center;padding:24px;color:var(--text-2);font-size:14px;">
+          No children added yet. <a href="{{ url_for('user.child_form') }}" style="color:var(--purple);font-weight:600;">Add a child first</a>.
+        </div>
+      {% endif %}
     </div>
 
-    <!-- Select Division -->
+    <!-- Step 2: Select Division -->
     {% if event.age_divisions %}
-      <div class="bg-white rounded-2xl shadow-sm p-6">
-        <h3 class="font-bold text-gray-700 mb-4">2. Select Age Division</h3>
-        <div class="space-y-3">
+      <div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
+        <h3 style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 16px;display:flex;align-items:center;gap:10px;">
+          <span style="width:26px;height:26px;border-radius:50%;background:var(--purple);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+          Select Age Division
+        </h3>
+        <div style="display:flex;flex-direction:column;gap:10px;">
           {% for div in event.age_divisions %}
-            <label class="flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer hover:border-primary transition has-[:checked]:border-primary has-[:checked]:bg-indigo-50">
-              <div class="flex items-center gap-3">
-                <input type="radio" name="division_id" value="{{ div.id }}" class="accent-primary"/>
+            <label style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:200ms ease;"
+                   onmouseover="this.style.borderColor='var(--purple)'" onmouseout="if(!this.querySelector('input').checked)this.style.borderColor='var(--border)'">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <input type="radio" name="division_id" value="{{ div.id }}"
+                       style="accent-color:var(--purple);width:16px;height:16px;flex-shrink:0;"
+                       onchange="document.querySelectorAll('[data-div-label]').forEach(l=>{l.style.borderColor='var(--border)';l.style.background='#fff'});this.closest('label').style.borderColor='var(--purple)';this.closest('label').style.background='var(--purple-light)'"
+                       data-div-label/>
                 <div>
-                  <div class="font-semibold text-sm text-gray-800">{{ div.name }}</div>
-                  <div class="text-xs text-gray-400">
-                    Ages {{ div.min_age }}-{{ div.max_age }}
+                  <div style="font-size:14px;font-weight:600;color:var(--text);">{{ div.name }}</div>
+                  <div style="font-size:12px;color:var(--text-2);">
+                    Ages {{ div.min_age }}–{{ div.max_age }}
                     {% if div.gender != 'all' %} · {{ div.gender | title }}{% endif %}
                     {% if div.weight_class %} · {{ div.weight_class }}{% endif %}
                   </div>
                 </div>
               </div>
-              <div class="text-right">
-                <div class="font-bold text-primary">{{ site.currency_symbol }}{{ "%.2f"|format(div.entry_fee|float) }}</div>
+              <div style="text-align:right;flex-shrink:0;margin-left:16px;">
+                <div style="font-size:16px;font-weight:800;color:var(--purple);">{{ site.currency_symbol }}{{ "%.2f"|format(div.entry_fee|float) }}</div>
                 {% if div.spots_remaining is not none %}
-                  <div class="text-xs {% if div.spots_remaining == 0 %}text-red-500{% else %}text-gray-400{% endif %}">
-                    {{ div.spots_remaining }} spots left
+                  <div style="font-size:12px;color:{% if div.spots_remaining == 0 %}#EF4444{% else %}var(--text-3){% endif %};">
+                    {% if div.spots_remaining == 0 %}Full{% else %}{{ div.spots_remaining }} spots left{% endif %}
                   </div>
                 {% endif %}
               </div>
@@ -76,36 +105,40 @@
       </div>
     {% endif %}
 
-    <!-- Custom Fields -->
+    <!-- Step 3: Custom Fields -->
     {% if custom_fields %}
-      <div class="bg-white rounded-2xl shadow-sm p-6">
-        <h3 class="font-bold text-gray-700 mb-4">3. Additional Information</h3>
-        <div class="space-y-4">
+      <div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
+        <h3 style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 16px;display:flex;align-items:center;gap:10px;">
+          <span style="width:26px;height:26px;border-radius:50%;background:var(--purple);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
+          Additional Information
+        </h3>
+        <div style="display:flex;flex-direction:column;gap:16px;">
           {% for cf in custom_fields %}
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">
                 {{ cf.field_label or cf.field_name }}
-                {% if cf.required %}<span class="text-red-500">*</span>{% endif %}
+                {% if cf.required %}<span style="color:#EF4444;"> *</span>{% endif %}
               </label>
               {% if cf.field_type == 'text' %}
                 <input type="text" name="cf_{{ cf.field_name }}" {% if cf.required %}required{% endif %}
-                       class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary"/>
+                       style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;"
+                       onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'"
+                       onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'"/>
               {% elif cf.field_type == 'select' %}
                 <select name="cf_{{ cf.field_name }}" {% if cf.required %}required{% endif %}
-                        class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary">
+                        style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);background:#fff;outline:none;">
                   <option value="">-- Select --</option>
                   {% for opt in (cf.options | fromjson if cf.options else []) %}
                     <option value="{{ opt }}">{{ opt }}</option>
                   {% endfor %}
                 </select>
               {% elif cf.field_type == 'checkbox' %}
-                <label class="flex items-center gap-2 text-sm">
-                  <input type="checkbox" name="cf_{{ cf.field_name }}" value="yes" class="accent-primary"/>
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);cursor:pointer;">
+                  <input type="checkbox" name="cf_{{ cf.field_name }}" value="yes" style="accent-color:var(--purple);width:16px;height:16px;"/>
                   {{ cf.field_label }}
                 </label>
               {% elif cf.field_type == 'file' %}
-                <input type="file" name="cf_{{ cf.field_name }}" {% if cf.required %}required{% endif %}
-                       class="w-full text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700"/>
+                <input type="file" name="cf_{{ cf.field_name }}" {% if cf.required %}required{% endif %} style="font-size:13px;color:var(--text-2);"/>
               {% endif %}
             </div>
           {% endfor %}
@@ -113,23 +146,27 @@
       </div>
     {% endif %}
 
-    <!-- Agreements -->
+    <!-- Step 4: Agreements -->
     {% if agreements %}
-      <div class="bg-white rounded-2xl shadow-sm p-6">
-        <h3 class="font-bold text-gray-700 mb-4">{{ 4 if custom_fields else 3 }}. Agreements</h3>
-        <div class="space-y-4">
+      {% set step = 4 if custom_fields else 3 %}
+      <div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
+        <h3 style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 16px;display:flex;align-items:center;gap:10px;">
+          <span style="width:26px;height:26px;border-radius:50%;background:var(--purple);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ step }}</span>
+          Agreements & Waivers
+        </h3>
+        <div style="display:flex;flex-direction:column;gap:12px;">
           {% for ag in agreements %}
-            <div class="border rounded-xl p-4">
-              <div class="flex items-start gap-3">
+            <div style="border:1px solid var(--border);border-radius:12px;padding:16px 20px;">
+              <div style="display:flex;align-items:flex-start;gap:12px;">
                 <input type="checkbox" name="agreements" value="{{ ag.id }}"
                        {% if ag.required %}required{% endif %}
-                       class="mt-1 accent-primary w-4 h-4 shrink-0"/>
-                <div>
-                  <p class="font-semibold text-sm text-gray-800">
+                       style="margin-top:2px;accent-color:var(--purple);width:16px;height:16px;flex-shrink:0;"/>
+                <div style="flex:1;">
+                  <p style="font-size:14px;font-weight:600;color:var(--text);margin:0 0 8px;">
                     {{ ag.title }}
-                    {% if ag.required %}<span class="text-red-500 text-xs ml-1">*Required</span>{% endif %}
+                    {% if ag.required %}<span style="font-size:11px;font-weight:700;color:#EF4444;margin-left:6px;">Required</span>{% endif %}
                   </p>
-                  <div class="text-xs text-gray-500 mt-2 max-h-32 overflow-y-auto bg-gray-50 rounded p-2">
+                  <div style="font-size:13px;color:var(--text-2);max-height:120px;overflow-y:auto;background:#F9FAFB;border-radius:8px;padding:10px 12px;line-height:1.6;">
                     {{ ag.content | safe }}
                   </div>
                 </div>
@@ -140,8 +177,11 @@
       </div>
     {% endif %}
 
-    <button type="submit" class="w-full btn-primary text-white font-bold py-4 rounded-xl text-lg hover:opacity-90 transition">
-      Complete Registration
+    <button type="submit"
+            style="height:52px;background:var(--purple);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:200ms ease;display:flex;align-items:center;justify-content:center;gap:8px;"
+            onmouseover="this.style.background='var(--purple-dark)';this.style.boxShadow='0 8px 28px rgba(110,65,226,.35)'"
+            onmouseout="this.style.background='var(--purple)';this.style.boxShadow='none'">
+      Complete Registration <i class="fas fa-arrow-right" style="font-size:13px;"></i>
     </button>
   </form>
 </div>

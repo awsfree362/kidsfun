@@ -1,72 +1,93 @@
 {% extends 'base.html' %}
 {% block title %}Create Account - {{ site.site_name }}{% endblock %}
 {% block content %}
-<div class="min-h-[calc(100vh-56px)] flex items-center justify-center py-12 px-4 bg-[#F7F8FC]">
-  <div class="w-full max-w-md">
-    <div class="text-center mb-6">
-      <div class="w-10 h-10 bg-[#635BFF] rounded flex items-center justify-center mx-auto mb-4">
-        <i class="fas fa-bolt text-white text-sm"></i>
+<div style="min-height:calc(100vh - 68px);display:flex;align-items:center;justify-content:center;padding:48px 24px;background:#F7F8FC;">
+  <div style="width:100%;max-width:500px;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="width:52px;height:52px;border-radius:14px;background:var(--purple);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+        <i class="fas fa-bolt" style="color:#fff;font-size:20px;"></i>
       </div>
-      <h1 class="text-xl font-bold text-[#1A1F36]">Create your account</h1>
-      <p class="text-[#697386] mt-1 text-xs">Register your kids for competitions</p>
+      <h1 style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:-0.03em;margin:0 0 8px;">Create your account</h1>
+      <p style="font-size:14px;color:var(--text-2);margin:0;">Register your kids for competitions — free forever</p>
     </div>
-    <div class="bg-white border border-[#E3E8EF] rounded p-6">
-      <form method="POST" class="space-y-4">
+
+    <div style="background:#fff;border-radius:16px;border:1px solid var(--border);padding:32px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
+      <form method="POST" style="display:flex;flex-direction:column;gap:20px;">
         {{ form.hidden_tag() }}
-        <div class="grid grid-cols-2 gap-3">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
           <div>
-            <label class="block text-[11px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">First Name</label>
-            {{ form.first_name(class="w-full border border-[#E3E8EF] rounded px-3 py-2.5 text-sm text-[#1A1F36] focus:border-[#635BFF] focus:outline-none transition") }}
-            {% for e in form.first_name.errors %}<p class="text-[#E74C3C] text-xs mt-1">{{ e }}</p>{% endfor %}
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">First Name</label>
+            {{ form.first_name(style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;",
+                               onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'",
+                               onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'") }}
+            {% for e in form.first_name.errors %}<p style="font-size:12px;color:#EF4444;margin:4px 0 0;">{{ e }}</p>{% endfor %}
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Last Name</label>
-            {{ form.last_name(class="w-full border border-[#E3E8EF] rounded px-3 py-2.5 text-sm text-[#1A1F36] focus:border-[#635BFF] focus:outline-none transition") }}
-            {% for e in form.last_name.errors %}<p class="text-[#E74C3C] text-xs mt-1">{{ e }}</p>{% endfor %}
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Last Name</label>
+            {{ form.last_name(style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;",
+                              onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'",
+                              onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'") }}
+            {% for e in form.last_name.errors %}<p style="font-size:12px;color:#EF4444;margin:4px 0 0;">{{ e }}</p>{% endfor %}
           </div>
         </div>
+
         <div>
-          <label class="block text-[11px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Email Address</label>
-          <div class="relative">
-            <i class="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-[#697386] text-xs"></i>
-            {{ form.email(class="w-full border border-[#E3E8EF] rounded pl-9 pr-4 py-2.5 text-sm text-[#1A1F36] focus:border-[#635BFF] focus:outline-none transition") }}
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Email Address</label>
+          <div style="position:relative;">
+            <i class="fas fa-envelope" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:13px;pointer-events:none;"></i>
+            {{ form.email(style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px 0 44px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;",
+                          onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'",
+                          onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'") }}
           </div>
-          {% for e in form.email.errors %}<p class="text-[#E74C3C] text-xs mt-1">{{ e }}</p>{% endfor %}
+          {% for e in form.email.errors %}<p style="font-size:12px;color:#EF4444;margin:4px 0 0;">{{ e }}</p>{% endfor %}
         </div>
+
         <div>
-          <label class="block text-[11px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Phone <span class="text-[#697386] font-normal normal-case">(optional)</span></label>
-          <div class="relative">
-            <i class="fas fa-phone absolute left-3 top-1/2 -translate-y-1/2 text-[#697386] text-xs"></i>
-            {{ form.phone(class="w-full border border-[#E3E8EF] rounded pl-9 pr-4 py-2.5 text-sm text-[#1A1F36] focus:border-[#635BFF] focus:outline-none transition") }}
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Phone <span style="font-weight:400;color:var(--text-3);">(optional)</span></label>
+          <div style="position:relative;">
+            <i class="fas fa-phone" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:13px;pointer-events:none;"></i>
+            {{ form.phone(style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px 0 44px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;",
+                          onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'",
+                          onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'") }}
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
           <div>
-            <label class="block text-[11px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Password</label>
-            <div class="relative">
-              <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-[#697386] text-xs"></i>
-              {{ form.password(class="w-full border border-[#E3E8EF] rounded pl-9 pr-4 py-2.5 text-sm text-[#1A1F36] focus:border-[#635BFF] focus:outline-none transition") }}
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Password</label>
+            <div style="position:relative;">
+              <i class="fas fa-lock" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:13px;pointer-events:none;"></i>
+              {{ form.password(style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px 0 44px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;",
+                               onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'",
+                               onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'") }}
             </div>
-            {% for e in form.password.errors %}<p class="text-[#E74C3C] text-xs mt-1">{{ e }}</p>{% endfor %}
+            {% for e in form.password.errors %}<p style="font-size:12px;color:#EF4444;margin:4px 0 0;">{{ e }}</p>{% endfor %}
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Confirm</label>
-            <div class="relative">
-              <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-[#697386] text-xs"></i>
-              {{ form.confirm_password(class="w-full border border-[#E3E8EF] rounded pl-9 pr-4 py-2.5 text-sm text-[#1A1F36] focus:border-[#635BFF] focus:outline-none transition") }}
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Confirm</label>
+            <div style="position:relative;">
+              <i class="fas fa-lock" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:13px;pointer-events:none;"></i>
+              {{ form.confirm_password(style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px 0 44px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;",
+                                       onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'",
+                                       onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'") }}
             </div>
-            {% for e in form.confirm_password.errors %}<p class="text-[#E74C3C] text-xs mt-1">{{ e }}</p>{% endfor %}
+            {% for e in form.confirm_password.errors %}<p style="font-size:12px;color:#EF4444;margin:4px 0 0;">{{ e }}</p>{% endfor %}
           </div>
         </div>
+
         <button type="submit"
-                class="w-full bg-[#635BFF] hover:bg-[#4f48e6] text-white font-semibold py-2.5 rounded text-sm transition">
+                style="height:48px;background:var(--purple);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:200ms ease;"
+                onmouseover="this.style.background='var(--purple-dark)';this.style.boxShadow='0 4px 16px rgba(110,65,226,.3)'"
+                onmouseout="this.style.background='var(--purple)';this.style.boxShadow='none'">
           Create Account
         </button>
       </form>
     </div>
-    <p class="text-center text-xs text-[#697386] mt-4">
+
+    <p style="text-align:center;font-size:14px;color:var(--text-2);margin-top:24px;">
       Already have an account?
-      <a href="{{ url_for('auth.login') }}" class="text-[#635BFF] font-semibold hover:underline">Sign in</a>
+      <a href="{{ url_for('auth.login') }}" style="font-weight:700;color:var(--purple);">Sign in</a>
     </p>
   </div>
 </div>

@@ -1,63 +1,63 @@
 <a href="{{ url_for('events.event_detail', slug=event.slug) }}"
-   class="bg-white border border-[#E3E8EF] hover:border-[#635BFF] hover:shadow-md transition-all overflow-hidden group flex flex-col rounded">
-  <div class="relative h-40 bg-[#F7F8FC] overflow-hidden">
+   style="display:flex;flex-direction:column;background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;text-decoration:none;transition:all 0.2s;"
+   onmouseover="this.style.borderColor='var(--purple)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 40px rgba(110,65,226,0.12)'"
+   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+  <div style="position:relative;height:188px;background:var(--purple-light);overflow:hidden;flex-shrink:0;">
     {% if event.cover_image %}
       <img src="{{ event.cover_image }}" alt="{{ event.title }}"
-           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+           style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s;"
+           onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"/>
     {% else %}
-      <div class="w-full h-full flex items-center justify-center bg-[#F0EFFE]">
+      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
         {% set sport_icons = {
-          'soccer': 'fa-futbol', 'football': 'fa-futbol',
-          'boxing': 'fa-hand-rock', 'wrestling': 'fa-people-arrows',
-          'athletics': 'fa-running', 'swimming': 'fa-swimmer',
-          'martial-arts': 'fa-user-ninja', 'karate': 'fa-user-ninja',
-          'chess': 'fa-chess', 'school-sports': 'fa-school',
-          'basketball': 'fa-basketball-ball', 'tennis': 'fa-table-tennis',
-          'cricket': 'fa-baseball-ball', 'rugby': 'fa-football-ball',
-          'cycling': 'fa-bicycle', 'gymnastics': 'fa-child',
-          'volleyball': 'fa-volleyball-ball', 'golf': 'fa-golf-ball',
-          'archery': 'fa-bullseye', 'hockey': 'fa-hockey-puck',
+          'soccer':'fa-futbol','football':'fa-futbol','boxing':'fa-hand-rock',
+          'wrestling':'fa-people-arrows','athletics':'fa-running','swimming':'fa-swimmer',
+          'martial-arts':'fa-user-ninja','karate':'fa-user-ninja','chess':'fa-chess',
+          'school-sports':'fa-school','basketball':'fa-basketball-ball','tennis':'fa-table-tennis',
+          'cricket':'fa-baseball-ball','rugby':'fa-football-ball','cycling':'fa-bicycle',
+          'gymnastics':'fa-child','volleyball':'fa-volleyball-ball','golf':'fa-golf-ball',
+          'archery':'fa-bullseye','hockey':'fa-hockey-puck',
         } %}
         {% if event.sport.icon and event.sport.icon.startswith('fa-') %}
-          <i class="fas {{ event.sport.icon }} text-[#c4c0fc] text-4xl"></i>
+          <i class="fas {{ event.sport.icon }}" style="color:var(--purple);font-size:52px;opacity:0.3;"></i>
         {% else %}
-          <i class="fas {{ sport_icons.get(event.sport.slug, 'fa-medal') }} text-[#c4c0fc] text-4xl"></i>
+          <i class="fas {{ sport_icons.get(event.sport.slug, 'fa-medal') }}" style="color:var(--purple);font-size:52px;opacity:0.3;"></i>
         {% endif %}
       </div>
     {% endif %}
-    <div class="absolute top-2 left-2 flex gap-1 flex-wrap">
-      <span class="bg-[#635BFF] text-white text-[10px] font-semibold px-2 py-0.5 rounded">{{ event.sport.name }}</span>
+    <div style="position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap;">
+      <span style="background:var(--purple);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;">{{ event.sport.name }}</span>
       {% if event.featured %}
-        <span class="bg-[#F5A623] text-white text-[10px] font-semibold px-2 py-0.5 rounded">Featured</span>
+        <span style="background:#f59e0b;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;">Featured</span>
       {% endif %}
     </div>
-    <div class="absolute top-2 right-2">
+    <div style="position:absolute;top:12px;right:12px;">
       {% if event.registration_open %}
-        <span class="bg-[#27AE60] text-white text-[10px] font-semibold px-2 py-0.5 rounded">Open</span>
+        <span style="background:#22c55e;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;">Open</span>
       {% else %}
-        <span class="bg-[#E74C3C] text-white text-[10px] font-semibold px-2 py-0.5 rounded">Closed</span>
+        <span style="background:#ef4444;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;">Closed</span>
       {% endif %}
     </div>
   </div>
-  <div class="p-4 flex flex-col flex-1">
-    <h3 class="font-semibold text-[#1A1F36] text-sm leading-snug mb-2 group-hover:text-[#635BFF] transition line-clamp-2">{{ event.title }}</h3>
+  <div style="padding:20px;display:flex;flex-direction:column;flex:1;">
+    <h3 style="font-size:15px;font-weight:700;color:var(--text);line-height:1.4;margin:0 0 8px;letter-spacing:-0.01em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ event.title }}</h3>
     {% if event.short_description %}
-      <p class="text-[#697386] text-xs mb-3 line-clamp-2">{{ event.short_description }}</p>
+      <p style="font-size:13px;color:var(--text-2);margin:0 0 16px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ event.short_description }}</p>
     {% endif %}
-    <div class="mt-auto space-y-1 text-[11px] text-[#697386]">
-      <div class="flex items-center gap-2">
-        <i class="fas fa-calendar-alt text-[#635BFF] w-3 text-center"></i>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:7px;">
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);">
+        <i class="fas fa-calendar-alt" style="color:var(--purple);width:14px;text-align:center;font-size:12px;flex-shrink:0;"></i>
         <span>{{ event.start_date.strftime('%d %b %Y') }}</span>
       </div>
       {% if event.venue %}
-        <div class="flex items-center gap-2">
-          <i class="fas fa-map-marker-alt text-[#635BFF] w-3 text-center"></i>
-          <span class="truncate">{{ event.venue.city }}{% if event.venue.state %}, {{ event.venue.state }}{% endif %}</span>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);">
+          <i class="fas fa-map-marker-alt" style="color:var(--purple);width:14px;text-align:center;font-size:12px;flex-shrink:0;"></i>
+          <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ event.venue.city }}{% if event.venue.state %}, {{ event.venue.state }}{% endif %}</span>
         </div>
       {% endif %}
       {% if event.age_divisions %}
-        <div class="flex items-center gap-2">
-          <i class="fas fa-users text-[#635BFF] w-3 text-center"></i>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);">
+          <i class="fas fa-users" style="color:var(--purple);width:14px;text-align:center;font-size:12px;flex-shrink:0;"></i>
           <span>{{ event.age_divisions | length }} division(s)</span>
         </div>
       {% endif %}

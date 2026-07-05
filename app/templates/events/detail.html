@@ -13,87 +13,78 @@
 {% if event.short_description %}<meta name="description" content="{{ event.short_description | e }}"/>{% endif %}
 {% endblock %}
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div style="max-width:1280px;margin:0 auto;padding:40px 24px;">
+
   <!-- Breadcrumb -->
-  <div class="flex items-center gap-2 text-xs text-[#697386] mb-5">
-    <a href="{{ url_for('events.event_list') }}" class="hover:text-[#635BFF] transition">Events</a>
-    <i class="fas fa-chevron-right text-[10px]"></i>
-    <a href="{{ url_for('events.sport_page', slug=event.sport.slug) }}" class="hover:text-[#635BFF] transition">{{ event.sport.name }}</a>
-    <i class="fas fa-chevron-right text-[10px]"></i>
-    <span class="text-[#3C4257] font-medium truncate max-w-[200px]">{{ event.title }}</span>
+  <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary);margin-bottom:24px;flex-wrap:wrap;">
+    <a href="{{ url_for('events.event_list') }}" style="color:var(--text-secondary);text-decoration:none;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">Events</a>
+    <i class="fas fa-chevron-right" style="font-size:10px;color:var(--text-light);"></i>
+    <a href="{{ url_for('events.sport_page', slug=event.sport.slug) }}" style="color:var(--text-secondary);text-decoration:none;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">{{ event.sport.name }}</a>
+    <i class="fas fa-chevron-right" style="font-size:10px;color:var(--text-light);"></i>
+    <span style="color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px;">{{ event.title }}</span>
   </div>
 
-  <div class="flex flex-col lg:flex-row gap-6">
+  <div style="display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;">
 
     <!-- Main Content -->
-    <div class="flex-1 min-w-0">
+    <div style="flex:1;min-width:0;">
       {% if event.cover_image %}
         <img src="{{ event.cover_image }}" alt="{{ event.title }}"
-             class="w-full h-52 sm:h-64 object-cover rounded mb-5 border border-[#E3E8EF]"/>
+             style="width:100%;height:280px;object-fit:cover;border-radius:var(--radius-xl);margin-bottom:24px;border:1px solid var(--border);"/>
       {% endif %}
 
       {% if event.images %}
-        <div class="flex gap-2 overflow-x-auto pb-2 mb-5 scrollbar-hide">
+        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:24px;">
           {% for img in event.images %}
             <img src="{{ img.image_url }}" alt="{{ img.caption }}"
-                 class="h-16 w-24 object-cover rounded shrink-0 cursor-pointer hover:opacity-80 border border-[#E3E8EF] transition"/>
+                 style="height:72px;width:112px;object-fit:cover;border-radius:var(--radius-md);flex-shrink:0;cursor:pointer;border:1px solid var(--border);transition:200ms ease;"
+                 onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'"/>
           {% endfor %}
         </div>
       {% endif %}
 
-      <div class="flex flex-wrap gap-1.5 mb-4">
-        <span class="inline-flex items-center gap-1 bg-[#F0EFFE] text-[#635BFF] text-xs font-semibold px-2.5 py-1 rounded">
-          <i class="fas fa-running text-[10px]"></i>{{ event.sport.name }}
-        </span>
-        <span class="inline-flex items-center gap-1 bg-[#F7F8FC] text-[#697386] text-xs px-2.5 py-1 rounded capitalize">
-          <i class="fas fa-venus-mars text-[10px]"></i>{{ event.gender_category }}
-        </span>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <span class="badge badge-purple"><i class="fas fa-running" style="font-size:10px;"></i> {{ event.sport.name }}</span>
+        <span class="badge badge-gray" style="text-transform:capitalize;"><i class="fas fa-venus-mars" style="font-size:10px;"></i> {{ event.gender_category }}</span>
         {% if event.featured %}
-          <span class="inline-flex items-center gap-1 bg-[#FFF8E6] text-[#7A5C00] text-xs font-semibold px-2.5 py-1 rounded">
-            <i class="fas fa-star text-[10px]"></i>Featured
-          </span>
+          <span class="badge badge-amber"><i class="fas fa-star" style="font-size:10px;"></i> Featured</span>
         {% endif %}
       </div>
 
-      <h1 class="text-2xl sm:text-3xl font-extrabold text-[#1A1F36] mb-4 leading-tight">{{ event.title }}</h1>
+      <h1 style="font-size:clamp(1.5rem,3vw,2.25rem);font-weight:800;color:var(--text);letter-spacing:-0.03em;margin:0 0 20px;line-height:1.2;">{{ event.title }}</h1>
 
       {% if event.description %}
-        <div class="prose max-w-none text-[#3C4257] mb-8 text-sm leading-relaxed">{{ event.description | safe }}</div>
+        <div style="font-size:15px;color:var(--text-secondary);line-height:1.7;margin-bottom:32px;">{{ event.description | safe }}</div>
       {% endif %}
 
       <!-- Age Divisions -->
       {% if event.age_divisions %}
-        <div class="mb-8">
-          <h2 class="text-sm font-bold text-[#1A1F36] mb-3 flex items-center gap-2 uppercase tracking-wider">
-            <i class="fas fa-layer-group text-[#635BFF] text-xs"></i> Age Divisions & Fees
+        <div style="margin-bottom:32px;">
+          <h2 style="font-size:16px;font-weight:700;color:var(--text);margin:0 0 16px;display:flex;align-items:center;gap:8px;">
+            <i class="fas fa-layer-group" style="color:var(--primary);font-size:14px;"></i> Age Divisions & Fees
           </h2>
-          <div class="overflow-x-auto border border-[#E3E8EF] rounded">
-            <table class="w-full text-xs">
+          <div style="border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow-sm);">
+            <table class="data-table">
               <thead>
-                <tr class="bg-[#F7F8FC] text-[#697386] text-left">
-                  <th class="px-4 py-3 font-semibold uppercase tracking-wider">Division</th>
-                  <th class="px-4 py-3 font-semibold uppercase tracking-wider">Ages</th>
-                  <th class="px-4 py-3 font-semibold uppercase tracking-wider">Gender</th>
-                  <th class="px-4 py-3 font-semibold uppercase tracking-wider">Weight</th>
-                  <th class="px-4 py-3 font-semibold uppercase tracking-wider">Fee</th>
-                  <th class="px-4 py-3 font-semibold uppercase tracking-wider">Spots</th>
+                <tr>
+                  <th>Division</th><th>Ages</th><th>Gender</th><th>Weight</th><th>Fee</th><th>Spots</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-[#F0F2F7]">
+              <tbody>
                 {% for div in event.age_divisions %}
-                  <tr class="hover:bg-[#F7F8FC]">
-                    <td class="px-4 py-3 font-semibold text-[#1A1F36]">{{ div.name }}</td>
-                    <td class="px-4 py-3 text-[#697386]">{{ div.min_age or '?' }}–{{ div.max_age or '?' }} yrs</td>
-                    <td class="px-4 py-3 capitalize text-[#697386]">{{ div.gender }}</td>
-                    <td class="px-4 py-3 text-[#697386]">{{ div.weight_class or '—' }}</td>
-                    <td class="px-4 py-3 font-bold text-[#635BFF]">{{ site.currency_symbol }}{{ "%.2f"|format(div.entry_fee|float) }}</td>
-                    <td class="px-4 py-3">
+                  <tr>
+                    <td style="font-weight:600;">{{ div.name }}</td>
+                    <td style="color:var(--text-secondary);">{{ div.min_age or '?' }}–{{ div.max_age or '?' }} yrs</td>
+                    <td style="color:var(--text-secondary);text-transform:capitalize;">{{ div.gender }}</td>
+                    <td style="color:var(--text-secondary);">{{ div.weight_class or '—' }}</td>
+                    <td style="font-weight:700;color:var(--primary);">{{ site.currency_symbol }}{{ "%.2f"|format(div.entry_fee|float) }}</td>
+                    <td>
                       {% if div.spots_remaining is not none %}
-                        <span class="font-semibold {% if div.spots_remaining == 0 %}text-[#E74C3C]{% elif div.spots_remaining < 5 %}text-[#F5A623]{% else %}text-[#27AE60]{% endif %}">
+                        <span style="font-weight:600;color:{% if div.spots_remaining == 0 %}var(--danger){% elif div.spots_remaining < 5 %}var(--warning){% else %}var(--success){% endif %};">
                           {{ div.spots_remaining }} left
                         </span>
                       {% else %}
-                        <span class="text-[#697386]">Unlimited</span>
+                        <span style="color:var(--text-light);">Unlimited</span>
                       {% endif %}
                     </td>
                   </tr>
@@ -105,98 +96,100 @@
       {% endif %}
 
       {% if event.rules %}
-        <div class="mb-6">
-          <h2 class="text-sm font-bold text-[#1A1F36] mb-2 flex items-center gap-2 uppercase tracking-wider">
-            <i class="fas fa-gavel text-[#635BFF] text-xs"></i> Rules & Regulations
+        <div style="margin-bottom:24px;">
+          <h2 style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 12px;display:flex;align-items:center;gap:8px;">
+            <i class="fas fa-gavel" style="color:var(--primary);font-size:13px;"></i> Rules & Regulations
           </h2>
-          <div class="bg-[#F7F8FC] border border-[#E3E8EF] rounded p-4 text-[#3C4257] text-xs leading-relaxed">{{ event.rules | safe }}</div>
+          <div style="background:var(--background);border-radius:var(--radius-lg);padding:20px;color:var(--text-secondary);font-size:14px;line-height:1.7;border:1px solid var(--border);">{{ event.rules | safe }}</div>
         </div>
       {% endif %}
 
       {% if event.requirements %}
-        <div class="mb-6">
-          <h2 class="text-sm font-bold text-[#1A1F36] mb-2 flex items-center gap-2 uppercase tracking-wider">
-            <i class="fas fa-clipboard-check text-[#F5A623] text-xs"></i> Requirements
+        <div style="margin-bottom:24px;">
+          <h2 style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 12px;display:flex;align-items:center;gap:8px;">
+            <i class="fas fa-clipboard-check" style="color:var(--warning);font-size:13px;"></i> Requirements
           </h2>
-          <div class="bg-[#FFF8E6] border border-[#F5A623]/20 rounded p-4 text-[#3C4257] text-xs leading-relaxed">{{ event.requirements | safe }}</div>
+          <div style="background:#FFFBEB;border-radius:var(--radius-lg);padding:20px;color:var(--text-secondary);font-size:14px;line-height:1.7;border:1px solid #FDE68A;">{{ event.requirements | safe }}</div>
         </div>
       {% endif %}
 
       {% if agreements %}
-        <div class="mb-6">
-          <h2 class="text-sm font-bold text-[#1A1F36] mb-2 flex items-center gap-2 uppercase tracking-wider">
-            <i class="fas fa-file-signature text-[#635BFF] text-xs"></i> Agreements Required
+        <div style="margin-bottom:24px;">
+          <h2 style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 12px;display:flex;align-items:center;gap:8px;">
+            <i class="fas fa-file-signature" style="color:var(--primary);font-size:13px;"></i> Agreements Required
           </h2>
-          <ul class="space-y-1.5">
+          <div style="display:flex;flex-direction:column;gap:8px;">
             {% for ag in agreements %}
-              <li class="flex items-center gap-2 text-xs text-[#3C4257] bg-[#F7F8FC] border border-[#E3E8EF] rounded px-3 py-2">
-                <i class="fas fa-check-circle text-[#635BFF] text-xs"></i>
+              <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-secondary);background:var(--background);border-radius:var(--radius-md);padding:12px 16px;border:1px solid var(--border);">
+                <i class="fas fa-check-circle" style="color:var(--primary);font-size:13px;flex-shrink:0;"></i>
                 {{ ag.title }}
-                {% if ag.required %}<span class="text-[#E74C3C] text-[10px] ml-1 font-semibold">Required</span>{% endif %}
-              </li>
+                {% if ag.required %}<span style="font-size:11px;font-weight:700;color:var(--danger);margin-left:4px;">Required</span>{% endif %}
+              </div>
             {% endfor %}
-          </ul>
+          </div>
         </div>
       {% endif %}
     </div>
 
     <!-- Sidebar -->
-    <aside class="lg:w-72 shrink-0">
-      <div class="bg-white border border-[#E3E8EF] rounded p-5 lg:sticky lg:top-20 space-y-4">
-        <div class="text-center">
+    <aside style="width:300px;flex-shrink:0;position:sticky;top:88px;">
+      <div style="background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);padding:24px;box-shadow:var(--shadow-md);display:flex;flex-direction:column;gap:20px;">
+        <div style="text-align:center;">
           {% if event.registration_open %}
-            <span class="inline-flex items-center gap-1.5 bg-[#EDFAF1] text-[#0D6832] font-semibold px-3 py-1.5 rounded text-xs border border-[#A3E6C0]">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#27AE60] inline-block"></span> Registration Open
+            <span class="badge badge-green" style="font-size:13px;padding:6px 16px;">
+              <span style="width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block;margin-right:4px;"></span>
+              Registration Open
             </span>
           {% else %}
-            <span class="inline-flex items-center gap-1.5 bg-[#FFF0F0] text-[#C0392B] font-semibold px-3 py-1.5 rounded text-xs border border-[#F5C6C6]">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#E74C3C] inline-block"></span> Registration Closed
+            <span class="badge badge-red" style="font-size:13px;padding:6px 16px;">
+              <span style="width:8px;height:8px;border-radius:50%;background:var(--danger);display:inline-block;margin-right:4px;"></span>
+              Registration Closed
             </span>
           {% endif %}
         </div>
 
-        <div class="space-y-3 text-xs text-[#697386]">
-          <div class="flex items-start gap-3">
-            <div class="w-7 h-7 rounded bg-[#F0EFFE] flex items-center justify-center shrink-0">
-              <i class="fas fa-calendar-alt text-[#635BFF] text-xs"></i>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:36px;height:36px;border-radius:var(--radius-sm);background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-calendar-alt" style="color:var(--primary);font-size:13px;"></i>
             </div>
             <div>
-              <div class="font-semibold text-[#1A1F36] text-[10px] uppercase tracking-wider mb-0.5">Date</div>
-              <div class="text-[#3C4257]">{{ event.start_date.strftime('%A, %d %B %Y') }}</div>
-              {% if event.end_date %}<div class="text-[#697386]">to {{ event.end_date.strftime('%d %B %Y') }}</div>{% endif %}
+              <div style="font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Date</div>
+              <div style="font-size:14px;color:var(--text);font-weight:500;">{{ event.start_date.strftime('%A, %d %B %Y') }}</div>
+              {% if event.end_date %}<div style="font-size:13px;color:var(--text-secondary);">to {{ event.end_date.strftime('%d %B %Y') }}</div>{% endif %}
             </div>
           </div>
           {% if event.venue %}
-            <div class="flex items-start gap-3">
-              <div class="w-7 h-7 rounded bg-[#F0EFFE] flex items-center justify-center shrink-0">
-                <i class="fas fa-map-marker-alt text-[#635BFF] text-xs"></i>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:var(--radius-sm);background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-map-marker-alt" style="color:var(--primary);font-size:13px;"></i>
               </div>
               <div>
-                <div class="font-semibold text-[#1A1F36] text-[10px] uppercase tracking-wider mb-0.5">Venue</div>
-                <div class="font-medium text-[#3C4257]">{{ event.venue.name }}</div>
-                <div class="text-[#697386] text-[11px]">{{ event.venue.full_address }}</div>
+                <div style="font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Venue</div>
+                <div style="font-size:14px;color:var(--text);font-weight:500;">{{ event.venue.name }}</div>
+                <div style="font-size:12px;color:var(--text-secondary);">{{ event.venue.full_address }}</div>
               </div>
             </div>
           {% endif %}
           {% if event.registration_deadline %}
-            <div class="flex items-start gap-3">
-              <div class="w-7 h-7 rounded bg-[#FFF8E6] flex items-center justify-center shrink-0">
-                <i class="fas fa-clock text-[#F5A623] text-xs"></i>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:var(--radius-sm);background:#FFFBEB;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-clock" style="color:var(--warning);font-size:13px;"></i>
               </div>
               <div>
-                <div class="font-semibold text-[#1A1F36] text-[10px] uppercase tracking-wider mb-0.5">Deadline</div>
-                <div class="text-[#3C4257]">{{ event.registration_deadline.strftime('%d %B %Y, %H:%M') }}</div>
+                <div style="font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Deadline</div>
+                <div style="font-size:14px;color:var(--text);font-weight:500;">{{ event.registration_deadline.strftime('%d %B %Y, %H:%M') }}</div>
               </div>
             </div>
           {% endif %}
           {% if event.max_participants %}
-            <div class="flex items-start gap-3">
-              <div class="w-7 h-7 rounded bg-[#F0EFFE] flex items-center justify-center shrink-0">
-                <i class="fas fa-users text-[#635BFF] text-xs"></i>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:var(--radius-sm);background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-users" style="color:var(--primary);font-size:13px;"></i>
               </div>
               <div>
-                <div class="font-semibold text-[#1A1F36] text-[10px] uppercase tracking-wider mb-0.5">Participants</div>
-                <div class="text-[#3C4257]">{{ event.participant_count }} / {{ event.max_participants }}</div>
+                <div style="font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Participants</div>
+                <div style="font-size:14px;color:var(--text);font-weight:500;">{{ event.participant_count }} / {{ event.max_participants }}</div>
               </div>
             </div>
           {% endif %}
@@ -204,32 +197,33 @@
 
         {% if event.registration_open %}
           {% if current_user.is_authenticated %}
-            <a href="{{ url_for('user.register_event', event_id=event.id) }}"
-               class="block w-full text-center bg-[#635BFF] hover:bg-[#4f48e6] text-white font-semibold py-2.5 rounded text-sm transition">
-              <i class="fas fa-clipboard-list mr-2 text-xs"></i>Register Now
+            <a href="{{ url_for('user.register_event', event_id=event.id) }}" class="btn btn-primary" style="width:100%;justify-content:center;height:48px;font-size:15px;">
+              <i class="fas fa-clipboard-list" style="font-size:13px;"></i> Register Now
             </a>
           {% else %}
-            <a href="{{ url_for('auth.register') }}"
-               class="block w-full text-center bg-[#635BFF] hover:bg-[#4f48e6] text-white font-semibold py-2.5 rounded text-sm transition">
-              <i class="fas fa-user-plus mr-2 text-xs"></i>Sign Up to Register
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="width:100%;justify-content:center;height:48px;font-size:15px;">
+              <i class="fas fa-user-plus" style="font-size:13px;"></i> Sign Up to Register
             </a>
           {% endif %}
         {% endif %}
 
-        <div class="pt-3 border-t border-[#E3E8EF]">
-          <p class="text-[10px] text-[#697386] mb-2 text-center font-semibold uppercase tracking-widest">Share</p>
-          <div class="flex justify-center gap-2">
+        <div style="border-top:1px solid var(--border);padding-top:16px;">
+          <p style="font-size:12px;color:var(--text-light);text-align:center;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:0 0 12px;">Share this event</p>
+          <div style="display:flex;justify-content:center;gap:8px;">
             <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" target="_blank"
-               class="w-8 h-8 rounded bg-[#F7F8FC] border border-[#E3E8EF] flex items-center justify-center text-[#697386] hover:text-[#1877F2] hover:border-[#1877F2] transition text-xs">
-              <i class="fab fa-facebook"></i>
+               style="width:36px;height:36px;border-radius:var(--radius-sm);background:var(--background);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);text-decoration:none;transition:200ms ease;"
+               onmouseover="this.style.borderColor='#1877F2';this.style.color='#1877F2'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">
+              <i class="fab fa-facebook" style="font-size:14px;"></i>
             </a>
             <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text={{ event.title }}" target="_blank"
-               class="w-8 h-8 rounded bg-[#F7F8FC] border border-[#E3E8EF] flex items-center justify-center text-[#697386] hover:text-[#1DA1F2] hover:border-[#1DA1F2] transition text-xs">
-              <i class="fab fa-twitter"></i>
+               style="width:36px;height:36px;border-radius:var(--radius-sm);background:var(--background);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);text-decoration:none;transition:200ms ease;"
+               onmouseover="this.style.borderColor='#1DA1F2';this.style.color='#1DA1F2'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">
+              <i class="fab fa-twitter" style="font-size:14px;"></i>
             </a>
             <a href="https://wa.me/?text={{ event.title }} {{ request.url }}" target="_blank"
-               class="w-8 h-8 rounded bg-[#F7F8FC] border border-[#E3E8EF] flex items-center justify-center text-[#697386] hover:text-[#25D366] hover:border-[#25D366] transition text-xs">
-              <i class="fab fa-whatsapp"></i>
+               style="width:36px;height:36px;border-radius:var(--radius-sm);background:var(--background);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);text-decoration:none;transition:200ms ease;"
+               onmouseover="this.style.borderColor='#25D366';this.style.color='#25D366'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">
+              <i class="fab fa-whatsapp" style="font-size:14px;"></i>
             </a>
           </div>
         </div>

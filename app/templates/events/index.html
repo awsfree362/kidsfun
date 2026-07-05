@@ -1,177 +1,234 @@
 {% extends 'base.html' %}
-{% block title %}Home - {{ site.site_name }}{% endblock %}
+{% block title %}{{ site.site_name }} - Kids Sports Registration Platform{% endblock %}
 {% block content %}
 
-<!-- Hero -->
-<section class="bg-[#1A1F36] text-white overflow-hidden"
-  {% if site.hero_image %}style="background-image: linear-gradient(rgba(26,31,54,0.85),rgba(26,31,54,0.92)), url('{{ site.hero_image }}'); background-size: cover; background-position: center;"{% endif %}>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-    <div class="inline-flex items-center gap-2 bg-[#635BFF]/20 border border-[#635BFF]/30 rounded-full px-4 py-1.5 text-xs font-semibold text-[#a89af9] mb-6">
-      <i class="fas fa-bolt text-[#635BFF]"></i> Kids Sports Registration Platform
+<!-- HERO -->
+<section class="hero">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="hero-badge">
+      <i class="fas fa-star" style="font-size:11px;"></i>
+      The #1 Kids Sports Registration Platform
     </div>
-    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold mb-5 leading-tight tracking-tight">
-      {{ site.hero_title or 'Find the Perfect Competition for Your Child' }}
+    <h1>
+      Register Your Child for<br/>
+      <span>Sports Competitions</span><br/>
+      in Minutes
     </h1>
-    <p class="text-base sm:text-lg text-[#8792A2] mb-10 max-w-2xl mx-auto">
-      {{ site.hero_subtitle or 'Browse sports events for kids of all ages across the country' }}
-    </p>
-    <form action="{{ url_for('events.event_list') }}" method="GET"
-          class="flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto" x-data="searchBar()">
-      <div class="relative flex-1">
-        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[#697386] text-sm"></i>
-        <input type="text" name="q" x-model="query" @input.debounce.300ms="suggest()"
-               @keydown.escape="results = []" @click.outside="results = []"
-               placeholder="Search events or sports..."
-               class="w-full bg-[#252B4A] border border-[#2D3561] text-white placeholder-[#697386] pl-10 pr-4 py-3 rounded text-sm focus:border-[#635BFF] focus:ring-0 focus:outline-none transition"/>
-        <div x-show="results.length > 0" x-cloak
-             class="absolute top-full left-0 right-0 bg-white border border-[#E3E8EF] rounded shadow-xl mt-1 z-50 overflow-hidden">
-          <template x-for="r in results" :key="r.url">
-            <a :href="r.url" class="flex items-center gap-3 px-4 py-2.5 hover:bg-[#F7F8FC] transition text-left">
-              <i :class="r.type === 'event' ? 'fas fa-calendar-alt text-[#635BFF]' : r.type === 'sport' ? 'fas fa-running text-[#27AE60]' : 'fas fa-map-marker-alt text-[#F5A623]'"
-                 class="w-4 text-center shrink-0 text-xs"></i>
-              <div>
-                <div class="text-xs font-semibold text-[#1A1F36]" x-text="r.label"></div>
-                <div class="text-[11px] text-[#697386]" x-text="r.meta"></div>
-              </div>
-            </a>
-          </template>
-        </div>
-      </div>
-      <select name="sport" class="bg-[#252B4A] border border-[#2D3561] text-white px-4 py-3 rounded text-sm focus:border-[#635BFF] focus:outline-none">
-        <option value="">All Sports</option>
-        {% for sport in sports_list %}
-          <option value="{{ sport.id }}">{{ sport.name }}</option>
-        {% endfor %}
-      </select>
-      <button type="submit" class="bg-[#635BFF] hover:bg-[#4f48e6] text-white px-6 py-3 rounded text-sm font-semibold transition whitespace-nowrap">
-        <i class="fas fa-search mr-2"></i>Search
-      </button>
-    </form>
+    <p>{{ site.hero_subtitle or 'Find local and national competitions, register online, pay securely — all in one place. Built for parents, loved by kids.' }}</p>
+    <div class="hero-actions">
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('events.event_list') }}" class="btn-hero">
+          Browse Events <i class="fas fa-arrow-right" style="font-size:13px;"></i>
+        </a>
+        <a href="{{ url_for('user.dashboard') }}" class="btn-hero-ghost">
+          My Dashboard
+        </a>
+      {% else %}
+        <a href="{{ url_for('auth.register') }}" class="btn-hero">
+          Get started free <i class="fas fa-arrow-right" style="font-size:13px;"></i>
+        </a>
+        <a href="{{ url_for('events.event_list') }}" class="btn-hero-ghost">
+          Browse events
+        </a>
+      {% endif %}
+    </div>
+    <div class="hero-trust">
+      <div class="hero-trust-item"><i class="fas fa-check-circle"></i> Free to sign up</div>
+      <div class="hero-trust-item"><i class="fas fa-shield-alt"></i> Secure payments</div>
+      <div class="hero-trust-item"><i class="fas fa-bolt"></i> Instant confirmation</div>
+      <div class="hero-trust-item"><i class="fas fa-users"></i> Trusted by parents</div>
+    </div>
   </div>
 </section>
 
-<!-- Stats bar -->
-<div class="bg-white border-b border-[#E3E8EF]">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap justify-center gap-8">
-    {% for label, icon in [('Trusted by parents', 'fa-heart'), ('Multiple sports', 'fa-running'), ('Secure payments', 'fa-shield-alt'), ('Instant confirmation', 'fa-check-circle')] %}
-      <div class="flex items-center gap-2 text-xs text-[#697386]">
-        <i class="fas {{ icon }} text-[#635BFF]"></i>
-        <span>{{ label }}</span>
-      </div>
-    {% endfor %}
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div>
+      <div class="stat-num">500+</div>
+      <div class="stat-label">Events Listed</div>
+    </div>
+    <div>
+      <div class="stat-num">10k+</div>
+      <div class="stat-label">Kids Registered</div>
+    </div>
+    <div>
+      <div class="stat-num">{{ sports_list | length }}+</div>
+      <div class="stat-label">Sports Covered</div>
+    </div>
+    <div>
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Secure & Trusted</div>
+    </div>
   </div>
 </div>
 
-<!-- Sports Grid -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-lg font-bold text-[#1A1F36]">Browse by Sport</h2>
-    <a href="{{ url_for('events.event_list') }}" class="text-xs font-semibold text-[#635BFF] hover:underline">View all events →</a>
-  </div>
-  <div class="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-8 gap-2">
+<!-- BROWSE BY SPORT -->
+<section class="section" style="background:#fff;">
+  <div class="section-inner">
+    <div class="section-center">
+      <span class="section-tag">Sports</span>
+      <h2 class="section-title">Browse by Sport</h2>
+      <p class="section-sub">From football to chess — find competitions across every sport your child loves.</p>
+    </div>
     {% set sport_icons = {
-        'soccer': 'fa-futbol', 'football': 'fa-futbol',
-        'boxing': 'fa-hand-rock', 'wrestling': 'fa-people-arrows',
-        'athletics': 'fa-running', 'swimming': 'fa-swimmer',
-        'martial-arts': 'fa-user-ninja', 'karate': 'fa-user-ninja', 'judo': 'fa-user-ninja',
-        'chess': 'fa-chess', 'school-sports': 'fa-school',
-        'basketball': 'fa-basketball-ball', 'tennis': 'fa-table-tennis',
-        'cricket': 'fa-baseball-ball', 'rugby': 'fa-football-ball',
-        'cycling': 'fa-bicycle', 'gymnastics': 'fa-child',
-        'volleyball': 'fa-volleyball-ball', 'golf': 'fa-golf-ball',
-        'archery': 'fa-bullseye', 'dance': 'fa-music',
-        'netball': 'fa-circle', 'hockey': 'fa-hockey-puck',
-      } %}
-    {% for sport in sports_list %}
-      <a href="{{ url_for('events.sport_page', slug=sport.slug) }}"
-         class="flex flex-col items-center gap-2 p-3 bg-white border border-[#E3E8EF] hover:border-[#635BFF] hover:shadow-sm transition-all text-center group rounded">
-        {% if sport.icon and sport.icon.startswith('http') %}
-          <img src="{{ sport.icon }}" alt="{{ sport.name }}" class="w-8 h-8 object-contain"/>
-        {% elif sport.icon and sport.icon.startswith('fa-') %}
-          <div class="w-8 h-8 bg-[#F0EFFE] rounded flex items-center justify-center">
-            <i class="fas {{ sport.icon }} text-[#635BFF] text-sm"></i>
+      'soccer':'fa-futbol','football':'fa-futbol','boxing':'fa-hand-rock',
+      'wrestling':'fa-people-arrows','athletics':'fa-running','swimming':'fa-swimmer',
+      'martial-arts':'fa-user-ninja','karate':'fa-user-ninja','judo':'fa-user-ninja',
+      'chess':'fa-chess','school-sports':'fa-school','basketball':'fa-basketball-ball',
+      'tennis':'fa-table-tennis','cricket':'fa-baseball-ball','rugby':'fa-football-ball',
+      'cycling':'fa-bicycle','gymnastics':'fa-child','volleyball':'fa-volleyball-ball',
+      'golf':'fa-golf-ball','archery':'fa-bullseye','dance':'fa-music',
+      'netball':'fa-circle','hockey':'fa-hockey-puck',
+    } %}
+    <div class="sports-grid">
+      {% for sport in sports_list %}
+        <a href="{{ url_for('events.sport_page', slug=sport.slug) }}" class="sport-pill">
+          <div class="sport-pill-icon">
+            {% if sport.icon and sport.icon.startswith('fa-') %}
+              <i class="fas {{ sport.icon }}"></i>
+            {% else %}
+              <i class="fas {{ sport_icons.get(sport.slug, 'fa-medal') }}"></i>
+            {% endif %}
           </div>
-        {% else %}
-          <div class="w-8 h-8 bg-[#F0EFFE] rounded flex items-center justify-center">
-            <i class="fas {{ sport_icons.get(sport.slug, 'fa-medal') }} text-[#635BFF] text-sm"></i>
-          </div>
-        {% endif %}
-        <span class="text-[11px] font-semibold text-[#3C4257] group-hover:text-[#635BFF] leading-tight">{{ sport.name }}</span>
-      </a>
-    {% endfor %}
-  </div>
-</section>
-
-<!-- Featured Events -->
-{% if featured %}
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
-  <div class="flex justify-between items-center mb-5">
-    <h2 class="text-lg font-bold text-[#1A1F36]">Featured Events</h2>
-    <a href="{{ url_for('events.event_list') }}" class="text-xs font-semibold text-[#635BFF] hover:underline">View all →</a>
-  </div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    {% for event in featured %}{% include 'events/_event_card.html' %}{% endfor %}
-  </div>
-</section>
-{% endif %}
-
-<!-- Upcoming Events -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="flex justify-between items-center mb-5">
-    <h2 class="text-lg font-bold text-[#1A1F36]">Upcoming Events</h2>
-    <a href="{{ url_for('events.event_list') }}" class="text-xs font-semibold text-[#635BFF] hover:underline">View all →</a>
-  </div>
-  {% if upcoming %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {% for event in upcoming %}{% include 'events/_event_card.html' %}{% endfor %}
-    </div>
-  {% else %}
-    <div class="text-center py-16 bg-white border border-[#E3E8EF] rounded">
-      <i class="fas fa-calendar-times text-4xl mb-3 block text-[#E3E8EF]"></i>
-      <p class="text-sm font-semibold text-[#3C4257]">No upcoming events yet.</p>
-      <p class="text-xs text-[#697386] mt-1">Check back soon or <a href="{{ url_for('auth.register') }}" class="text-[#635BFF] hover:underline">sign up</a> to get notified.</p>
-    </div>
-  {% endif %}
-</section>
-
-<!-- How It Works -->
-<section class="bg-white border-t border-[#E3E8EF] py-16">
-  <div class="max-w-5xl mx-auto px-4 text-center">
-    <p class="text-xs font-semibold text-[#635BFF] uppercase tracking-widest mb-2">Simple Process</p>
-    <h2 class="text-2xl font-bold text-[#1A1F36] mb-10">How It Works</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-      {% for step, icon, title, desc in [
-        ('01', 'fa-user-plus', 'Create Account', 'Sign up free and add your children\'s profiles with their details.'),
-        ('02', 'fa-search', 'Find Events', 'Browse competitions by sport, age group, location and date.'),
-        ('03', 'fa-clipboard-check', 'Register & Pay', 'Register your child, sign agreements and pay entry fees securely.'),
-      ] %}
-        <div class="flex flex-col items-center gap-3">
-          <div class="w-12 h-12 rounded bg-[#F0EFFE] flex items-center justify-center">
-            <i class="fas {{ icon }} text-[#635BFF] text-lg"></i>
-          </div>
-          <span class="text-[10px] font-bold text-[#635BFF] tracking-widest uppercase">Step {{ step }}</span>
-          <h3 class="font-bold text-[#1A1F36] text-base">{{ title }}</h3>
-          <p class="text-[#697386] text-sm leading-relaxed">{{ desc }}</p>
-        </div>
+          <span>{{ sport.name }}</span>
+        </a>
       {% endfor %}
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="bg-[#635BFF] py-14">
-  <div class="max-w-3xl mx-auto text-center px-4">
-    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3">Ready to Register Your Child?</h2>
-    <p class="text-[#c4c0fc] text-sm mb-8">Create a free account and start registering for competitions today.</p>
+<!-- FEATURES -->
+<section class="section" style="background:#fafafa;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-center">
+      <span class="section-tag">Why KidsComp</span>
+      <h2 class="section-title">Everything you need,<br/>nothing you don't</h2>
+      <p class="section-sub">A complete platform built specifically for parents registering children in sports competitions.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-search"></i></div>
+        <h3>Find Events Instantly</h3>
+        <p>Search and filter competitions by sport, age group, location, and date. Everything in one place.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-child"></i></div>
+        <h3>Manage Multiple Children</h3>
+        <p>Add all your children's profiles once. Register any of them for any event in seconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-credit-card"></i></div>
+        <h3>Secure Online Payments</h3>
+        <p>Pay entry fees safely with Paystack, Stripe, or other trusted payment gateways.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-file-signature"></i></div>
+        <h3>Digital Agreements</h3>
+        <p>Sign waivers and agreements digitally. No printing, no scanning, no hassle.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-bell"></i></div>
+        <h3>Instant Notifications</h3>
+        <p>Get email confirmations and status updates the moment anything changes with your registration.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-trophy"></i></div>
+        <h3>All Age Groups</h3>
+        <p>From U7 to U19 — competitions are organised by age division so your child always competes fairly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED EVENTS -->
+{% if featured %}
+<section class="section" style="background:#fff;">
+  <div class="section-inner">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <span class="section-tag">Featured</span>
+        <h2 class="section-title" style="margin-bottom:0;">Featured Events</h2>
+      </div>
+      <a href="{{ url_for('events.event_list') }}" style="font-size:14px;font-weight:600;color:var(--purple);display:flex;align-items:center;gap:6px;">
+        View all events <i class="fas fa-arrow-right" style="font-size:12px;"></i>
+      </a>
+    </div>
+    <div class="events-grid">
+      {% for event in featured %}{% include 'events/_event_card.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- UPCOMING EVENTS -->
+<section class="section" style="background:{% if featured %}#fafafa;border-top:1px solid var(--border){% else %}#fff{% endif %};">
+  <div class="section-inner">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <span class="section-tag">Upcoming</span>
+        <h2 class="section-title" style="margin-bottom:0;">Upcoming Events</h2>
+      </div>
+      <a href="{{ url_for('events.event_list') }}" style="font-size:14px;font-weight:600;color:var(--purple);display:flex;align-items:center;gap:6px;">
+        View all <i class="fas fa-arrow-right" style="font-size:12px;"></i>
+      </a>
+    </div>
+    {% if upcoming %}
+      <div class="events-grid">
+        {% for event in upcoming %}{% include 'events/_event_card.html' %}{% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align:center;padding:72px 24px;background:#fff;border-radius:16px;border:1px solid var(--border);margin-top:32px;">
+        <div style="width:56px;height:56px;border-radius:14px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <i class="fas fa-calendar-alt" style="color:var(--purple);font-size:22px;"></i>
+        </div>
+        <p style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;">No upcoming events yet</p>
+        <p style="font-size:14px;color:var(--text-2);">Check back soon or <a href="{{ url_for('auth.register') }}" style="color:var(--purple);font-weight:600;">sign up</a> to get notified.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="background:#fff;border-top:1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-center">
+      <span class="section-tag">How it works</span>
+      <h2 class="section-title">Up and running in 3 steps</h2>
+      <p class="section-sub">Getting your child registered for their first competition takes less than 5 minutes.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Create your account</h3>
+        <p>Sign up free and add your children's profiles — name, age, gender, and sport preferences.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Find the right event</h3>
+        <p>Browse competitions filtered by sport, age group, location, and date. Read all the details.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Register & pay securely</h3>
+        <p>Select your child, choose their division, sign agreements, and pay the entry fee — done.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <div style="max-width:640px;margin:0 auto;">
+    <h2>Ready to get started?</h2>
+    <p>Join thousands of parents already using {{ site.site_name or 'KidsComp' }} to register their children.</p>
     {% if not current_user.is_authenticated %}
-      <a href="{{ url_for('auth.register') }}"
-         class="bg-white text-[#635BFF] font-bold px-8 py-3 rounded text-sm hover:bg-[#F0EFFE] transition inline-block">
-        Get Started Free
+      <a href="{{ url_for('auth.register') }}" class="btn-cta-white">
+        Create free account <i class="fas fa-arrow-right" style="font-size:13px;"></i>
       </a>
     {% else %}
-      <a href="{{ url_for('events.event_list') }}"
-         class="bg-white text-[#635BFF] font-bold px-8 py-3 rounded text-sm hover:bg-[#F0EFFE] transition inline-block">
-        Browse Events
+      <a href="{{ url_for('events.event_list') }}" class="btn-cta-white">
+        Browse events <i class="fas fa-arrow-right" style="font-size:13px;"></i>
       </a>
     {% endif %}
   </div>

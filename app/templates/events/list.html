@@ -1,36 +1,34 @@
 {% extends 'base.html' %}
 {% block title %}Events - {{ site.site_name }}{% endblock %}
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="flex flex-col lg:flex-row gap-6">
+<div style="max-width:1280px;margin:0 auto;padding:40px 24px;">
+  <div style="display:flex;gap:32px;align-items:flex-start;">
 
     <!-- Filters Sidebar -->
-    <aside class="lg:w-56 shrink-0" x-data="{ open: false }">
-      <button @click="open = !open"
-              class="lg:hidden w-full flex items-center justify-between bg-white border border-[#E3E8EF] rounded px-4 py-2.5 mb-3 text-sm font-semibold text-[#1A1F36]">
-        <span><i class="fas fa-filter mr-2 text-[#635BFF] text-xs"></i>Filters</span>
-        <i class="fas fa-chevron-down text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
+    <aside style="width:260px;flex-shrink:0;" x-data="{ open: false }">
+      <button @click="open = !open" class="lg:hidden"
+              style="width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:12px;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;">
+        <span><i class="fas fa-filter" style="color:var(--primary);margin-right:8px;font-size:13px;"></i>Filters</span>
+        <i class="fas fa-chevron-down" style="font-size:12px;transition:transform 200ms;" :style="open ? 'transform:rotate(180deg)' : ''"></i>
       </button>
 
-      <div class="bg-white border border-[#E3E8EF] rounded p-4 lg:sticky lg:top-20"
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-md);position:sticky;top:88px;"
            :class="open ? 'block' : 'hidden lg:block'">
-        <h3 class="text-xs font-bold text-[#1A1F36] mb-4 flex items-center gap-2 uppercase tracking-widest">
-          <i class="fas fa-sliders-h text-[#635BFF]"></i> Filters
+        <h3 style="font-size:13px;font-weight:700;color:var(--text);margin:0 0 20px;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-sliders-h" style="color:var(--primary);font-size:12px;"></i> Filters
         </h3>
         <form method="GET" action="{{ url_for('events.event_list') }}">
-          <div class="space-y-4">
+          <div style="display:flex;flex-direction:column;gap:16px;">
             <div>
-              <label class="block text-[10px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Search</label>
-              <div class="relative">
-                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-[#697386] text-xs"></i>
-                <input type="text" name="q" value="{{ filters.q }}"
-                       class="w-full border border-[#E3E8EF] rounded pl-8 pr-3 py-2 text-xs text-[#1A1F36] focus:border-[#635BFF] focus:outline-none transition"
-                       placeholder="Event name..."/>
+              <label class="form-label">Search</label>
+              <div style="position:relative;">
+                <i class="fas fa-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-light);font-size:12px;pointer-events:none;"></i>
+                <input type="text" name="q" value="{{ filters.q }}" class="form-input" style="padding-left:40px;" placeholder="Event name..."/>
               </div>
             </div>
             <div>
-              <label class="block text-[10px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Sport</label>
-              <select name="sport" class="w-full border border-[#E3E8EF] rounded px-3 py-2 text-xs text-[#1A1F36] focus:border-[#635BFF] focus:outline-none">
+              <label class="form-label">Sport</label>
+              <select name="sport" class="form-select">
                 <option value="">All Sports</option>
                 {% for sport in sports %}
                   <option value="{{ sport.id }}" {% if filters.sport_id == sport.id %}selected{% endif %}>{{ sport.name }}</option>
@@ -38,35 +36,31 @@
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Gender</label>
-              <select name="gender" class="w-full border border-[#E3E8EF] rounded px-3 py-2 text-xs text-[#1A1F36] focus:border-[#635BFF] focus:outline-none">
+              <label class="form-label">Gender</label>
+              <select name="gender" class="form-select">
                 <option value="">All</option>
                 <option value="male" {% if filters.gender == 'male' %}selected{% endif %}>Male</option>
                 <option value="female" {% if filters.gender == 'female' %}selected{% endif %}>Female</option>
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Location</label>
-              <div class="relative">
-                <i class="fas fa-map-marker-alt absolute left-3 top-1/2 -translate-y-1/2 text-[#697386] text-xs"></i>
-                <input type="text" name="location" value="{{ filters.location }}"
-                       class="w-full border border-[#E3E8EF] rounded pl-8 pr-3 py-2 text-xs text-[#1A1F36] focus:border-[#635BFF] focus:outline-none transition"
-                       placeholder="City or state..."/>
+              <label class="form-label">Location</label>
+              <div style="position:relative;">
+                <i class="fas fa-map-marker-alt" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-light);font-size:12px;pointer-events:none;"></i>
+                <input type="text" name="location" value="{{ filters.location }}" class="form-input" style="padding-left:40px;" placeholder="City or state..."/>
               </div>
             </div>
             <div>
-              <label class="block text-[10px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">From Date</label>
-              <input type="date" name="date_from" value="{{ filters.date_from }}"
-                     class="w-full border border-[#E3E8EF] rounded px-3 py-2 text-xs text-[#1A1F36] focus:border-[#635BFF] focus:outline-none"/>
+              <label class="form-label">From Date</label>
+              <input type="date" name="date_from" value="{{ filters.date_from }}" class="form-input"/>
             </div>
             <div>
-              <label class="block text-[10px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">To Date</label>
-              <input type="date" name="date_to" value="{{ filters.date_to }}"
-                     class="w-full border border-[#E3E8EF] rounded px-3 py-2 text-xs text-[#1A1F36] focus:border-[#635BFF] focus:outline-none"/>
+              <label class="form-label">To Date</label>
+              <input type="date" name="date_to" value="{{ filters.date_to }}" class="form-input"/>
             </div>
             <div>
-              <label class="block text-[10px] font-semibold text-[#697386] uppercase tracking-widest mb-1.5">Age Group</label>
-              <select name="age_group" class="w-full border border-[#E3E8EF] rounded px-3 py-2 text-xs text-[#1A1F36] focus:border-[#635BFF] focus:outline-none">
+              <label class="form-label">Age Group</label>
+              <select name="age_group" class="form-select">
                 <option value="">All Ages</option>
                 {% for ag in age_groups %}
                   <option value="{{ ag.id }}" {% if filters.age_group_id == ag.id %}selected{% endif %}>
@@ -75,12 +69,10 @@
                 {% endfor %}
               </select>
             </div>
-            <button type="submit"
-                    class="w-full bg-[#635BFF] hover:bg-[#4f48e6] text-white py-2 rounded text-xs font-semibold transition">
-              <i class="fas fa-search mr-1"></i> Apply Filters
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
+              <i class="fas fa-search" style="font-size:12px;"></i> Apply Filters
             </button>
-            <a href="{{ url_for('events.event_list') }}"
-               class="block text-center text-xs text-[#697386] hover:text-[#635BFF] transition">
+            <a href="{{ url_for('events.event_list') }}" style="text-align:center;font-size:13px;color:var(--text-secondary);text-decoration:none;transition:color 200ms;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">
               Clear Filters
             </a>
           </div>
@@ -89,53 +81,48 @@
     </aside>
 
     <!-- Events Grid -->
-    <div class="flex-1 min-w-0">
-      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-5">
-        <h1 class="text-base font-bold text-[#1A1F36]">
+    <div style="flex:1;min-width:0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+        <h1 style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.02em;margin:0;">
           All Events
-          <span class="text-[#697386] text-sm font-normal ml-1">({{ events.total }})</span>
+          <span style="font-size:15px;color:var(--text-secondary);font-weight:400;margin-left:8px;">({{ events.total }})</span>
         </h1>
       </div>
 
       {% if events.items %}
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;">
           {% for event in events.items %}
             {% include 'events/_event_card.html' %}
           {% endfor %}
         </div>
 
         {% if events.pages > 1 %}
-          <div class="flex flex-wrap justify-center gap-1.5 mt-8">
+          <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:40px;">
             {% if events.has_prev %}
               <a href="{{ url_for('events.event_list', page=events.prev_num, **filters) }}"
-                 class="px-3 py-1.5 bg-white border border-[#E3E8EF] rounded text-xs text-[#3C4257] hover:bg-[#F7F8FC] transition">
-                <i class="fas fa-chevron-left mr-1"></i> Prev
-              </a>
+                 class="btn btn-secondary btn-sm"><i class="fas fa-chevron-left" style="font-size:11px;"></i> Prev</a>
             {% endif %}
             {% for p in events.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
               {% if p %}
                 <a href="{{ url_for('events.event_list', page=p, **filters) }}"
-                   class="px-3 py-1.5 rounded text-xs transition
-                          {% if p == events.page %}bg-[#635BFF] text-white{% else %}bg-white border border-[#E3E8EF] text-[#3C4257] hover:bg-[#F7F8FC]{% endif %}">
-                  {{ p }}
-                </a>
+                   class="btn btn-sm {% if p == events.page %}btn-primary{% else %}btn-secondary{% endif %}">{{ p }}</a>
               {% else %}
-                <span class="px-2 py-1.5 text-[#697386] text-xs">…</span>
+                <span style="padding:7px 4px;color:var(--text-secondary);font-size:13px;">…</span>
               {% endif %}
             {% endfor %}
             {% if events.has_next %}
               <a href="{{ url_for('events.event_list', page=events.next_num, **filters) }}"
-                 class="px-3 py-1.5 bg-white border border-[#E3E8EF] rounded text-xs text-[#3C4257] hover:bg-[#F7F8FC] transition">
-                Next <i class="fas fa-chevron-right ml-1"></i>
-              </a>
+                 class="btn btn-secondary btn-sm">Next <i class="fas fa-chevron-right" style="font-size:11px;"></i></a>
             {% endif %}
           </div>
         {% endif %}
       {% else %}
-        <div class="text-center py-20 bg-white border border-[#E3E8EF] rounded">
-          <i class="fas fa-search text-4xl mb-3 block text-[#E3E8EF]"></i>
-          <p class="text-sm font-semibold text-[#3C4257]">No events found.</p>
-          <p class="text-xs text-[#697386] mt-1">Try adjusting your filters.</p>
+        <div style="text-align:center;padding:80px 24px;background:var(--surface);border-radius:var(--radius-xl);border:1px solid var(--border);">
+          <div style="width:56px;height:56px;border-radius:var(--radius-lg);background:var(--primary-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+            <i class="fas fa-search" style="color:var(--primary);font-size:22px;"></i>
+          </div>
+          <p style="font-size:16px;font-weight:600;color:var(--text);margin:0 0 8px;">No events found.</p>
+          <p style="font-size:14px;color:var(--text-secondary);margin:0;">Try adjusting your filters.</p>
         </div>
       {% endif %}
     </div>
