@@ -1,122 +1,95 @@
-{% extends 'base.html' %}
-{% block title %}My Registrations - {{ site.site_name }}{% endblock %}
+{% extends 'user/base.html' %}
+{% block title %}My Registrations — {{ site.site_name }}{% endblock %}
+{% block page_title %}My Registrations{% endblock %}
 {% block content %}
-<div style="max-width:960px;margin:0 auto;padding:48px 24px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
-    <div>
-      <h1 style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.02em;margin:0 0 4px;">My Registrations</h1>
-      <p style="font-size:14px;color:var(--text-2);margin:0;">Track all your children's event registrations.</p>
-    </div>
-    <a href="{{ url_for('events.event_list') }}"
-       style="display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:#fff;font-size:14px;font-weight:600;padding:10px 20px;border-radius:10px;text-decoration:none;transition:200ms ease;"
-       onmouseover="this.style.background='var(--purple-dark)'" onmouseout="this.style.background='var(--purple)'">
-      <i class="fas fa-search" style="font-size:12px;"></i> Find Events
-    </a>
+
+<div class="ph">
+  <div>
+    <div class="ph-title">My Registrations</div>
+    <div class="ph-sub">Track all your children's event registrations.</div>
+  </div>
+  <a href="{{ url_for('events.event_list') }}" class="btn btn-p">
+    <i class="fas fa-search" style="font-size:11px;"></i> Find Events
+  </a>
+</div>
+
+{% if registrations %}
+  <!-- Filter tabs -->
+  <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;">
+    {% for s in ['all', 'confirmed', 'pending', 'cancelled'] %}
+      <button onclick="filterRegs('{{ s }}')" id="tab-{{ s }}"
+              class="btn btn-sm"
+              style="{% if s == 'all' %}background:var(--primary);color:#fff;border:1px solid var(--primary);{% else %}background:var(--surface);color:var(--text-2);border:1px solid var(--border);{% endif %}">
+        {{ s | title }}
+      </button>
+    {% endfor %}
   </div>
 
-  {% if registrations %}
-    <!-- Filter tabs -->
-    <div style="display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap;">
-      {% for s in ['all', 'confirmed', 'pending', 'cancelled'] %}
-        <button onclick="filterRegs('{{ s }}')" id="tab-{{ s }}"
-                style="padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid var(--border);cursor:pointer;transition:200ms ease;font-family:'Inter',sans-serif;
-                       {% if s == 'all' %}background:var(--purple);color:#fff;border-color:var(--purple);{% else %}background:#fff;color:var(--text-2);{% endif %}">
-          {{ s | title }}
-        </button>
-      {% endfor %}
-    </div>
+  <div style="display:flex;flex-direction:column;gap:10px;" id="regsList">
+    {% for reg in registrations %}
+      <div class="card" style="padding:16px 20px;display:flex;gap:14px;align-items:flex-start;transition:200ms ease;cursor:pointer;"
+           data-status="{{ reg.status }}" class="reg-item"
+           onmouseover="this.style.borderColor='var(--primary)';this.style.transform='translateY(-1px)'"
+           onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
 
-    <div style="display:flex;flex-direction:column;gap:12px;" id="regsList">
-      {% for reg in registrations %}
-        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px 24px;display:flex;gap:16px;align-items:flex-start;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);transition:200ms ease;"
-             data-status="{{ reg.status }}"
-             class="reg-item"
-             onmouseover="this.style.borderColor='var(--purple)';this.style.transform='translateY(-1px)'"
-             onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <!-- Thumb -->
+        <div class="stat-icon" style="background:var(--primary-light);flex-shrink:0;width:52px;height:52px;border-radius:10px;overflow:hidden;">
+          {% if reg.event.cover_image %}
+            <img src="{{ reg.event.cover_image }}" style="width:100%;height:100%;object-fit:cover;"/>
+          {% elif reg.event.sport.icon and reg.event.sport.icon.startswith('fa-') %}
+            <i class="fas {{ reg.event.sport.icon }}" style="color:var(--primary);font-size:20px;opacity:.7;"></i>
+          {% else %}
+            <i class="fas fa-medal" style="color:var(--primary);font-size:20px;opacity:.7;"></i>
+          {% endif %}
+        </div>
 
-          <!-- Thumbnail -->
-          <div style="width:60px;height:60px;border-radius:10px;flex-shrink:0;overflow:hidden;background:var(--purple-light);display:flex;align-items:center;justify-content:center;">
-            {% if reg.event.cover_image %}
-              <img src="{{ reg.event.cover_image }}" style="width:100%;height:100%;object-fit:cover;"/>
-            {% elif reg.event.sport.icon and reg.event.sport.icon.startswith('fa-') %}
-              <i class="fas {{ reg.event.sport.icon }}" style="color:var(--purple);font-size:22px;opacity:.6;"></i>
-            {% else %}
-              <i class="fas fa-medal" style="color:var(--purple);font-size:22px;opacity:.6;"></i>
-            {% endif %}
-          </div>
-
-          <!-- Info -->
-          <div style="flex:1;min-width:0;">
-            <h3 style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ reg.event.title }}</h3>
-            <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--text-2);">
-              <span><i class="fas fa-user-circle" style="color:var(--purple);margin-right:4px;font-size:11px;"></i>{{ reg.child.full_name }}</span>
-              <span><i class="fas fa-calendar-alt" style="color:var(--purple);margin-right:4px;font-size:11px;"></i>{{ reg.event.start_date.strftime('%d %b %Y') }}</span>
-              {% if reg.event.venue %}
-                <span><i class="fas fa-map-marker-alt" style="color:var(--purple);margin-right:4px;font-size:11px;"></i>{{ reg.event.venue.city }}</span>
-              {% endif %}
-              {% if reg.division %}
-                <span><i class="fas fa-layer-group" style="color:var(--purple);margin-right:4px;font-size:11px;"></i>{{ reg.division.name }} · {{ site.currency_symbol }}{{ "%.2f"|format(reg.division.entry_fee|float) }}</span>
-              {% endif %}
-            </div>
-          </div>
-
-          <!-- Status & actions -->
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
-            <span style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;
-              {% if reg.status == 'confirmed' %}background:#F0FDF4;color:#15803D;
-              {% elif reg.status == 'pending' %}background:#FFFBEB;color:#92400E;
-              {% elif reg.status == 'cancelled' %}background:#FEF2F2;color:#B91C1C;
-              {% else %}background:#F9FAFB;color:var(--text-2);{% endif %}">
-              {{ reg.status | title }}
-            </span>
-            <span style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;
-              {% if reg.payment_status == 'paid' %}background:#F0FDF4;color:#15803D;
-              {% elif reg.payment_status == 'refunded' %}background:#EFF6FF;color:#1D4ED8;
-              {% else %}background:#FFF7ED;color:#C2410C;{% endif %}">
-              {{ reg.payment_status | title }}
-            </span>
-            <div style="display:flex;gap:8px;margin-top:4px;">
-              <a href="{{ url_for('user.registration_detail', reg_id=reg.id) }}"
-                 style="font-size:13px;font-weight:600;color:var(--purple);text-decoration:none;">Details</a>
-              {% if reg.payment_status == 'unpaid' and reg.status != 'cancelled' %}
-                <a href="{{ url_for('payments.checkout', reg_id=reg.id) }}"
-                   style="font-size:12px;font-weight:700;padding:5px 12px;border-radius:6px;background:#22C55E;color:#fff;text-decoration:none;transition:200ms ease;"
-                   onmouseover="this.style.background='#16A34A'" onmouseout="this.style.background='#22C55E'">
-                  Pay Now
-                </a>
-              {% endif %}
-            </div>
+        <!-- Info -->
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;">{{ reg.event.title }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--text-2);">
+            <span><i class="fas fa-user-circle" style="color:var(--primary);margin-right:3px;font-size:11px;"></i>{{ reg.child.full_name }}</span>
+            <span><i class="fas fa-calendar-alt" style="color:var(--primary);margin-right:3px;font-size:11px;"></i>{{ reg.event.start_date.strftime('%d %b %Y') }}</span>
+            {% if reg.event.venue %}<span><i class="fas fa-map-marker-alt" style="color:var(--primary);margin-right:3px;font-size:11px;"></i>{{ reg.event.venue.city }}</span>{% endif %}
+            {% if reg.division %}<span><i class="fas fa-layer-group" style="color:var(--primary);margin-right:3px;font-size:11px;"></i>{{ reg.division.name }}</span>{% endif %}
           </div>
         </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div style="text-align:center;padding:80px 24px;background:#fff;border-radius:16px;border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
-      <div style="width:64px;height:64px;border-radius:16px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
-        <i class="fas fa-clipboard-list" style="color:var(--purple);font-size:26px;"></i>
+
+        <!-- Status + actions -->
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+          <span class="badge {% if reg.status == 'confirmed' %}badge-green{% elif reg.status == 'pending' %}badge-amber{% elif reg.status == 'cancelled' %}badge-red{% else %}badge-gray{% endif %}">
+            {{ reg.status | title }}
+          </span>
+          <span class="badge {% if reg.payment_status == 'paid' %}badge-green{% elif reg.payment_status == 'refunded' %}badge-blue{% else %}badge-orange{% endif %}">
+            {{ reg.payment_status | title }}
+          </span>
+          <div style="display:flex;gap:8px;margin-top:2px;">
+            <a href="{{ url_for('user.registration_detail', reg_id=reg.id) }}" style="font-size:12.5px;font-weight:600;color:var(--primary);">Details</a>
+            {% if reg.payment_status == 'unpaid' and reg.status != 'cancelled' %}
+              <a href="{{ url_for('payments.checkout', reg_id=reg.id) }}" class="btn btn-success btn-xs">Pay Now</a>
+            {% endif %}
+          </div>
+        </div>
       </div>
-      <p style="font-size:18px;font-weight:700;color:var(--text);margin:0 0 8px;">No registrations yet</p>
-      <p style="font-size:14px;color:var(--text-2);margin:0 0 24px;">Find an event and register your child today.</p>
-      <a href="{{ url_for('events.event_list') }}"
-         style="display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:#fff;font-size:14px;font-weight:600;padding:12px 24px;border-radius:10px;text-decoration:none;">
-        Browse Events
-      </a>
-    </div>
-  {% endif %}
-</div>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="card" style="text-align:center;padding:64px 24px;">
+    <div class="stat-icon" style="background:var(--primary-light);margin:0 auto 16px;width:56px;height:56px;"><i class="fas fa-clipboard-list" style="color:var(--primary);font-size:22px;"></i></div>
+    <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;">No registrations yet</div>
+    <div style="font-size:13.5px;color:var(--text-2);margin-bottom:20px;">Find an event and register your child today.</div>
+    <a href="{{ url_for('events.event_list') }}" class="btn btn-p">Browse Events</a>
+  </div>
+{% endif %}
 
 <script>
 function filterRegs(status) {
-  document.querySelectorAll('[id^="tab-"]').forEach(btn => {
-    btn.style.background = '#fff';
-    btn.style.color = 'var(--text-2)';
-    btn.style.borderColor = 'var(--border)';
+  document.querySelectorAll('[id^="tab-"]').forEach(b => {
+    b.style.background = 'var(--surface)'; b.style.color = 'var(--text-2)'; b.style.borderColor = 'var(--border)';
   });
-  const active = document.getElementById('tab-' + status);
-  active.style.background = 'var(--purple)';
-  active.style.color = '#fff';
-  active.style.borderColor = 'var(--purple)';
-  document.querySelectorAll('.reg-item').forEach(item => {
+  const a = document.getElementById('tab-' + status);
+  a.style.background = 'var(--primary)'; a.style.color = '#fff'; a.style.borderColor = 'var(--primary)';
+  document.querySelectorAll('#regsList > div').forEach(item => {
     item.style.display = (status === 'all' || item.dataset.status === status) ? '' : 'none';
   });
 }

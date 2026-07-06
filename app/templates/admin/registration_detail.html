@@ -1,158 +1,154 @@
 {% extends 'admin/base.html' %}
 {% block title %}Registration #{{ reg.id }}{% endblock %}
 {% block content %}
-<div class="flex justify-between items-center mb-6">
-  <h1 class="text-2xl font-bold text-gray-800">Registration #{{ reg.id }}</h1>
-  <a href="{{ url_for('admin.registrations') }}" class="text-sm text-gray-500 hover:text-gray-700">← Back</a>
+<div class="page-header">
+  <div><div class="page-title">Registration #{{ reg.id }}</div><div class="page-subtitle">Registered {{ reg.registered_at.strftime('%d %b %Y at %H:%M') }}</div></div>
+  <a href="{{ url_for('admin.registrations') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  <!-- Main Info -->
-  <div class="lg:col-span-2 space-y-6">
+<div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;">
 
-    <!-- Status & Payment -->
-    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-      <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Status Management</h2>
-      <div class="flex flex-wrap gap-3 mb-4">
-        <span class="px-3 py-1.5 rounded-full text-sm font-bold
-          {% if reg.status == 'confirmed' %}bg-green-100 text-green-700
-          {% elif reg.status == 'pending' %}bg-amber-100 text-amber-700
-          {% elif reg.status == 'cancelled' %}bg-red-100 text-red-700
-          {% else %}bg-gray-100 text-gray-600{% endif %}">
-          {{ reg.status | title }}
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-sm font-bold
-          {% if reg.payment_status == 'paid' %}bg-green-100 text-green-700{% else %}bg-orange-100 text-orange-700{% endif %}">
-          Payment: {{ reg.payment_status | title }}
-        </span>
+  <!-- Left column -->
+  <div style="display:flex;flex-direction:column;gap:16px;">
+
+    <!-- Status management -->
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">Status Management</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+        <span class="badge {% if reg.status == 'confirmed' %}badge-green{% elif reg.status == 'pending' %}badge-amber{% elif reg.status == 'cancelled' %}badge-red{% else %}badge-blue{% endif %}" style="padding:5px 12px;font-size:12.5px;">{{ reg.status | title }}</span>
+        <span class="badge {% if reg.payment_status == 'paid' %}badge-green{% elif reg.payment_status == 'refunded' %}badge-purple{% else %}badge-orange{% endif %}" style="padding:5px 12px;font-size:12.5px;">Payment: {{ reg.payment_status | title }}</span>
       </div>
-      <form method="POST" action="{{ url_for('admin.registration_status', reg_id=reg.id) }}" class="flex gap-3 flex-wrap">
+      <form method="POST" action="{{ url_for('admin.registration_status', reg_id=reg.id) }}" style="display:flex;gap:10px;flex-wrap:wrap;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <select name="status" class="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-          {% for s in ['pending', 'confirmed', 'cancelled', 'waitlist'] %}
+        <select name="status" class="form-select" style="width:160px;">
+          {% for s in ['pending','confirmed','cancelled','waitlist'] %}
             <option value="{{ s }}" {% if reg.status == s %}selected{% endif %}>{{ s | title }}</option>
           {% endfor %}
         </select>
-        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-indigo-700">Update Status</button>
+        <button type="submit" class="btn btn-primary">Update Status</button>
       </form>
       {% if reg.payment_status == 'paid' %}
-        <form method="POST" action="{{ url_for('admin.registration_refund', reg_id=reg.id) }}" class="mt-3"
-              onsubmit="return confirm('Mark as refunded and cancel this registration?')">
+        <form method="POST" action="{{ url_for('admin.registration_refund', reg_id=reg.id) }}" style="margin-top:10px;" onsubmit="return confirm('Issue refund and cancel?')">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <button type="submit" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded text-sm font-semibold hover:bg-red-100">
-            <i class="fas fa-undo mr-1"></i> Issue Refund
-          </button>
-        </form>
-      {% endif %}
-      {% if reg.payment_status == 'paid' %}
-        <form method="POST" action="{{ url_for('admin.registration_refund', reg_id=reg.id) }}" class="mt-3"
-              onsubmit="return confirm('Mark as refunded and cancel this registration?')">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <button type="submit" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded text-sm font-semibold hover:bg-red-100">
-            <i class="fas fa-undo mr-1"></i> Issue Refund
-          </button>
+          <button type="submit" class="btn btn-danger"><i class="fas fa-undo"></i> Issue Refund</button>
         </form>
       {% endif %}
     </div>
 
-    <!-- Event Info -->
-    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-      <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Event</h2>
-      <div class="flex gap-4 items-start">
+    <!-- Event -->
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">Event</div>
+      <div style="display:flex;gap:14px;align-items:flex-start;">
         {% if reg.event.cover_image %}
-          <img src="{{ reg.event.cover_image }}" class="w-20 h-20 object-cover rounded shrink-0"/>
+          <img src="{{ reg.event.cover_image }}" style="width:72px;height:72px;object-fit:cover;border-radius:10px;flex-shrink:0;"/>
         {% endif %}
         <div>
-          <p class="font-bold text-gray-800 text-lg">{{ reg.event.title }}</p>
-          <p class="text-gray-500 text-sm">{{ reg.event.start_date.strftime('%A, %d %B %Y') }}</p>
-          {% if reg.event.venue %}
-            <p class="text-gray-500 text-sm">{{ reg.event.venue.name }}, {{ reg.event.venue.full_address }}</p>
-          {% endif %}
-          <a href="{{ url_for('events.event_detail', slug=reg.event.slug) }}" target="_blank"
-             class="text-indigo-600 text-xs hover:underline mt-1 inline-block">View Event →</a>
+          <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;">{{ reg.event.title }}</div>
+          <div style="font-size:13px;color:var(--text-2);margin-bottom:3px;"><i class="fas fa-calendar-alt" style="color:var(--primary);margin-right:6px;font-size:11px;"></i>{{ reg.event.start_date.strftime('%A, %d %B %Y') }}</div>
+          {% if reg.event.venue %}<div style="font-size:13px;color:var(--text-2);"><i class="fas fa-map-marker-alt" style="color:var(--primary);margin-right:6px;font-size:11px;"></i>{{ reg.event.venue.name }}, {{ reg.event.venue.city }}</div>{% endif %}
+          <a href="{{ url_for('events.event_detail', slug=reg.event.slug) }}" target="_blank" style="font-size:12px;color:var(--primary);margin-top:6px;display:inline-block;">View Event →</a>
         </div>
       </div>
     </div>
 
-    <!-- Custom Field Values -->
+    <!-- Custom fields -->
     {% if reg.custom_fields_dict %}
-      <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-        <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Custom Field Responses</h2>
-        <dl class="space-y-2">
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">Custom Field Responses</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
           {% for key, val in reg.custom_fields_dict.items() %}
-            <div class="flex gap-4 text-sm">
-              <dt class="font-medium text-gray-600 w-40 shrink-0">{{ key }}</dt>
-              <dd class="text-gray-800">{{ val or '—' }}</dd>
+            <div style="display:flex;gap:16px;font-size:13.5px;">
+              <span style="font-weight:600;color:var(--text-2);width:160px;flex-shrink:0;">{{ key }}</span>
+              <span style="color:var(--text);">{{ val or '—' }}</span>
             </div>
           {% endfor %}
-        </dl>
+        </div>
       </div>
     {% endif %}
 
     <!-- Documents -->
     {% if reg.documents %}
-      <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-        <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Submitted Documents</h2>
-        <div class="space-y-2">
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">Submitted Documents</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
           {% for doc in reg.documents %}
-            <div class="flex items-center justify-between bg-gray-50 rounded px-4 py-3 text-sm">
-              <div class="flex items-center gap-3">
-                <i class="fas fa-file text-indigo-400"></i>
+            <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-radius:8px;padding:10px 14px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <i class="fas fa-file-alt" style="color:var(--primary);font-size:13px;"></i>
                 <div>
-                  <p class="font-medium text-gray-800">{{ doc.file_name }}</p>
-                  <p class="text-gray-400 text-xs">{{ doc.doc_type }} · {{ doc.uploaded_at.strftime('%d %b %Y') }}</p>
+                  <div style="font-size:13.5px;font-weight:600;color:var(--text);">{{ doc.file_name }}</div>
+                  <div style="font-size:11px;color:var(--text-3);">{{ doc.doc_type }} · {{ doc.uploaded_at.strftime('%d %b %Y') }}</div>
                 </div>
               </div>
-              <a href="{{ doc.file_url }}" target="_blank"
-                 class="text-indigo-600 hover:underline text-xs font-semibold">View / Download</a>
+              <a href="{{ doc.file_url }}" target="_blank" class="btn btn-secondary btn-xs">View</a>
             </div>
           {% endfor %}
         </div>
       </div>
     {% endif %}
+
+    <!-- Payment history -->
+    {% if reg.payment_logs %}
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">Payment History</div>
+        <div class="table-scroll">
+          <table class="data-table" style="min-width:auto;">
+            <thead><tr><th>Gateway</th><th>Reference</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+              {% for log in reg.payment_logs | sort(attribute='created_at', reverse=True) %}
+                <tr>
+                  <td style="font-weight:600;text-transform:capitalize;">{{ log.gateway }}</td>
+                  <td style="font-size:12px;color:var(--text-3);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ log.reference }}</td>
+                  <td style="font-weight:600;">{{ site.currency_symbol }}{{ "%.2f"|format(log.amount|float) }}</td>
+                  <td><span class="badge {% if log.status == 'success' %}badge-green{% elif log.status == 'failed' %}badge-red{% elif log.status == 'refunded' %}badge-purple{% else %}badge-gray{% endif %}">{{ log.status }}</span></td>
+                  <td style="font-size:12px;color:var(--text-3);">{{ log.created_at.strftime('%d %b %H:%M') }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% endif %}
   </div>
 
-  <!-- Sidebar -->
-  <div class="space-y-6">
+  <!-- Right sidebar -->
+  <div style="display:flex;flex-direction:column;gap:16px;">
+
     <!-- Athlete -->
-    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-      <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Athlete</h2>
-      <div class="flex items-center gap-3 mb-3">
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">Athlete</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
         {% if reg.child.profile_image %}
-          <img src="{{ reg.child.profile_image }}" class="w-12 h-12 rounded-full object-cover"/>
+          <img src="{{ reg.child.profile_image }}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;"/>
         {% else %}
-          <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-600">
-            {{ reg.child.first_name[0] }}
-          </div>
+          <div class="avatar" style="width:48px;height:48px;font-size:18px;">{{ reg.child.first_name[0] | upper }}</div>
         {% endif %}
         <div>
-          <p class="font-bold text-gray-800">{{ reg.child.full_name }}</p>
-          <p class="text-gray-400 text-sm">Age {{ reg.child.age }} · {{ reg.child.gender | title }}</p>
-          <p class="text-gray-400 text-xs">DOB: {{ reg.child.date_of_birth.strftime('%d %b %Y') }}</p>
+          <div style="font-size:14px;font-weight:700;color:var(--text);">{{ reg.child.full_name }}</div>
+          <div style="font-size:12.5px;color:var(--text-2);">Age {{ reg.child.age }} · {{ reg.child.gender | title }}</div>
+          <div style="font-size:11px;color:var(--text-3);">DOB: {{ reg.child.date_of_birth.strftime('%d %b %Y') }}</div>
         </div>
       </div>
       {% if reg.child.medical_notes %}
-        <div class="bg-yellow-50 rounded p-3 text-xs text-yellow-800 border border-yellow-100">
-          <i class="fas fa-notes-medical mr-1"></i>{{ reg.child.medical_notes }}
-        </div>
+        <div class="alert alert-warning" style="font-size:12px;"><i class="fas fa-notes-medical" style="flex-shrink:0;"></i><span>{{ reg.child.medical_notes }}</span></div>
       {% endif %}
     </div>
 
     <!-- Parent -->
-    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-      <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Parent / Guardian</h2>
-      <div class="space-y-2 text-sm">
-        <div class="flex items-center gap-2 text-gray-600">
-          <i class="fas fa-user text-indigo-400 w-4 text-center"></i>
-          <a href="{{ url_for('admin.user_detail', user_id=reg.user.id) }}" class="hover:text-indigo-600 font-medium">{{ reg.user.full_name }}</a>
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">Parent / Guardian</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:13.5px;">
+        <div style="display:flex;align-items:center;gap:8px;color:var(--text-2);">
+          <i class="fas fa-user" style="color:var(--primary);width:14px;text-align:center;font-size:11px;"></i>
+          <a href="{{ url_for('admin.user_detail', user_id=reg.user.id) }}" style="font-weight:600;color:var(--text);">{{ reg.user.full_name }}</a>
         </div>
-        <div class="flex items-center gap-2 text-gray-600">
-          <i class="fas fa-envelope text-indigo-400 w-4 text-center"></i>
-          <a href="mailto:{{ reg.user.email }}" class="hover:text-indigo-600">{{ reg.user.email }}</a>
+        <div style="display:flex;align-items:center;gap:8px;color:var(--text-2);">
+          <i class="fas fa-envelope" style="color:var(--primary);width:14px;text-align:center;font-size:11px;"></i>
+          <a href="mailto:{{ reg.user.email }}" style="color:var(--primary);">{{ reg.user.email }}</a>
         </div>
         {% if reg.user.phone %}
-          <div class="flex items-center gap-2 text-gray-600">
-            <i class="fas fa-phone text-indigo-400 w-4 text-center"></i>
+          <div style="display:flex;align-items:center;gap:8px;color:var(--text-2);">
+            <i class="fas fa-phone" style="color:var(--primary);width:14px;text-align:center;font-size:11px;"></i>
             <span>{{ reg.user.phone }}</span>
           </div>
         {% endif %}
@@ -161,68 +157,28 @@
 
     <!-- Division & Fee -->
     {% if reg.division %}
-      <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-        <h2 class="font-bold text-gray-700 mb-4 border-b pb-2">Division & Fee</h2>
-        <p class="font-semibold text-gray-800">{{ reg.division.name }}</p>
-        <p class="text-gray-500 text-sm">Ages {{ reg.division.min_age }}–{{ reg.division.max_age }}</p>
-        {% if reg.division.gender != 'all' %}
-          <p class="text-gray-500 text-sm">{{ reg.division.gender | title }}</p>
-        {% endif %}
-        <p class="text-2xl font-extrabold text-indigo-600 mt-2">
-          {{ site.currency_symbol }}{{ "%.2f"|format(reg.division.entry_fee|float) }}
-        </p>
-        <p class="text-sm text-gray-500">Paid: {{ site.currency_symbol }}{{ "%.2f"|format(reg.amount_paid|float) }}</p>
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">Division & Fee</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;">{{ reg.division.name }}</div>
+        <div style="font-size:12.5px;color:var(--text-2);margin-bottom:10px;">Ages {{ reg.division.min_age }}–{{ reg.division.max_age }}</div>
+        <div style="font-size:22px;font-weight:800;color:var(--primary);letter-spacing:-0.02em;">{{ site.currency_symbol }}{{ "%.2f"|format(reg.division.entry_fee|float) }}</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:4px;">Paid: {{ site.currency_symbol }}{{ "%.2f"|format(reg.amount_paid|float) }}</div>
       </div>
     {% endif %}
 
-    <!-- Timestamps -->
-    <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-      <h2 class="font-bold text-gray-700 mb-3 border-b pb-2">Timeline</h2>
-      <div class="space-y-2 text-xs text-gray-500">
-        <div class="flex justify-between">
-          <span>Registered</span>
-          <span class="font-medium text-gray-700">{{ reg.registered_at.strftime('%d %b %Y %H:%M') }}</span>
-        </div>
-        <div class="flex justify-between">
-          <span>Last Updated</span>
-          <span class="font-medium text-gray-700">{{ reg.updated_at.strftime('%d %b %Y %H:%M') }}</span>
-        </div>
+    <!-- Timeline -->
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">Timeline</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;">
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-2);">Registered</span><span style="font-weight:600;color:var(--text);">{{ reg.registered_at.strftime('%d %b %Y %H:%M') }}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-2);">Last Updated</span><span style="font-weight:600;color:var(--text);">{{ reg.updated_at.strftime('%d %b %Y %H:%M') }}</span></div>
         {% if reg.payment_intent_id %}
-          <div class="flex justify-between">
-            <span>Payment Ref</span>
-            <span class="font-medium text-gray-700 truncate max-w-[120px]">{{ reg.payment_intent_id }}</span>
-          </div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-2);">Payment Ref</span><span style="font-weight:600;color:var(--text);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ reg.payment_intent_id }}</span></div>
         {% endif %}
       </div>
     </div>
-
-    <!-- Payment Logs -->
-    {% if reg.payment_logs %}
-      <div class="bg-white rounded border border-gray-100 shadow-sm p-6">
-        <h2 class="font-bold text-gray-700 mb-3 border-b pb-2">Payment History</h2>
-        <div class="space-y-2">
-          {% for log in reg.payment_logs | sort(attribute='created_at', reverse=True) %}
-            <div class="flex items-center justify-between text-xs py-1.5 border-b border-gray-50 last:border-0">
-              <div>
-                <span class="font-medium text-gray-700 capitalize">{{ log.gateway }}</span>
-                <span class="text-gray-400 ml-2">{{ log.reference[:20] }}{% if log.reference|length > 20 %}…{% endif %}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="font-semibold text-gray-700">{{ site.currency_symbol }}{{ "%.2f"|format(log.amount|float) }}</span>
-                <span class="px-1.5 py-0.5 rounded text-xs font-semibold
-                  {% if log.status == 'success' %}bg-green-100 text-green-700
-                  {% elif log.status == 'failed' %}bg-red-100 text-red-700
-                  {% elif log.status == 'refunded' %}bg-purple-100 text-purple-700
-                  {% else %}bg-gray-100 text-gray-500{% endif %}">
-                  {{ log.status }}
-                </span>
-                <span class="text-gray-300">{{ log.created_at.strftime('%d %b %H:%M') }}</span>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-    {% endif %}
   </div>
 </div>
+
+<style>@media(max-width:900px){.reg-detail-grid{grid-template-columns:1fr!important;}}</style>
 {% endblock %}

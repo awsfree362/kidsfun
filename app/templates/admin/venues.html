@@ -1,48 +1,37 @@
 {% extends 'admin/base.html' %}
 {% block title %}Venues{% endblock %}
 {% block content %}
-<div class="flex justify-between items-center mb-6">
-  <h1 class="text-2xl font-bold text-gray-800">Venues</h1>
-  <a href="{{ url_for('admin.venue_form') }}" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-indigo-700">+ Add Venue</a>
+<div class="page-header">
+  <div><div class="page-title">Venues</div><div class="page-subtitle">Manage competition venues and locations.</div></div>
+  <a href="{{ url_for('admin.venue_form') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Venue</a>
 </div>
-<div class="bg-white rounded shadow-sm overflow-x-auto">
-  <table class="w-full text-sm min-w-[600px]">
-    <thead class="bg-gray-50 text-gray-500 text-left">
-      <tr>
-        <th class="px-4 py-3 font-semibold">Name</th>
-        <th class="px-4 py-3 font-semibold">Address</th>
-        <th class="px-4 py-3 font-semibold">City</th>
-        <th class="px-4 py-3 font-semibold">Country</th>
-        <th class="px-4 py-3 font-semibold">Capacity</th>
-        <th class="px-4 py-3 font-semibold">Events</th>
-        <th class="px-4 py-3 font-semibold">Actions</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y">
-      {% for venue in venues %}
-        <tr class="hover:bg-gray-50">
-          <td class="px-4 py-3 font-medium">{{ venue.name }}</td>
-          <td class="px-4 py-3 text-gray-500 text-xs max-w-[180px] truncate">{{ venue.address or '-' }}</td>
-          <td class="px-4 py-3">{{ venue.city or '-' }}{% if venue.state %}, {{ venue.state }}{% endif %}</td>
-          <td class="px-4 py-3">{{ venue.country or '-' }}</td>
-          <td class="px-4 py-3">{{ venue.capacity or '-' }}</td>
-          <td class="px-4 py-3">{{ venue.events | length }}</td>
-          <td class="px-4 py-3">
-            <div class="flex gap-3">
-              <a href="{{ url_for('admin.venue_form', venue_id=venue.id) }}"
-                 class="text-indigo-600 hover:text-indigo-800 text-xs font-semibold">Edit</a>
-              <form method="POST" action="{{ url_for('admin.venue_delete', venue_id=venue.id) }}"
-                    onsubmit="return confirm('Delete this venue?')">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-semibold">Delete</button>
-              </form>
-            </div>
-          </td>
-        </tr>
-      {% else %}
-        <tr><td colspan="7" class="px-4 py-10 text-center text-gray-400">No venues yet.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="table-wrap">
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead><tr><th>Name</th><th>City</th><th>Country</th><th>Capacity</th><th>Events</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for venue in venues %}
+          <tr>
+            <td style="font-weight:600;">{{ venue.name }}</td>
+            <td>{{ venue.city or '—' }}{% if venue.state %}, {{ venue.state }}{% endif %}</td>
+            <td>{{ venue.country or '—' }}</td>
+            <td>{{ venue.capacity or '—' }}</td>
+            <td>{{ venue.events | length }}</td>
+            <td>
+              <div style="display:flex;gap:8px;">
+                <a href="{{ url_for('admin.venue_form', venue_id=venue.id) }}" class="btn btn-secondary btn-xs">Edit</a>
+                <form method="POST" action="{{ url_for('admin.venue_delete', venue_id=venue.id) }}" onsubmit="return confirm('Delete this venue?')">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                  <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3);">No venues yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

@@ -1,93 +1,73 @@
-{% extends 'base.html' %}
-{% block title %}My Profile - {{ site.site_name }}{% endblock %}
+{% extends 'user/base.html' %}
+{% block title %}My Profile — {{ site.site_name }}{% endblock %}
+{% block page_title %}My Profile{% endblock %}
 {% block content %}
-<div style="max-width:640px;margin:0 auto;padding:48px 24px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;">
+
+<div style="max-width:560px;">
+  <div class="ph">
     <div>
-      <h1 style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.02em;margin:0 0 4px;">My Profile</h1>
-      <p style="font-size:14px;color:var(--text-2);margin:0;">Update your personal information and password.</p>
+      <div class="ph-title">My Profile</div>
+      <div class="ph-sub">Update your personal information and password.</div>
     </div>
-    <a href="{{ url_for('user.dashboard') }}" style="font-size:13px;font-weight:600;color:var(--purple);display:flex;align-items:center;gap:6px;">
-      <i class="fas fa-arrow-left" style="font-size:11px;"></i> Dashboard
-    </a>
   </div>
 
-  <div style="background:#fff;border-radius:16px;border:1px solid var(--border);padding:32px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
-    <form method="POST" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:20px;">
+  <div class="card">
+    <form method="POST" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:18px;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
       <!-- Avatar -->
-      <div style="display:flex;align-items:center;gap:20px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:18px;padding-bottom:18px;border-bottom:1px solid var(--border);">
         {% if current_user.profile_image %}
-          <img src="{{ current_user.profile_image }}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;"/>
+          <img src="{{ current_user.profile_image }}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;flex-shrink:0;"/>
         {% else %}
-          <div style="width:72px;height:72px;border-radius:50%;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:var(--purple);flex-shrink:0;">
-            {{ current_user.first_name[0] | upper if current_user.first_name else '?' }}
-          </div>
+          <div class="avatar" style="width:64px;height:64px;font-size:22px;">{{ current_user.first_name[0] | upper if current_user.first_name else '?' }}</div>
         {% endif %}
         <div>
-          <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Profile Photo</label>
+          <label class="f-label">Profile Photo</label>
           <input type="file" name="profile_image" accept="image/*" style="font-size:13px;color:var(--text-2);"/>
         </div>
       </div>
 
-      <!-- Name -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         <div>
-          <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">First Name</label>
-          <input type="text" name="first_name" value="{{ current_user.first_name or '' }}"
-                 style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;"
-                 onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'"
-                 onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'"/>
+          <label class="f-label">First Name</label>
+          <input type="text" name="first_name" value="{{ current_user.first_name or '' }}" class="f-input"/>
         </div>
         <div>
-          <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Last Name</label>
-          <input type="text" name="last_name" value="{{ current_user.last_name or '' }}"
-                 style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;"
-                 onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'"
-                 onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'"/>
+          <label class="f-label">Last Name</label>
+          <input type="text" name="last_name" value="{{ current_user.last_name or '' }}" class="f-input"/>
         </div>
       </div>
 
       <div>
-        <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Email Address</label>
+        <label class="f-label">Email Address</label>
         <input type="email" value="{{ current_user.email }}" disabled
-               style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;background:#F9FAFB;color:var(--text-3);cursor:not-allowed;"/>
+               style="height:42px;width:100%;border-radius:var(--radius-md);border:1px solid #D1D5DB;padding:0 14px;font-size:13.5px;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text-3);cursor:not-allowed;"/>
       </div>
 
       <div>
-        <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Phone <span style="font-weight:400;color:var(--text-3);">(optional)</span></label>
-        <input type="text" name="phone" value="{{ current_user.phone or '' }}"
-               style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;"
-               onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'"
-               onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'"/>
+        <label class="f-label">Phone <span style="font-weight:400;color:var(--text-3);">(optional)</span></label>
+        <input type="text" name="phone" value="{{ current_user.phone or '' }}" class="f-input"/>
       </div>
 
-      <!-- Password section -->
-      <div style="padding-top:20px;border-top:1px solid var(--border);">
-        <p style="font-size:14px;font-weight:700;color:var(--text);margin:0 0 16px;">Change Password <span style="font-size:12px;font-weight:400;color:var(--text-3);">— leave blank to keep current</span></p>
-        <div style="display:flex;flex-direction:column;gap:16px;">
+      <!-- Password -->
+      <div style="padding-top:16px;border-top:1px solid var(--border);">
+        <div style="font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:14px;">
+          Change Password <span style="font-size:12px;font-weight:400;color:var(--text-3);">— leave blank to keep current</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
           <div>
-            <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Current Password</label>
-            <input type="password" name="current_password"
-                   style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;"
-                   onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'"
-                   onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'"/>
+            <label class="f-label">Current Password</label>
+            <input type="password" name="current_password" class="f-input"/>
           </div>
           <div>
-            <label style="display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">New Password</label>
-            <input type="password" name="new_password"
-                   style="height:44px;width:100%;border-radius:10px;border:1px solid #D1D5DB;padding:0 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:200ms ease;"
-                   onfocus="this.style.borderColor='var(--purple)';this.style.boxShadow='0 0 0 4px rgba(110,65,226,.15)'"
-                   onblur="this.style.borderColor='#D1D5DB';this.style.boxShadow='none'"/>
+            <label class="f-label">New Password</label>
+            <input type="password" name="new_password" class="f-input"/>
           </div>
         </div>
       </div>
 
-      <button type="submit"
-              style="height:48px;background:var(--purple);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:200ms ease;"
-              onmouseover="this.style.background='var(--purple-dark)';this.style.boxShadow='0 4px 16px rgba(110,65,226,.3)'"
-              onmouseout="this.style.background='var(--purple)';this.style.boxShadow='none'">
+      <button type="submit" class="btn btn-p" style="width:100%;justify-content:center;height:44px;font-size:14px;">
         Save Changes
       </button>
     </form>

@@ -1,62 +1,46 @@
 {% extends 'admin/base.html' %}
 {% block title %}Sports{% endblock %}
 {% block content %}
-<div class="flex justify-between items-center mb-6">
-  <h1 class="text-2xl font-bold text-gray-800">Sports</h1>
-  <a href="{{ url_for('admin.sport_form') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700">+ Add Sport</a>
+<div class="page-header">
+  <div><div class="page-title">Sports</div><div class="page-subtitle">Manage sport categories.</div></div>
+  <a href="{{ url_for('admin.sport_form') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Sport</a>
 </div>
-<div class="bg-white rounded shadow-sm overflow-hidden">
-  <table class="w-full text-sm">
-    <thead class="bg-gray-50 text-gray-500 text-left">
-      <tr>
-        <th class="px-4 py-3 font-semibold">Icon</th>
-        <th class="px-4 py-3 font-semibold">Name</th>
-        <th class="px-4 py-3 font-semibold">Slug</th>
-        <th class="px-4 py-3 font-semibold">Events</th>
-        <th class="px-4 py-3 font-semibold">Order</th>
-        <th class="px-4 py-3 font-semibold">Active</th>
-        <th class="px-4 py-3 font-semibold">Actions</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y">
-      {% for sport in sports %}
-        <tr class="hover:bg-gray-50">
-          <td class="px-4 py-3">
-            {% if sport.icon and sport.icon.startswith('http') %}
-              <img src="{{ sport.icon }}" class="w-8 h-8 object-contain"/>
-            {% elif sport.icon and sport.icon.startswith('fa-') %}
-              <div class="w-8 h-8 bg-indigo-50 flex items-center justify-center">
-                <i class="fas {{ sport.icon }} text-indigo-500"></i>
+<div class="table-wrap">
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead><tr><th>Icon</th><th>Name</th><th>Slug</th><th>Events</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for sport in sports %}
+          <tr>
+            <td>
+              {% if sport.icon and sport.icon.startswith('http') %}
+                <img src="{{ sport.icon }}" style="width:32px;height:32px;object-fit:contain;border-radius:6px;"/>
+              {% else %}
+                <div style="width:32px;height:32px;border-radius:6px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;">
+                  <i class="fas {{ sport.icon if sport.icon and sport.icon.startswith('fa-') else 'fa-medal' }}" style="color:var(--primary);font-size:13px;"></i>
+                </div>
+              {% endif %}
+            </td>
+            <td style="font-weight:600;">{{ sport.name }}</td>
+            <td style="color:var(--text-3);font-size:12px;">{{ sport.slug }}</td>
+            <td>{{ sport.events | length }}</td>
+            <td>{{ sport.sort_order }}</td>
+            <td><span class="badge {% if sport.is_active %}badge-green{% else %}badge-gray{% endif %}">{{ 'Active' if sport.is_active else 'Inactive' }}</span></td>
+            <td>
+              <div style="display:flex;gap:8px;">
+                <a href="{{ url_for('admin.sport_form', sport_id=sport.id) }}" class="btn btn-secondary btn-xs">Edit</a>
+                <form method="POST" action="{{ url_for('admin.sport_delete', sport_id=sport.id) }}" onsubmit="return confirm('Delete?')">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                  <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                </form>
               </div>
-            {% else %}
-              <div class="w-8 h-8 bg-gray-100 flex items-center justify-center">
-                <i class="fas fa-medal text-gray-400"></i>
-              </div>
-            {% endif %}
-          </td>
-          <td class="px-4 py-3 font-medium">{{ sport.name }}</td>
-          <td class="px-4 py-3 text-gray-400 text-xs">{{ sport.slug }}</td>
-          <td class="px-4 py-3">{{ sport.events | length }}</td>
-          <td class="px-4 py-3">{{ sport.sort_order }}</td>
-          <td class="px-4 py-3">
-            <span class="px-2 py-0.5 rounded-full text-xs font-semibold {% if sport.is_active %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-500{% endif %}">
-              {{ 'Active' if sport.is_active else 'Inactive' }}
-            </span>
-          </td>
-          <td class="px-4 py-3">
-            <div class="flex gap-3">
-              <a href="{{ url_for('admin.sport_form', sport_id=sport.id) }}" class="text-indigo-600 hover:text-indigo-800 text-xs font-semibold">Edit</a>
-              <form method="POST" action="{{ url_for('admin.sport_delete', sport_id=sport.id) }}" onsubmit="return confirm('Delete this sport?')">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-semibold">Delete</button>
-              </form>
-            </div>
-          </td>
-        </tr>
-      {% else %}
-        <tr><td colspan="7" class="px-4 py-10 text-center text-gray-400">No sports yet.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-3);">No sports yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

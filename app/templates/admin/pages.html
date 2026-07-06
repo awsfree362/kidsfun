@@ -1,45 +1,37 @@
 {% extends 'admin/base.html' %}
 {% block title %}Pages{% endblock %}
 {% block content %}
-<div class="flex justify-between items-center mb-6">
-  <h1 class="text-2xl font-bold text-gray-800">Pages</h1>
-  <a href="{{ url_for('admin.page_form') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700">+ New Page</a>
+<div class="page-header">
+  <div><div class="page-title">Pages</div><div class="page-subtitle">Manage static content pages.</div></div>
+  <a href="{{ url_for('admin.page_form') }}" class="btn btn-primary"><i class="fas fa-plus"></i> New Page</a>
 </div>
-<div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-  <table class="w-full text-sm">
-    <thead class="bg-gray-50 text-gray-500 text-left">
-      <tr>
-        <th class="px-4 py-3 font-semibold">Title</th>
-        <th class="px-4 py-3 font-semibold">Slug</th>
-        <th class="px-4 py-3 font-semibold">Published</th>
-        <th class="px-4 py-3 font-semibold">Updated</th>
-        <th class="px-4 py-3 font-semibold">Actions</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y">
-      {% for page in pages %}
-        <tr class="hover:bg-gray-50">
-          <td class="px-4 py-3 font-medium">{{ page.title }}</td>
-          <td class="px-4 py-3 text-gray-400">/page/{{ page.slug }}</td>
-          <td class="px-4 py-3">
-            <span class="px-2 py-0.5 rounded-full text-xs font-semibold {% if page.is_published %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-500{% endif %}">
-              {{ 'Yes' if page.is_published else 'No' }}
-            </span>
-          </td>
-          <td class="px-4 py-3 text-gray-400">{{ page.updated_at.strftime('%d %b %Y') }}</td>
-          <td class="px-4 py-3 flex gap-3">
-            <a href="{{ url_for('admin.page_form', page_id=page.id) }}" class="text-indigo-600 hover:text-indigo-800 text-xs font-semibold">Edit</a>
-            <a href="{{ url_for('events.static_page', slug=page.slug) }}" target="_blank" class="text-gray-500 hover:text-gray-700 text-xs">View</a>
-            <form method="POST" action="{{ url_for('admin.page_delete', page_id=page.id) }}" onsubmit="return confirm('Delete?')">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-              <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-semibold">Delete</button>
-            </form>
-          </td>
-        </tr>
-      {% else %}
-        <tr><td colspan="5" class="px-4 py-10 text-center text-gray-400">No pages yet.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="table-wrap">
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead><tr><th>Title</th><th>Slug</th><th>Published</th><th>Updated</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for page in pages %}
+          <tr>
+            <td style="font-weight:600;">{{ page.title }}</td>
+            <td style="color:var(--text-3);font-size:12px;">/page/{{ page.slug }}</td>
+            <td><span class="badge {% if page.is_published %}badge-green{% else %}badge-gray{% endif %}">{{ 'Yes' if page.is_published else 'Draft' }}</span></td>
+            <td style="color:var(--text-3);font-size:12px;">{{ page.updated_at.strftime('%d %b %Y') }}</td>
+            <td>
+              <div style="display:flex;gap:8px;">
+                <a href="{{ url_for('admin.page_form', page_id=page.id) }}" class="btn btn-secondary btn-xs">Edit</a>
+                <a href="{{ url_for('events.static_page', slug=page.slug) }}" target="_blank" style="font-size:12px;color:var(--text-2);">View</a>
+                <form method="POST" action="{{ url_for('admin.page_delete', page_id=page.id) }}" onsubmit="return confirm('Delete?')">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                  <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-3);">No pages yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

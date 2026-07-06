@@ -1,142 +1,92 @@
 {% extends 'admin/base.html' %}
 {% block title %}Settings{% endblock %}
 {% block content %}
-<h1 class="text-2xl font-bold text-gray-800 mb-6">Site Settings</h1>
-<form method="POST" enctype="multipart/form-data" class="space-y-6">
+<div class="page-header">
+  <div><div class="page-title">Site Settings</div><div class="page-subtitle">Configure your platform appearance, contact info, and payments.</div></div>
+</div>
+
+<form method="POST" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:20px;max-width:860px;">
   {{ form.hidden_tag() }}
 
   <!-- General -->
-  <div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
-    <h2 class="font-bold text-gray-700 text-lg border-b pb-2">General</h2>
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Site Name</label>
-        {{ form.site_name(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
-        {{ form.site_tagline(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
-      </div>
+  <div class="card">
+    <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">General</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div><label class="form-label">Site Name</label>{{ form.site_name(class="form-input") }}</div>
+      <div><label class="form-label">Tagline</label>{{ form.site_tagline(class="form-input") }}</div>
     </div>
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Footer Text</label>
-      {{ form.footer_text(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400", rows=2) }}
-    </div>
+    <div style="margin-top:16px;"><label class="form-label">Footer Text</label>{{ form.footer_text(class="form-input form-textarea", rows=2) }}</div>
   </div>
 
   <!-- Appearance -->
-  <div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
-    <h2 class="font-bold text-gray-700 text-lg border-b pb-2">Appearance</h2>
-    <div class="grid grid-cols-2 gap-4">
+  <div class="card">
+    <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">Appearance</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
-        <div class="flex gap-2 items-center">
-          {{ form.primary_color(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400", id="primaryColor") }}
-          <input type="color" id="primaryPicker" class="w-10 h-10 rounded cursor-pointer border"/>
+        <label class="form-label">Primary Color</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          {{ form.primary_color(class="form-input", id="primaryColor") }}
+          <input type="color" id="primaryPicker" style="width:40px;height:42px;border-radius:8px;border:1px solid var(--border);cursor:pointer;padding:2px;"/>
         </div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Secondary Color</label>
-        <div class="flex gap-2 items-center">
-          {{ form.secondary_color(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400", id="secondaryColor") }}
-          <input type="color" id="secondaryPicker" class="w-10 h-10 rounded cursor-pointer border"/>
+        <label class="form-label">Secondary Color</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          {{ form.secondary_color(class="form-input", id="secondaryColor") }}
+          <input type="color" id="secondaryPicker" style="width:40px;height:42px;border-radius:8px;border:1px solid var(--border);cursor:pointer;padding:2px;"/>
         </div>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Hero Title</label>
-        {{ form.hero_title(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Hero Subtitle</label>
-        {{ form.hero_subtitle(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
-      </div>
+      <div><label class="form-label">Hero Title</label>{{ form.hero_title(class="form-input") }}</div>
+      <div><label class="form-label">Hero Subtitle</label>{{ form.hero_subtitle(class="form-input") }}</div>
     </div>
-    <div class="grid grid-cols-3 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Logo</label>
-        {{ form.site_logo(class="w-full text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700") }}
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Favicon</label>
-        {{ form.site_favicon(class="w-full text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700") }}
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Hero Image (poster/fallback)</label>
-        {{ form.hero_image(class="w-full text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700") }}
-      </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px;">
+      <div><label class="form-label">Logo</label>{{ form.site_logo(style="font-size:13px;color:var(--text-2);") }}</div>
+      <div><label class="form-label">Favicon</label>{{ form.site_favicon(style="font-size:13px;color:var(--text-2);") }}</div>
+      <div><label class="form-label">Hero Image (poster)</label>{{ form.hero_image(style="font-size:13px;color:var(--text-2);") }}</div>
     </div>
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Hero Video URL <span class="text-gray-400 font-normal">(MP4 link — leave blank to use default)</span></label>
-      <input type="text" name="hero_video" value="{{ site.hero_video or '' }}"
-             placeholder="https://example.com/your-video.mp4"
-             class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm"/>
-      <p class="text-xs text-gray-400 mt-1">Upload your video to S3 or paste any public MP4 URL. Recommended: 1920×1080, under 20MB.</p>
+    <div style="margin-top:16px;">
+      <label class="form-label">Hero Video URL <span style="font-weight:400;color:var(--text-3);">(MP4 — leave blank for default)</span></label>
+      <input type="text" name="hero_video" value="{{ site.hero_video or '' }}" class="form-input" placeholder="https://example.com/video.mp4"/>
+      <div class="form-hint">Upload to S3 and paste the URL. Recommended: 1920×1080, under 20MB.</div>
     </div>
   </div>
 
   <!-- Contact & Social -->
-  <div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
-    <h2 class="font-bold text-gray-700 text-lg border-b pb-2">Contact & Social</h2>
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
-        {{ form.contact_email(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
-        {{ form.contact_phone(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
-        {{ form.facebook_url(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
-        {{ form.instagram_url(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Twitter URL</label>
-        {{ form.twitter_url(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
-      </div>
+  <div class="card">
+    <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">Contact & Social</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div><label class="form-label">Contact Email</label>{{ form.contact_email(class="form-input") }}</div>
+      <div><label class="form-label">Contact Phone</label>{{ form.contact_phone(class="form-input") }}</div>
+      <div><label class="form-label">Facebook URL</label>{{ form.facebook_url(class="form-input") }}</div>
+      <div><label class="form-label">Instagram URL</label>{{ form.instagram_url(class="form-input") }}</div>
+      <div><label class="form-label">Twitter URL</label>{{ form.twitter_url(class="form-input") }}</div>
     </div>
   </div>
 
   <!-- Payments -->
-  <div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
-    <h2 class="font-bold text-gray-700 text-lg border-b pb-2">Payments</h2>
-    <div class="grid grid-cols-3 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Active Gateway</label>
-        {{ form.active_payment_gateway(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Currency Code</label>
-        {{ form.currency(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400", placeholder="ZAR") }}
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Currency Symbol</label>
-        {{ form.currency_symbol(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400", placeholder="R") }}
-      </div>
+  <div class="card">
+    <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">Payments</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+      <div><label class="form-label">Active Gateway</label>{{ form.active_payment_gateway(class="form-select") }}</div>
+      <div><label class="form-label">Currency Code</label>{{ form.currency(class="form-input", placeholder="ZAR") }}</div>
+      <div><label class="form-label">Currency Symbol</label>{{ form.currency_symbol(class="form-input", placeholder="R") }}</div>
     </div>
-    <p class="text-xs text-gray-400">API keys for payment gateways are configured in the <code>.env</code> file.</p>
+    <div class="form-hint" style="margin-top:10px;">API keys are configured in the <code>.env</code> file on the server.</div>
   </div>
 
-  <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl text-lg hover:bg-indigo-700 transition">
-    Save Settings
+  <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;height:46px;font-size:14px;">
+    <i class="fas fa-save"></i> Save Settings
   </button>
 </form>
 
 <script>
-  const pc = document.getElementById('primaryColor');
-  const pp = document.getElementById('primaryPicker');
-  pp.value = pc.value || '#6366f1';
-  pp.addEventListener('input', () => pc.value = pp.value);
-  pc.addEventListener('input', () => pp.value = pc.value);
-
-  const sc = document.getElementById('secondaryColor');
-  const sp = document.getElementById('secondaryPicker');
-  sp.value = sc.value || '#f59e0b';
-  sp.addEventListener('input', () => sc.value = sp.value);
-  sc.addEventListener('input', () => sp.value = sc.value);
+const pc = document.getElementById('primaryColor'), pp = document.getElementById('primaryPicker');
+pp.value = pc.value || '#5B5CEB';
+pp.addEventListener('input', () => pc.value = pp.value);
+pc.addEventListener('input', () => pp.value = pc.value);
+const sc = document.getElementById('secondaryColor'), sp = document.getElementById('secondaryPicker');
+sp.value = sc.value || '#0EA5E9';
+sp.addEventListener('input', () => sc.value = sp.value);
+sc.addEventListener('input', () => sp.value = sc.value);
 </script>
 {% endblock %}

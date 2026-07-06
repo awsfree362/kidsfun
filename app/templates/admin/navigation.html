@@ -1,34 +1,36 @@
 {% extends 'admin/base.html' %}
 {% block title %}Navigation{% endblock %}
 {% block content %}
-<h1 class="text-2xl font-bold text-gray-800 mb-6">Navigation Menu</h1>
-<div class="max-w-2xl bg-white rounded-2xl shadow-sm p-6" x-data="navManager()">
-  <div class="space-y-2 mb-6" id="navList">
-    <template x-for="(item, index) in items" :key="index">
-      <div class="flex items-center gap-3 bg-gray-50 rounded-lg px-3 py-2">
-        <i class="fas fa-grip-vertical text-gray-300 cursor-move"></i>
-        <input x-model="item.label" class="flex-1 border rounded px-2 py-1 text-sm" placeholder="Label"/>
-        <input x-model="item.url" class="flex-1 border rounded px-2 py-1 text-sm" placeholder="URL"/>
-        <label class="flex items-center gap-1 text-xs text-gray-500">
-          <input type="checkbox" x-model="item.open_in_new_tab"/> New tab
-        </label>
-        <button @click="items.splice(index,1)" class="text-red-400 hover:text-red-600">
-          <i class="fas fa-trash text-xs"></i>
-        </button>
-      </div>
-    </template>
-  </div>
-  <div class="flex gap-3 mb-6">
-    <button @click="addItem()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700">
-      + Add Item
-    </button>
-    <button @click="saveNav()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700">
-      Save Navigation
-    </button>
-  </div>
-  <p class="text-xs text-gray-400">Changes take effect immediately on the frontend.</p>
+<div class="page-header">
+  <div><div class="page-title">Navigation Menu</div><div class="page-subtitle">Edit the public site navigation links.</div></div>
 </div>
-
+<div style="max-width:640px;" x-data="navManager()">
+  <div class="card">
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;" id="navList">
+      <template x-for="(item, index) in items" :key="index">
+        <div style="display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:var(--radius-md);padding:10px 14px;border:1px solid var(--border);">
+          <i class="fas fa-grip-vertical" style="color:var(--text-3);cursor:move;flex-shrink:0;"></i>
+          <input x-model="item.label" class="form-input" style="height:36px;font-size:13px;" placeholder="Label"/>
+          <input x-model="item.url" class="form-input" style="height:36px;font-size:13px;" placeholder="URL"/>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);white-space:nowrap;cursor:pointer;">
+            <input type="checkbox" x-model="item.open_in_new_tab" style="accent-color:var(--primary);"/> New tab
+          </label>
+          <button @click="items.splice(index,1)" class="btn btn-danger btn-xs" style="flex-shrink:0;">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </template>
+      <div x-show="items.length === 0" style="text-align:center;padding:24px;color:var(--text-3);font-size:13.5px;">
+        No nav items yet. Click "Add Item" to start.
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button @click="addItem()" class="btn btn-secondary"><i class="fas fa-plus"></i> Add Item</button>
+      <button @click="saveNav()" class="btn btn-primary"><i class="fas fa-save"></i> Save Navigation</button>
+    </div>
+    <p style="font-size:12px;color:var(--text-3);margin-top:12px;">Changes take effect immediately on the public site.</p>
+  </div>
+</div>
 <script>
 function navManager() {
   return {
@@ -40,7 +42,7 @@ function navManager() {
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token() }}' },
         body: JSON.stringify(this.items.map((item, i) => ({ ...item, sort_order: i })))
       });
-      if (r.ok) alert('Navigation saved!');
+      if (r.ok) { alert('Navigation saved!'); } else { alert('Save failed.'); }
     }
   }
 }

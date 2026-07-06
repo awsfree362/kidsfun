@@ -1,130 +1,107 @@
-{% extends 'base.html' %}
-{% block title %}My Children - {{ site.site_name }}{% endblock %}
+{% extends 'user/base.html' %}
+{% block title %}My Children — {{ site.site_name }}{% endblock %}
+{% block page_title %}My Children{% endblock %}
 {% block content %}
-<div style="max-width:1100px;margin:0 auto;padding:48px 24px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
-    <div>
-      <h1 style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.02em;margin:0 0 4px;">My Children</h1>
-      <p style="font-size:14px;color:var(--text-2);margin:0;">Manage your children's profiles and documents.</p>
-    </div>
-    <a href="{{ url_for('user.child_form') }}"
-       style="display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:#fff;font-size:14px;font-weight:600;padding:10px 20px;border-radius:10px;text-decoration:none;transition:200ms ease;"
-       onmouseover="this.style.background='var(--purple-dark)'" onmouseout="this.style.background='var(--purple)'">
-      <i class="fas fa-plus" style="font-size:12px;"></i> Add Child
-    </a>
-  </div>
 
-  {% if children %}
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;">
-      {% for child in children %}
-        <div style="background:#fff;border-radius:16px;border:1px solid var(--border);padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
-          <!-- Child header -->
-          <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-            {% if child.profile_image %}
-              <img src="{{ child.profile_image }}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;flex-shrink:0;"/>
-            {% else %}
-              <div style="width:60px;height:60px;border-radius:50%;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--purple);flex-shrink:0;">
-                {{ child.first_name[0] | upper }}
-              </div>
-            {% endif %}
-            <div style="flex:1;min-width:0;">
-              <h3 style="font-size:16px;font-weight:700;color:var(--text);margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ child.full_name }}</h3>
-              <p style="font-size:13px;color:var(--text-2);margin:0;">Age {{ child.age }} · {{ child.gender | title }}</p>
-              <p style="font-size:12px;color:var(--text-3);margin:2px 0 0;">DOB: {{ child.date_of_birth.strftime('%d %b %Y') }}</p>
-            </div>
+<div class="ph">
+  <div>
+    <div class="ph-title">My Children</div>
+    <div class="ph-sub">Manage profiles and upload documents.</div>
+  </div>
+  <a href="{{ url_for('user.child_form') }}" class="btn btn-p">
+    <i class="fas fa-plus" style="font-size:11px;"></i> Add Child
+  </a>
+</div>
+
+{% if children %}
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;">
+    {% for child in children %}
+      <div class="card" style="padding:0;overflow:hidden;">
+
+        <!-- Header -->
+        <div style="padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;">
+          {% if child.profile_image %}
+            <img src="{{ child.profile_image }}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;"/>
+          {% else %}
+            <div class="avatar" style="width:56px;height:56px;font-size:20px;">{{ child.first_name[0] | upper }}</div>
+          {% endif %}
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ child.full_name }}</div>
+            <div style="font-size:13px;color:var(--text-2);">Age {{ child.age }} · {{ child.gender | title }}</div>
+            <div style="font-size:12px;color:var(--text-3);">DOB: {{ child.date_of_birth.strftime('%d %b %Y') }}</div>
           </div>
+        </div>
+
+        <div style="padding:16px;display:flex;flex-direction:column;gap:14px;">
 
           {% if child.medical_notes %}
-            <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;margin-bottom:16px;font-size:13px;color:#92400E;display:flex;gap:8px;align-items:flex-start;">
-              <i class="fas fa-notes-medical" style="flex-shrink:0;margin-top:1px;"></i>
+            <div class="alert alert-warning" style="font-size:12.5px;">
+              <i class="fas fa-notes-medical" style="flex-shrink:0;"></i>
               <span>{{ child.medical_notes }}</span>
             </div>
           {% endif %}
 
-          <!-- Stats -->
-          <div style="display:flex;gap:8px;margin-bottom:16px;">
-            <span style="background:var(--purple-light);color:var(--purple);font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;">
-              <i class="fas fa-file" style="font-size:10px;margin-right:4px;"></i>{{ child.documents | length }} doc(s)
-            </span>
-            <span style="background:#F0FDF4;color:#15803D;font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;">
-              <i class="fas fa-clipboard-list" style="font-size:10px;margin-right:4px;"></i>{{ child.registrations | length }} reg(s)
-            </span>
+          <!-- Badges -->
+          <div style="display:flex;gap:8px;">
+            <span class="badge badge-purple"><i class="fas fa-file" style="font-size:10px;"></i> {{ child.documents | length }} doc(s)</span>
+            <span class="badge badge-green"><i class="fas fa-clipboard-list" style="font-size:10px;"></i> {{ child.registrations | length }} reg(s)</span>
           </div>
 
           <!-- Documents -->
-          <div style="margin-bottom:16px;">
-            <p style="font-size:12px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px;">Documents</p>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Documents</div>
             {% if child.documents %}
               <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:10px;">
                 {% for doc in child.documents %}
-                  <div style="display:flex;align-items:center;justify-content:space-between;background:#F9FAFB;border-radius:8px;padding:8px 12px;font-size:13px;">
-                    <span style="color:var(--text-2);display:flex;align-items:center;gap:6px;overflow:hidden;">
-                      <i class="fas fa-file-alt" style="color:var(--purple);flex-shrink:0;font-size:11px;"></i>
+                  <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-radius:8px;padding:8px 12px;font-size:13px;">
+                    <span style="color:var(--text-2);display:flex;align-items:center;gap:6px;overflow:hidden;min-width:0;">
+                      <i class="fas fa-file-alt" style="color:var(--primary);flex-shrink:0;font-size:11px;"></i>
                       <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ doc.file_name }}</span>
-                      <span style="color:var(--text-3);flex-shrink:0;">({{ doc.doc_type }})</span>
                     </span>
-                    <a href="{{ doc.file_url }}" target="_blank" style="color:var(--purple);font-weight:600;font-size:12px;flex-shrink:0;margin-left:8px;">View</a>
+                    <a href="{{ doc.file_url }}" target="_blank" style="color:var(--primary);font-weight:600;font-size:12px;flex-shrink:0;margin-left:8px;">View</a>
                   </div>
                 {% endfor %}
               </div>
             {% endif %}
-            <!-- Upload form -->
-            <form onsubmit="uploadDoc(event, {{ child.id }})" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-              <select name="doc_type" style="height:36px;border-radius:8px;border:1px solid #D1D5DB;padding:0 10px;font-size:12px;font-family:'Inter',sans-serif;background:#fff;color:var(--text);outline:none;">
+            <form onsubmit="uploadDoc(event, {{ child.id }})" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <select name="doc_type" class="f-select" style="height:36px;width:auto;font-size:12px;flex-shrink:0;">
                 <option value="birth_certificate">Birth Certificate</option>
                 <option value="medical">Medical</option>
                 <option value="id">ID</option>
                 <option value="other">Other</option>
               </select>
               <input type="file" name="document" style="font-size:12px;flex:1;min-width:0;"/>
-              <button type="submit"
-                      style="height:36px;padding:0 14px;background:var(--purple);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;white-space:nowrap;">
-                Upload
-              </button>
+              <button type="submit" class="btn btn-p btn-sm" style="white-space:nowrap;">Upload</button>
             </form>
           </div>
 
           <!-- Actions -->
-          <div style="display:flex;gap:8px;padding-top:16px;border-top:1px solid var(--border);">
-            <a href="{{ url_for('user.child_form', child_id=child.id) }}"
-               style="flex:1;text-align:center;padding:9px;border-radius:8px;border:1.5px solid var(--purple);color:var(--purple);font-size:13px;font-weight:600;text-decoration:none;transition:200ms ease;"
-               onmouseover="this.style.background='var(--purple-light)'" onmouseout="this.style.background='transparent'">
-              Edit Profile
-            </a>
-            <a href="{{ url_for('events.event_list') }}"
-               style="flex:1;text-align:center;padding:9px;border-radius:8px;background:var(--purple);color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:200ms ease;"
-               onmouseover="this.style.background='var(--purple-dark)'" onmouseout="this.style.background='var(--purple)'">
-              Find Events
-            </a>
+          <div style="display:flex;gap:8px;padding-top:12px;border-top:1px solid var(--border);">
+            <a href="{{ url_for('user.child_form', child_id=child.id) }}" class="btn btn-sec btn-sm" style="flex:1;justify-content:center;">Edit Profile</a>
+            <a href="{{ url_for('events.event_list') }}" class="btn btn-p btn-sm" style="flex:1;justify-content:center;">Find Events</a>
           </div>
         </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div style="text-align:center;padding:80px 24px;background:#fff;border-radius:16px;border:1px solid var(--border);">
-      <div style="width:64px;height:64px;border-radius:16px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
-        <i class="fas fa-child" style="color:var(--purple);font-size:26px;"></i>
       </div>
-      <p style="font-size:18px;font-weight:700;color:var(--text);margin:0 0 8px;">No children added yet</p>
-      <p style="font-size:14px;color:var(--text-2);margin:0 0 24px;">Add your child's profile to start registering for events.</p>
-      <a href="{{ url_for('user.child_form') }}"
-         style="display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:#fff;font-size:14px;font-weight:600;padding:12px 24px;border-radius:10px;text-decoration:none;">
-        <i class="fas fa-plus" style="font-size:12px;"></i> Add Your First Child
-      </a>
-    </div>
-  {% endif %}
-</div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="card" style="text-align:center;padding:64px 24px;">
+    <div class="stat-icon" style="background:var(--primary-light);margin:0 auto 16px;width:56px;height:56px;"><i class="fas fa-child" style="color:var(--primary);font-size:22px;"></i></div>
+    <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;">No children added yet</div>
+    <div style="font-size:13.5px;color:var(--text-2);margin-bottom:20px;">Add your child's profile to start registering for events.</div>
+    <a href="{{ url_for('user.child_form') }}" class="btn btn-p"><i class="fas fa-plus" style="font-size:11px;"></i> Add Your First Child</a>
+  </div>
+{% endif %}
 
 <script>
 async function uploadDoc(e, childId) {
   e.preventDefault();
   const btn = e.target.querySelector('button[type=submit]');
-  btn.textContent = 'Uploading...';
-  btn.disabled = true;
-  const fd = new FormData(e.target);
-  const r = await fetch(`/dashboard/children/${childId}/documents`, { method: 'POST', body: fd });
+  const orig = btn.textContent;
+  btn.textContent = 'Uploading...'; btn.disabled = true;
+  const r = await fetch(`/dashboard/children/${childId}/documents`, { method: 'POST', body: new FormData(e.target) });
   if (r.ok) location.reload();
-  else { alert('Upload failed. Please try again.'); btn.textContent = 'Upload'; btn.disabled = false; }
+  else { alert('Upload failed.'); btn.textContent = orig; btn.disabled = false; }
 }
 </script>
 {% endblock %}

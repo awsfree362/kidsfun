@@ -1,50 +1,45 @@
-{% extends 'base.html' %}
-{% block title %}Registration #{{ reg.id }} - {{ site.site_name }}{% endblock %}
+{% extends 'user/base.html' %}
+{% block title %}Registration #{{ reg.id }} — {{ site.site_name }}{% endblock %}
+{% block page_title %}Registration #{{ reg.id }}{% endblock %}
 {% block content %}
-<div style="max-width:680px;margin:0 auto;padding:48px 24px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
+
+<div style="max-width:640px;">
+  <div class="ph">
     <div>
-      <h1 style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.02em;margin:0 0 4px;">Registration #{{ reg.id }}</h1>
-      <p style="font-size:14px;color:var(--text-2);margin:0;">Registered {{ reg.registered_at.strftime('%d %b %Y at %H:%M') }}</p>
+      <div class="ph-title">Registration #{{ reg.id }}</div>
+      <div class="ph-sub">Registered {{ reg.registered_at.strftime('%d %b %Y at %H:%M') }}</div>
     </div>
-    <a href="{{ url_for('user.registrations') }}" style="font-size:13px;font-weight:600;color:var(--purple);display:flex;align-items:center;gap:6px;">
-      <i class="fas fa-arrow-left" style="font-size:11px;"></i> All Registrations
+    <a href="{{ url_for('user.registrations') }}" class="btn btn-sec btn-sm">
+      <i class="fas fa-arrow-left" style="font-size:11px;"></i> Back
     </a>
   </div>
 
-  <div style="background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 20px rgba(0,0,0,.04);">
+  <div class="card" style="padding:0;overflow:hidden;">
 
     <!-- Status bar -->
-    <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-      <span style="padding:6px 14px;border-radius:8px;font-size:13px;font-weight:700;
-        {% if reg.status == 'confirmed' %}background:#F0FDF4;color:#15803D;
-        {% elif reg.status == 'pending' %}background:#FFFBEB;color:#92400E;
-        {% elif reg.status == 'waitlist' %}background:#EFF6FF;color:#1D4ED8;
-        {% else %}background:#FEF2F2;color:#B91C1C;{% endif %}">
-        <i class="fas {% if reg.status == 'confirmed' %}fa-check-circle{% elif reg.status == 'pending' %}fa-clock{% elif reg.status == 'waitlist' %}fa-list-ol{% else %}fa-times-circle{% endif %}" style="margin-right:5px;"></i>
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <span class="badge {% if reg.status == 'confirmed' %}badge-green{% elif reg.status == 'pending' %}badge-amber{% elif reg.status == 'waitlist' %}badge-blue{% else %}badge-red{% endif %}" style="padding:5px 12px;font-size:12.5px;">
+        <i class="fas {% if reg.status == 'confirmed' %}fa-check-circle{% elif reg.status == 'pending' %}fa-clock{% elif reg.status == 'waitlist' %}fa-list-ol{% else %}fa-times-circle{% endif %}"></i>
         {{ reg.status | title }}
       </span>
-      <span style="padding:6px 14px;border-radius:8px;font-size:13px;font-weight:700;
-        {% if reg.payment_status == 'paid' %}background:#F0FDF4;color:#15803D;
-        {% elif reg.payment_status == 'refunded' %}background:#EFF6FF;color:#1D4ED8;
-        {% else %}background:#FFF7ED;color:#C2410C;{% endif %}">
-        <i class="fas {% if reg.payment_status == 'paid' %}fa-credit-card{% elif reg.payment_status == 'refunded' %}fa-undo{% else %}fa-exclamation-circle{% endif %}" style="margin-right:5px;"></i>
+      <span class="badge {% if reg.payment_status == 'paid' %}badge-green{% elif reg.payment_status == 'refunded' %}badge-blue{% else %}badge-orange{% endif %}" style="padding:5px 12px;font-size:12.5px;">
+        <i class="fas {% if reg.payment_status == 'paid' %}fa-credit-card{% elif reg.payment_status == 'refunded' %}fa-undo{% else %}fa-exclamation-circle{% endif %}"></i>
         Payment: {{ reg.payment_status | title }}
       </span>
     </div>
 
-    <!-- Event info -->
-    <div style="padding:20px 24px;border-bottom:1px solid var(--border);">
-      <p style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin:0 0 10px;">Event</p>
-      <h2 style="font-size:17px;font-weight:700;color:var(--text);margin:0 0 8px;">{{ reg.event.title }}</h2>
-      <div style="display:flex;flex-direction:column;gap:5px;">
+    <!-- Event -->
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+      <div style="font-size:10.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Event</div>
+      <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;">{{ reg.event.title }}</div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
         <div style="font-size:13px;color:var(--text-2);display:flex;align-items:center;gap:8px;">
-          <i class="fas fa-calendar-alt" style="color:var(--purple);width:14px;text-align:center;font-size:11px;"></i>
+          <i class="fas fa-calendar-alt" style="color:var(--primary);width:14px;font-size:11px;"></i>
           {{ reg.event.start_date.strftime('%A, %d %B %Y') }}
         </div>
         {% if reg.event.venue %}
           <div style="font-size:13px;color:var(--text-2);display:flex;align-items:center;gap:8px;">
-            <i class="fas fa-map-marker-alt" style="color:var(--purple);width:14px;text-align:center;font-size:11px;"></i>
+            <i class="fas fa-map-marker-alt" style="color:var(--primary);width:14px;font-size:11px;"></i>
             {{ reg.event.venue.name }}, {{ reg.event.venue.city }}
           </div>
         {% endif %}
@@ -52,51 +47,48 @@
     </div>
 
     <!-- Athlete -->
-    <div style="padding:20px 24px;border-bottom:1px solid var(--border);">
-      <p style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin:0 0 12px;">Athlete</p>
-      <div style="display:flex;align-items:center;gap:14px;">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+      <div style="font-size:10.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Athlete</div>
+      <div style="display:flex;align-items:center;gap:12px;">
         {% if reg.child.profile_image %}
-          <img src="{{ reg.child.profile_image }}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;"/>
+          <img src="{{ reg.child.profile_image }}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;"/>
         {% else %}
-          <div style="width:52px;height:52px;border-radius:50%;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--purple);flex-shrink:0;">
-            {{ reg.child.first_name[0] | upper }}
-          </div>
+          <div class="avatar" style="width:48px;height:48px;font-size:18px;">{{ reg.child.first_name[0] | upper }}</div>
         {% endif %}
         <div>
-          <p style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 3px;">{{ reg.child.full_name }}</p>
-          <p style="font-size:13px;color:var(--text-2);margin:0;">Age {{ reg.child.age }} · {{ reg.child.gender | title }}</p>
+          <div style="font-size:14px;font-weight:700;color:var(--text);">{{ reg.child.full_name }}</div>
+          <div style="font-size:12.5px;color:var(--text-2);">Age {{ reg.child.age }} · {{ reg.child.gender | title }}</div>
         </div>
       </div>
     </div>
 
     <!-- Division & Fee -->
     {% if reg.division %}
-      <div style="padding:20px 24px;border-bottom:1px solid var(--border);">
-        <p style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin:0 0 10px;">Division & Fee</p>
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+        <div style="font-size:10.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Division & Fee</div>
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <div>
-            <p style="font-size:15px;font-weight:600;color:var(--text);margin:0 0 3px;">{{ reg.division.name }}</p>
-            <p style="font-size:13px;color:var(--text-2);margin:0;">Ages {{ reg.division.min_age }}–{{ reg.division.max_age }}</p>
+            <div style="font-size:14px;font-weight:600;color:var(--text);">{{ reg.division.name }}</div>
+            <div style="font-size:12.5px;color:var(--text-2);">Ages {{ reg.division.min_age }}–{{ reg.division.max_age }}</div>
           </div>
-          <p style="font-size:22px;font-weight:900;color:var(--purple);margin:0;letter-spacing:-0.02em;">
+          <div style="font-size:22px;font-weight:800;color:var(--primary);letter-spacing:-0.02em;">
             {{ site.currency_symbol }}{{ "%.2f"|format(reg.division.entry_fee|float) }}
-          </p>
+          </div>
         </div>
       </div>
     {% endif %}
 
     <!-- Documents -->
     {% if reg.documents %}
-      <div style="padding:20px 24px;border-bottom:1px solid var(--border);">
-        <p style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin:0 0 10px;">Submitted Documents</p>
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+        <div style="font-size:10.5px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Submitted Documents</div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           {% for doc in reg.documents %}
-            <div style="display:flex;align-items:center;justify-content:space-between;background:#F9FAFB;border-radius:8px;padding:10px 14px;font-size:13px;">
-              <span style="color:var(--text-2);display:flex;align-items:center;gap:8px;">
-                <i class="fas fa-file-alt" style="color:var(--purple);font-size:11px;"></i>
-                {{ doc.file_name }}
+            <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-radius:8px;padding:9px 12px;font-size:13px;">
+              <span style="color:var(--text-2);display:flex;align-items:center;gap:7px;">
+                <i class="fas fa-file-alt" style="color:var(--primary);font-size:11px;"></i>{{ doc.file_name }}
               </span>
-              <a href="{{ doc.file_url }}" target="_blank" style="color:var(--purple);font-weight:600;font-size:12px;">View</a>
+              <a href="{{ doc.file_url }}" target="_blank" style="color:var(--primary);font-weight:600;font-size:12px;">View</a>
             </div>
           {% endfor %}
         </div>
@@ -104,30 +96,20 @@
     {% endif %}
 
     <!-- Actions -->
-    <div style="padding:20px 24px;display:flex;gap:10px;flex-wrap:wrap;">
+    <div style="padding:16px 20px;display:flex;gap:10px;flex-wrap:wrap;">
       {% if reg.payment_status == 'unpaid' and reg.status != 'cancelled' %}
-        <a href="{{ url_for('payments.checkout', reg_id=reg.id) }}"
-           style="flex:1;min-width:140px;text-align:center;padding:12px;border-radius:10px;background:#22C55E;color:#fff;font-size:14px;font-weight:700;text-decoration:none;transition:200ms ease;"
-           onmouseover="this.style.background='#16A34A'" onmouseout="this.style.background='#22C55E'">
-          <i class="fas fa-credit-card" style="margin-right:6px;"></i> Pay Now
+        <a href="{{ url_for('payments.checkout', reg_id=reg.id) }}" class="btn btn-success" style="flex:1;min-width:130px;justify-content:center;">
+          <i class="fas fa-credit-card"></i> Pay Now
         </a>
       {% endif %}
       {% if reg.status in ('pending', 'confirmed') %}
         <form method="POST" action="{{ url_for('user.cancel_registration', reg_id=reg.id) }}"
-              onsubmit="return confirm('Are you sure you want to cancel this registration?')" style="flex:1;min-width:140px;">
+              onsubmit="return confirm('Cancel this registration?')" style="flex:1;min-width:130px;">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-          <button type="submit"
-                  style="width:100%;padding:12px;border-radius:10px;border:1.5px solid #FECACA;background:#FEF2F2;color:#B91C1C;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:200ms ease;"
-                  onmouseover="this.style.background='#FEE2E2'" onmouseout="this.style.background='#FEF2F2'">
-            Cancel Registration
-          </button>
+          <button type="submit" class="btn btn-danger" style="width:100%;justify-content:center;">Cancel</button>
         </form>
       {% endif %}
-      <a href="{{ url_for('events.event_detail', slug=reg.event.slug) }}"
-         style="flex:1;min-width:140px;text-align:center;padding:12px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--text);font-size:14px;font-weight:600;text-decoration:none;transition:200ms ease;"
-         onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='#fff'">
-        View Event
-      </a>
+      <a href="{{ url_for('events.event_detail', slug=reg.event.slug) }}" class="btn btn-sec" style="flex:1;min-width:130px;justify-content:center;">View Event</a>
     </div>
   </div>
 </div>

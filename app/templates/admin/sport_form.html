@@ -1,49 +1,43 @@
 {% extends 'admin/base.html' %}
 {% block title %}{{ 'Edit' if sport else 'New' }} Sport{% endblock %}
 {% block content %}
-<div class="flex justify-between items-center mb-6">
-  <h1 class="text-2xl font-bold text-gray-800">{{ 'Edit' if sport else 'New' }} Sport</h1>
-  <a href="{{ url_for('admin.sports') }}" class="text-sm text-gray-500 hover:text-gray-700">← Back</a>
+<div class="page-header">
+  <div><div class="page-title">{{ 'Edit' if sport else 'New' }} Sport</div></div>
+  <a href="{{ url_for('admin.sports') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
 </div>
-<div class="max-w-lg bg-white rounded-2xl shadow-sm p-6">
-  <form method="POST" enctype="multipart/form-data" class="space-y-4">
-    {{ form.hidden_tag() }}
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Sport Name</label>
-      {{ form.name(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
-    </div>
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-      {{ form.description(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400", rows=3) }}
-    </div>
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">FA Icon Class</label>
-      <p class="text-xs text-gray-400 mb-2">Enter a Font Awesome class name e.g. <code>fa-futbol</code>, <code>fa-running</code>. Leave blank to upload an image instead.</p>
-      {% if sport and sport.icon and sport.icon.startswith('fa-') %}
-        <div class="flex items-center gap-3 mb-2 p-3 bg-indigo-50 border border-indigo-100 rounded">
-          <i class="fas {{ sport.icon }} text-indigo-500 text-2xl"></i>
-          <span class="text-sm text-gray-600">Current: <code>{{ sport.icon }}</code></span>
-        </div>
-      {% endif %}
-      <input type="text" name="fa_icon" value="{{ sport.icon if sport and sport.icon and sport.icon.startswith('fa-') else '' }}"
-             placeholder="fa-futbol" class="w-full border rounded px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 mb-2"/>
-      <label class="block text-sm font-medium text-gray-700 mb-1 mt-3">Or Upload Image</label>
-      {% if sport and sport.icon and sport.icon.startswith('http') %}
-        <img src="{{ sport.icon }}" class="w-16 h-16 object-contain mb-2 rounded border"/>
-      {% endif %}
-      {{ form.icon(class="w-full text-sm file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700") }}
-    </div>
-    <div class="grid grid-cols-2 gap-4">
+<div style="max-width:520px;">
+  <div class="card">
+    <form method="POST" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:18px;">
+      {{ form.hidden_tag() }}
+      <div><label class="form-label">Sport Name</label>{{ form.name(class="form-input") }}</div>
+      <div><label class="form-label">Description</label>{{ form.description(class="form-input form-textarea", rows=3) }}</div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
-        {{ form.sort_order(class="w-full border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-400") }}
+        <label class="form-label">Font Awesome Icon</label>
+        <div class="form-hint" style="margin-bottom:8px;">Enter a FA class e.g. <code>fa-futbol</code>, <code>fa-running</code>. Leave blank to upload an image.</div>
+        {% if sport and sport.icon and sport.icon.startswith('fa-') %}
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--primary-light);border-radius:8px;margin-bottom:10px;">
+            <i class="fas {{ sport.icon }}" style="color:var(--primary);font-size:20px;"></i>
+            <span style="font-size:13px;color:var(--text-2);">Current: <code>{{ sport.icon }}</code></span>
+          </div>
+        {% endif %}
+        <input type="text" name="fa_icon" value="{{ sport.icon if sport and sport.icon and sport.icon.startswith('fa-') else '' }}" class="form-input" placeholder="fa-futbol"/>
       </div>
-      <div class="flex items-center gap-2 mt-6">
-        {{ form.is_active(class="w-4 h-4 text-indigo-600") }}
-        <label class="text-sm font-medium text-gray-700">Active</label>
+      <div>
+        <label class="form-label">Or Upload Image</label>
+        {% if sport and sport.icon and sport.icon.startswith('http') %}
+          <img src="{{ sport.icon }}" style="width:48px;height:48px;object-fit:contain;border-radius:8px;border:1px solid var(--border);margin-bottom:8px;display:block;"/>
+        {% endif %}
+        {{ form.icon(style="font-size:13px;color:var(--text-2);") }}
       </div>
-    </div>
-    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition">Save Sport</button>
-  </form>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:end;">
+        <div><label class="form-label">Sort Order</label>{{ form.sort_order(class="form-input") }}</div>
+        <div style="display:flex;align-items:center;gap:8px;padding-bottom:2px;">
+          {{ form.is_active(style="width:16px;height:16px;accent-color:var(--primary);") }}
+          <label class="form-label" style="margin:0;">Active</label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;height:44px;">Save Sport</button>
+    </form>
+  </div>
 </div>
 {% endblock %}
